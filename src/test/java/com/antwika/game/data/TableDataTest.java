@@ -20,7 +20,7 @@ public class TableDataTest {
     @Test
     @Tag("UnitTest")
     public void serializeToString() {
-        assertEquals("TableData(seats=null, smallBlind=0, bigBlind=0, pots=null, buttonAt=0, actionAt=0)", TableData.builder().build().toString());
+        assertEquals("TableData(dealer=null, seats=null, smallBlind=0, bigBlind=0, pots=null, buttonAt=0, actionAt=0)", TableData.builder().build().toString());
     }
 
     @Test
