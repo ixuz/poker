@@ -3,10 +3,7 @@ package com.antwika.game.event;
 import com.antwika.game.actor.Dealer;
 import com.antwika.game.actor.Player;
 import com.antwika.game.actor.TableManager;
-import com.antwika.game.core.IActor;
-import com.antwika.game.core.IEvent;
-import com.antwika.game.core.IEventProcessor;
-import com.antwika.game.core.ITableData;
+import com.antwika.game.core.*;
 import com.antwika.game.data.JoinEvent;
 import com.antwika.game.data.RequestSeatEvent;
 import com.antwika.game.data.RequestTableOpenEvent;
@@ -24,14 +21,14 @@ public class RequestTableOpenEventProcessor implements IEventProcessor {
     }
 
     @Override
-    public void process(IActor thisActor, IEvent event) {
-        if (!(thisActor instanceof TableManager)) return;
+    public void process(IEventHandler handler, IEvent event) {
+        if (!(handler instanceof TableManager)) return;
 
         final RequestTableOpenEvent requestTableOpenEvent = (RequestTableOpenEvent) event;
         final ITableData tableData = requestTableOpenEvent.getTableData();
 
-        final TableManager tableManager = (TableManager) thisActor;
+        final TableManager tableManager = (TableManager) handler;
 
-        tableManager.handleEvent(requestTableOpenEvent);
+        tableManager.onEvent(requestTableOpenEvent);
     }
 }

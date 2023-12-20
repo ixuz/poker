@@ -3,6 +3,7 @@ package com.antwika.game.event;
 import com.antwika.game.actor.Dealer;
 import com.antwika.game.core.IActor;
 import com.antwika.game.core.IEvent;
+import com.antwika.game.core.IEventHandler;
 import com.antwika.game.core.IEventProcessor;
 import com.antwika.game.data.AddChipsEvent;
 import com.antwika.game.exception.TableException;
@@ -19,14 +20,14 @@ public class AddChipsEventProcessor implements IEventProcessor {
     }
 
     @Override
-    public void process(IActor thisActor, IEvent event) {
+    public void process(IEventHandler handler, IEvent event) {
         final AddChipsEvent addChipsEvent = (AddChipsEvent) event;
         final IActor actor = addChipsEvent.getActor();
         final int seatIndex = addChipsEvent.getSeatIndex();
         final int amount = addChipsEvent.getAmount();
 
         try {
-            final Dealer dealer = (Dealer) thisActor;
+            final Dealer dealer = (Dealer) handler;
             TableDataUtil.addChipsToSeat(dealer.getTable(), actor, seatIndex, amount);
 
             logger.info("Player {} at seat {} added {} chips",

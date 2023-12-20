@@ -4,6 +4,7 @@ import com.antwika.game.actor.Dealer;
 import com.antwika.game.actor.Player;
 import com.antwika.game.core.IActor;
 import com.antwika.game.core.IEvent;
+import com.antwika.game.core.IEventHandler;
 import com.antwika.game.core.IEventProcessor;
 import com.antwika.game.data.JoinEvent;
 import com.antwika.game.exception.GameException;
@@ -20,19 +21,19 @@ public class JoinEventProcessor implements IEventProcessor {
     }
 
     @Override
-    public void process(IActor thisActor, IEvent event) {
+    public void process(IEventHandler handler, IEvent event) {
         if (!(event instanceof JoinEvent)) return;
 
         final JoinEvent joinEvent = (JoinEvent) event;
 
-        if (thisActor instanceof Player) {
-            final Player player = (Player) thisActor;
-            player.handleEvent(joinEvent);
+        if (handler instanceof Player) {
+            final Player player = (Player) handler;
+            player.onEvent(joinEvent);
         }
 
-        if (thisActor instanceof Dealer) {
-            final Dealer dealer = (Dealer) thisActor;
-            dealer.handleEvent(joinEvent);
+        if (handler instanceof Dealer) {
+            final Dealer dealer = (Dealer) handler;
+            dealer.onEvent(joinEvent);
         }
     }
 }

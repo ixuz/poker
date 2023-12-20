@@ -1,7 +1,6 @@
 package com.antwika.game.actor;
 
 import com.antwika.game.core.IEvent;
-import com.antwika.game.core.IEventProcessor;
 import com.antwika.game.core.ITableData;
 import com.antwika.game.data.*;
 import com.antwika.game.event.RequestDealerSeatEventProcessor;
@@ -20,14 +19,14 @@ public class TableManager extends Actor {
 
     public TableManager(String actorName) {
         super(actorName, List.of(
-                new RequestTableOpenEventProcessor(),
-                new RequestDealerSeatEventProcessor(),
-                new RequestTableListEventProcessor()
+                // new RequestTableOpenEventProcessor(),
+                // new RequestDealerSeatEventProcessor()
+                // new RequestTableListEventProcessor()
         ));
     }
 
     @Override
-    public void handleEvent(IEvent event) {
+    public void onEvent(IEvent event) {
         if (event instanceof RequestTableOpenEvent) {
             final RequestTableOpenEvent requestTableOpenEvent = (RequestTableOpenEvent) event;
             final ITableData tableData = requestTableOpenEvent.getTableData();
@@ -72,7 +71,8 @@ public class TableManager extends Actor {
             logger.info("{} is aware of {}", this, requestTableListEvent);
 
             event.getWorld().offerEvent(TableListEvent.builder()
-                    .world(event.getWorld())
+                    .world(requestTableListEvent.getWorld())
+                    .actor(requestTableListEvent.getActor())
                     .tables(tables)
                     .build());
         }

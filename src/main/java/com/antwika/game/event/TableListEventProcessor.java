@@ -4,6 +4,7 @@ import com.antwika.game.actor.Player;
 import com.antwika.game.actor.TableManager;
 import com.antwika.game.core.IActor;
 import com.antwika.game.core.IEvent;
+import com.antwika.game.core.IEventHandler;
 import com.antwika.game.core.IEventProcessor;
 import com.antwika.game.data.RequestTableListEvent;
 import com.antwika.game.data.TableListEvent;
@@ -19,12 +20,12 @@ public class TableListEventProcessor implements IEventProcessor {
     }
 
     @Override
-    public void process(IActor thisActor, IEvent event) {
+    public void process(IEventHandler handler, IEvent event) {
         final TableListEvent tableListEvent = (TableListEvent) event;
 
-        if (thisActor instanceof Player) {
-            final Player player = (Player) thisActor;
-            player.handleEvent(tableListEvent);
+        if (handler instanceof Player) {
+            final Player player = (Player) handler;
+            player.onEvent(tableListEvent);
         }
     }
 }

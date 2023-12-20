@@ -28,19 +28,17 @@ public class Player extends Actor {
 
     public Player(String name) {
         super(name, List.of(
-                new WorldJoinEventProcessor(),
-                new TableListEventProcessor(),
+                // new WorldJoinEventProcessor(),
+                // new TableListEventProcessor(),
                 new JoinEventProcessor()
         ));
     }
 
     @Override
-    public void handleEvent(IEvent event) {
+    public void onEvent(IEvent event) {
         if (event instanceof WorldJoinEvent) {
             final WorldJoinEvent worldJoinEvent = (WorldJoinEvent) event;
             if (worldJoinEvent.getActor() != this) return;
-
-            logger.info("{} is aware of {}", this, worldJoinEvent);
 
             world = worldJoinEvent.getWorld();
         }
@@ -48,12 +46,13 @@ public class Player extends Actor {
             final JoinEvent joinEvent = (JoinEvent) event;
             if (joinEvent.getActor() != this) return;
 
-            logger.info("{} is aware of {}", this, joinEvent);
             tableData = joinEvent.getTableData();
             seatIndex = joinEvent.getSeatIndex();
         }
         if (event instanceof TableListEvent) {
             final TableListEvent tableListEvent = (TableListEvent) event;
+
+            if (tableListEvent.getActor() != this) return;
 
             logger.info("{} is aware of {}", this, tableListEvent);
 
@@ -92,6 +91,7 @@ public class Player extends Actor {
 
                 world.offerEvent(RequestTableListEvent.builder()
                         .world(world)
+                        .actor(this)
                         .build());
             }
         }

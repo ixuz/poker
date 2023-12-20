@@ -2,10 +2,7 @@ package com.antwika.game.event;
 
 import com.antwika.game.actor.Dealer;
 import com.antwika.game.actor.TableManager;
-import com.antwika.game.core.IActor;
-import com.antwika.game.core.IEvent;
-import com.antwika.game.core.IEventProcessor;
-import com.antwika.game.core.ITableData;
+import com.antwika.game.core.*;
 import com.antwika.game.data.JoinEvent;
 import com.antwika.game.data.RequestDealerSeatEvent;
 import com.antwika.game.data.RequestSeatEvent;
@@ -23,12 +20,12 @@ public class RequestDealerSeatEventProcessor implements IEventProcessor {
     }
 
     @Override
-    public void process(IActor thisActor, IEvent event) {
-        if (!(thisActor instanceof TableManager)) return;
+    public void process(IEventHandler handler, IEvent event) {
+        if (!(handler instanceof TableManager)) return;
 
         final RequestDealerSeatEvent requestDealerSeatEvent = (RequestDealerSeatEvent) event;
 
-        final TableManager tableManager = (TableManager) thisActor;
-        tableManager.handleEvent(requestDealerSeatEvent);
+        final TableManager tableManager = (TableManager) handler;
+        tableManager.onEvent(requestDealerSeatEvent);
     }
 }

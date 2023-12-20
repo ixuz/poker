@@ -3,6 +3,7 @@ package com.antwika.game.event;
 import com.antwika.game.actor.Dealer;
 import com.antwika.game.core.IActor;
 import com.antwika.game.core.IEvent;
+import com.antwika.game.core.IEventHandler;
 import com.antwika.game.core.IEventProcessor;
 import com.antwika.game.data.LeaveEvent;
 import com.antwika.game.exception.GameException;
@@ -19,9 +20,9 @@ public class LeaveEventProcessor implements IEventProcessor {
     }
 
     @Override
-    public void process(IActor thisActor, IEvent event) {
+    public void process(IEventHandler handler, IEvent event) {
         try {
-            final Dealer dealer = (Dealer) thisActor;
+            final Dealer dealer = (Dealer) handler;
             final LeaveEvent joinEvent = (LeaveEvent) event;
             DealerUtil.leave(dealer, joinEvent.getActor());
             logger.info("{} left game {}", joinEvent.getActor(), dealer);

@@ -1,10 +1,7 @@
 package com.antwika.game.event;
 
 import com.antwika.game.actor.TableManager;
-import com.antwika.game.core.IActor;
-import com.antwika.game.core.IEvent;
-import com.antwika.game.core.IEventProcessor;
-import com.antwika.game.core.ITableData;
+import com.antwika.game.core.*;
 import com.antwika.game.data.RequestTableListEvent;
 import com.antwika.game.data.RequestTableOpenEvent;
 import org.slf4j.Logger;
@@ -19,13 +16,13 @@ public class RequestTableListEventProcessor implements IEventProcessor {
     }
 
     @Override
-    public void process(IActor thisActor, IEvent event) {
-        if (!(thisActor instanceof TableManager)) return;
+    public void process(IEventHandler handler, IEvent event) {
+        if (!(handler instanceof TableManager)) return;
 
         final RequestTableListEvent requestTableListEvent = (RequestTableListEvent) event;
 
-        final TableManager tableManager = (TableManager) thisActor;
+        final TableManager tableManager = (TableManager) handler;
 
-        tableManager.handleEvent(requestTableListEvent);
+        tableManager.onEvent(requestTableListEvent);
     }
 }

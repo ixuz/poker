@@ -5,8 +5,6 @@ import com.antwika.game.core.IEvent;
 import com.antwika.game.core.ITableData;
 import com.antwika.game.data.*;
 import com.antwika.game.event.*;
-import com.antwika.game.exception.GameException;
-import com.antwika.game.util.DealerUtil;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,24 +19,16 @@ public class Dealer extends Actor {
 
     public Dealer() {
         super("Dealer", List.of(
-                new RequestDealerEventProcessor(),
+                // new RequestDealerEventProcessor(),
                 new RequestSeatEventProcessor(),
-                new JoinEventProcessor(),
+                // new JoinEventProcessor(),
                 new LeaveEventProcessor(),
                 new AddChipsEventProcessor()
         ));
     }
 
-    public void join(IActor actor, int seatIndex) throws GameException {
-        DealerUtil.join(this, seatIndex, actor);
-    }
-
-    public void leave(IActor actor) throws GameException {
-        DealerUtil.leave(this, actor);
-    }
-
     @Override
-    public void handleEvent(IEvent event) {
+    public void onEvent(IEvent event) {
         if (event instanceof RequestDealerEvent) {
             final RequestDealerEvent requestDealerEvent = (RequestDealerEvent) event;
             final ITableData tableData = requestDealerEvent.getTableData();
