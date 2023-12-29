@@ -1,6 +1,7 @@
 package com.antwika.game;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +13,14 @@ public class Player extends EventHandler {
     private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
     @ToString.Include
-    private final String name;
+    @Getter
+    private final String playerName;
 
-    private final Random prng = new Random();
+    private final Random prng;
 
-    public Player(String name) {
-        this.name = name;
+    public Player(long prngSeed, String playerName) {
+        this.prng = new Random(prngSeed);
+        this.playerName = playerName;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class Player extends EventHandler {
 
     private Event onPlayerActionRequest(PlayerActionRequest event) {
         if (event.player != this) return null;
-        logger.info("event: { toCall: {}, minBet: {}, minRaise: {} }", event.toCall, event.minBet, event.minRaise);
+        logger.debug("event: { toCall: {}, minBet: {}, minRaise: {} }", event.toCall, event.minBet, event.minRaise);
 
         if (event.toCall == 0) {
             int rand = prng.nextInt(100);

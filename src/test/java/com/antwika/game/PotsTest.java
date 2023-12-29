@@ -612,4 +612,39 @@ public class PotsTest {
         assertEquals(350, collapsed.get(0).getAmountPerCandidate());
         assertEquals(700, collapsed.get(0).getTotalAmount());
     }
+
+    @Test
+    public void determineWinners_forCollapsedPot() throws NotationException {
+        // Arrange
+        final Seat seat1 = new Seat();
+        seat1.setSeatIndex(0);
+        seat1.setCards(HandUtil.fromNotation("AcAd").getBitmask());
+        final Seat seat2 = new Seat();
+        seat2.setSeatIndex(1);
+        seat2.setCards(HandUtil.fromNotation("AhAs").getBitmask());
+        final List<Candidate> candidates1 = List.of(
+                new Candidate(seat1, 1),
+                new Candidate(seat2, 1)
+        );
+        final List<Candidate> candidates2 = List.of(
+                new Candidate(seat1, 2),
+                new Candidate(seat2, 2)
+        );
+        final List<Pot> pots = List.of(
+                new Pot(1, candidates1),
+                new Pot(2, candidates2)
+        );
+
+        // Act
+        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0);
+
+        // Assert
+        assertEquals(2, winners.size());
+
+        assertEquals(seat1, winners.get(0).getSeat());
+        assertEquals(3, winners.get(0).getAmount());
+
+        assertEquals(seat2, winners.get(1).getSeat());
+        assertEquals(3, winners.get(1).getAmount());
+    }
 }

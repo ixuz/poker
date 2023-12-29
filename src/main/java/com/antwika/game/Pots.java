@@ -102,13 +102,16 @@ public class Pots {
 
     public static List<Candidate> determineWinners(List<Pot> pots, long communityCards, int buttonAt) {
         final List<Pot> potsCopy = new ArrayList<>(pots);
+        final List<Pot> collapsedPots = collapsePots(potsCopy);
 
         final IHandProcessor processor = new TexasHoldemProcessor();
 
         final List<Candidate> winners = new ArrayList<>();
 
-        while (!potsCopy.isEmpty()) {
-            final Pot pot = potsCopy.remove(0);
+        int potIndex = -1;
+        while (!collapsedPots.isEmpty()) {
+            potIndex += 1;
+            final Pot pot = collapsedPots.remove(0);
             final List<Candidate> candidates = pot.getCandidates();
 
             final List<CandidateEvaluation> evaluations = candidates.stream()
@@ -147,7 +150,13 @@ public class Pots {
                 for (CandidateEvaluation e : group) {
                     int candidatePortion = portion;
                     delivered += candidatePortion;
-                    groupWinners.add(new Candidate(e.candidate.getSeat(), candidatePortion));
+
+                    final Candidate candidate = new Candidate(e.candidate.getSeat(), candidatePortion);
+
+                    if (potIndex == 0) candidate.setPotName("Main pot");
+                    else candidate.setPotName("Side pot #" + potIndex);
+
+                    groupWinners.add(candidate);
                 }
 
                 if (rest > 0) {

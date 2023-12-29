@@ -1,12 +1,9 @@
 package com.antwika.game;
 
 import com.antwika.common.exception.NotationException;
+import com.antwika.common.util.BitmaskUtil;
 import com.antwika.common.util.HandUtil;
 import com.antwika.eval.core.IEvaluation;
-import com.antwika.eval.core.IHandProcessor;
-import com.antwika.eval.exception.HandEvaluatorException;
-import com.antwika.eval.processor.TexasHoldemProcessor;
-import com.antwika.eval.util.HandEvaluatorUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
@@ -18,6 +15,9 @@ import java.util.stream.Collectors;
 
 public class Game extends EventHandler {
     private static Logger logger = LoggerFactory.getLogger(Game.class);
+
+    private String tableName;
+
     private long id = 0L;
 
     private List<Seat> seats = new ArrayList<>();
@@ -36,12 +36,29 @@ public class Game extends EventHandler {
 
     private final Deck deck;
 
-    public Game(int seatCount) {
+    private final Random prng;
+
+    private final int smallBlind;
+
+    private final int bigBlind;
+
+    private int delivered = 0;
+
+    public Game(long prngSeed, String tableName, int seatCount, int smallBlind, int bigBlind) {
+        this.prng = new Random(prngSeed);
+        this.tableName = tableName;
+        this.smallBlind = smallBlind;
+        this.bigBlind = bigBlind;
+
         for (int i = 0; i < seatCount; i += 1) {
-            seats.add(new Seat());
+            final Seat seat = new Seat();
+            seat.setSeatIndex(i);
+            seats.add(seat);
         }
 
-        deck = new Deck();
+        deck = new Deck(prng.nextInt());
+
+        logger.info("Game with {} seats opened", seats.size());
     }
 
     public void join(Player player) {
@@ -61,10 +78,73 @@ public class Game extends EventHandler {
         available.setCommitted(0);
         available.setPostedSmallBlindLastRound(false);
         available.setPostedBigBlindLastRound(false);
+
+        logger.info("{} joined the game at seat #{}", player, available.getSeatIndex());
     }
 
-    public void start() {
+    public void leave(Player player) {
+        for (Seat seat : seats) {
+            if (seat.getPlayer() == player) {
+                seat.setPlayer(null);
+                seat.setStack(0);
+            }
+        }
+        logger.info("{} left the game", player);
+    }
+
+    public void startGame() throws NotationException {
+
+    }
+
+    public void stopGame() {
+        logger.info("Game is stopped");
+    }
+
+    public void drawButtonPosition() throws NotationException {
+        logger.debug("Drawing cards to determine button position...");
         deck.resetAndShuffle();
+
+        for (final Seat seat : seats) {
+            if (seat.getPlayer() == null) continue;
+
+            long card = deck.draw();
+            seat.setCards(card);
+            logger.debug("Seat #{} got card: {}", seat.getSeatIndex(), HandUtil.toNotation(card));
+        }
+
+        final List<Seat> seatCardByRankAndSuit = seats.stream()
+                .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_SUIT_INDEX.get(e.getCards())))
+                .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_RANK_INDEX.get(e.getCards())))
+                .toList();
+
+        Seat seatWithHighestCardAndSuit = null;
+        for (int i = seats.size() - 1; i >= 0; i -= 1) {
+            final Seat seat = seats.get(i);
+
+            if (seat.getPlayer() == null) continue;
+
+            seatWithHighestCardAndSuit = seat;
+            break;
+        }
+
+        if (seatWithHighestCardAndSuit == null) {
+            throw new RuntimeException("Failed to draw card for the button position!");
+        }
+
+        moveButtonTo(seatWithHighestCardAndSuit.getSeatIndex());
+
+        for (final Seat seat : seats) {
+            seat.setCards(0L);
+        }
+    }
+
+    public void moveButtonTo(int seatIndex) {
+        buttonAt = seatIndex;
+        logger.debug("Button is at seat #{}", buttonAt);
+    }
+
+    public void incrementHandId() {
+        id += 1L;
     }
 
     public void blinds() {
@@ -72,13 +152,17 @@ public class Game extends EventHandler {
         seats.get(1).setStack(seats.get(1).getStack() - smallBlindAmount);
         seats.get(1).setCommitted(seats.get(1).getCommitted() + smallBlindAmount);
         actionAt += 1;
-        logger.info("{} posted small blind {}", seats.get(1).getPlayer(), smallBlindAmount);
+        logger.info("{}: posts small blind {}",
+                seats.get(1).getPlayer().getPlayerName(),
+                smallBlindAmount);
 
         int bigBlindAmount = 10;
         seats.get(2).setStack(seats.get(2).getStack() - bigBlindAmount);
         seats.get(2).setCommitted(seats.get(2).getCommitted() + bigBlindAmount);
         actionAt += 1;
-        logger.info("{} posted big blind {}", seats.get(2).getPlayer(), bigBlindAmount);
+        logger.info("{}: posts big blind {}",
+                seats.get(2).getPlayer().getPlayerName(),
+                bigBlindAmount);
 
         totalBet = bigBlindAmount;
         lastRaise = bigBlindAmount;
@@ -103,9 +187,9 @@ public class Game extends EventHandler {
             final int minBet = totalBet + minRaise - seat.getCommitted();
 
             if (toCall > 0) {
-                logger.info("{}, {} to call", seat.getPlayer(), toCall);
+                logger.debug("{}, {} to call", seat.getPlayer(), toCall);
             } else {
-                logger.info("{}, Check or bet?", seat.getPlayer());
+                logger.debug("{}, Check or bet?", seat.getPlayer());
             }
 
             final Event response = player.handle(new PlayerActionRequest(player, this, toCall, minBet, minRaise));
@@ -113,17 +197,19 @@ public class Game extends EventHandler {
             if (response instanceof PlayerActionResponse e) {
                 if (e.action.equals("CHECK")) {
                     seat.setHasActed(true);
-                    logger.info("{} checked", seat.getPlayer());
+                    logger.info("{}: checks", seat.getPlayer().getPlayerName());
                 } else if (e.action.equals("BET")) {
                     seat.setHasActed(true);
                     seat.setCommitted(seat.getCommitted() + e.amount);
                     seat.setStack(seat.getStack() - e.amount);
                     totalBet = seat.getCommitted();
                     lastRaise = e.amount;
-                    logger.info("{} bet {}, total bet {}", seat.getPlayer(), e.amount, totalBet);
+                    final StringBuilder sb = new StringBuilder();
+                    sb.append(String.format("%s: bets %d", seat.getPlayer().getPlayerName(), e.amount));
                     if (seat.getStack() == 0) {
-                        logger.info("{} is all in", seat.getPlayer());
+                        sb.append("and is all-in");
                     }
+                    logger.info(sb.toString());
                 } else if (e.action.equals("RAISE")) {
                     seat.setHasActed(true);
                     seat.setCommitted(seat.getCommitted() + e.amount);
@@ -132,25 +218,29 @@ public class Game extends EventHandler {
                         totalBet = seat.getCommitted();
                         lastRaise = e.amount;
                     }
-                    logger.info("{} raise {}, total bet {}", seat.getPlayer(), e.amount, totalBet);
+                    final StringBuilder sb = new StringBuilder();
+                    sb.append(String.format("%s: raise %d", seat.getPlayer().getPlayerName(), e.amount));
                     if (seat.getStack() == 0) {
-                        logger.info("{} is all in", seat.getPlayer());
+                        sb.append("and is all-in");
                     }
+                    logger.info(sb.toString());
                 } else if (e.action.equals("CALL")) {
                     seat.setHasActed(true);
                     seat.setCommitted(seat.getCommitted() + e.amount);
                     seat.setStack(seat.getStack() - e.amount);
-                    logger.info("{} calls {}", seat.getPlayer(), e.amount);
+                    final StringBuilder sb = new StringBuilder();
+                    sb.append(String.format("%s: calls %d", seat.getPlayer().getPlayerName(), e.amount));
                     if (seat.getStack() == 0) {
-                        logger.info("{} is all in", seat.getPlayer());
+                        sb.append("and is all-in");
                     }
+                    logger.info(sb.toString());
                 }
             }
 
             actionAt = seatAfter.getSeatIndex();
         }
 
-        logger.info("Betting round ended");
+        logger.debug("Betting round ended");
     }
 
     public void collect() {
@@ -196,44 +286,52 @@ public class Game extends EventHandler {
         return nextSeat;
     }
 
-    public void dealCards() {
+    public void dealCards() throws NotationException {
+        logger.info("*** HOLE CARDS ***");
         for (int i = 0; i < seats.size() * 2; i += 1) {
             final int seatIndex = (actionAt + i + 1) % seats.size();
             final Seat seat = seats.get(seatIndex);
             final long card = deck.draw();
             seat.setCards(seat.getCards() | card);
             try {
-                logger.info("Deal card {} to {}", HandUtil.toNotation(card), seat.getPlayer());
+                logger.debug("Deal card {} to {}", HandUtil.toNotation(card), seat.getPlayer());
             } catch (NotationException e) {
                 throw new RuntimeException(e);
             }
         }
+
+        printTableSeatCardsInfo();
     }
 
     public void dealFlop() {
-        cards |= deck.draw();
-        cards |= deck.draw();
-        cards |= deck.draw();
+        long flop = deck.draw() | deck.draw() | deck.draw();
+        cards |= flop;
         try {
-            logger.info("Deal flop {}", HandUtil.toNotation(cards));
+            logger.info("*** FLOP *** [{}]", getCardsNotation(flop));
         } catch (NotationException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void dealTurn() {
-        cards |= deck.draw();
+        long flop = cards;
+        long turn = deck.draw();
+        cards |= turn;
+
         try {
-            logger.info("Deal turn {}", HandUtil.toNotation(cards));
+            logger.info("*** TURN *** [{}] [{}]", getCardsNotation(flop), getCardsNotation(turn));
         } catch (NotationException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void dealRiver() {
-        cards |= deck.draw();
+        long flopAndTurn = cards;
+        long river = deck.draw();
+        cards |= river;
+
         try {
-            logger.info("Deal river {}", HandUtil.toNotation(cards));
+            logger.info("*** RIVER *** [{}] [{}]", getCardsNotation(flopAndTurn), getCardsNotation(river));
         } catch (NotationException e) {
             throw new RuntimeException(e);
         }
@@ -278,18 +376,26 @@ public class Game extends EventHandler {
         return null;
     }
 
-    public void showdown() {
-        logger.info("Showdown");
+    public void showdown() throws NotationException {
+        logger.debug("Showdown");
         final List<Pot> collapsed = Pots.collapsePots(pots);
         final List<Candidate> winners = Pots.determineWinners(collapsed, cards, buttonAt);
 
         for (Candidate winner : winners) {
             final Seat seat = winner.getSeat();
+            final Player player = seat.getPlayer();
             int seatIndex = seat.getSeatIndex();
             int amount = winner.getAmount();
+            delivered += amount;
             winner.getSeat().setStack(seat.getStack() + amount);
-            logger.info("{} at seat #{} won {}", seat, seatIndex, amount);
+
+            logger.info("{} collected {} from {}",
+                    player.getPlayerName(),
+                    amount,
+                    winner.getPotName());
         }
+
+        printSummary();
 
         /*final IHandProcessor handProcessor = new TexasHoldemProcessor();
 
@@ -349,23 +455,95 @@ public class Game extends EventHandler {
         }*/
     }
 
-    public void gameLoop() {
-        // PLAYER_JOIN_ACTION
-        // PLAYER_JOIN_ACTION
+    public void gameLoop() throws NotationException {
+        incrementHandId();
+        printGameInfo();
+        drawButtonPosition();
+        deck.resetAndShuffle();
+        printTableInfo();
+        printTableSeatsInfo();
+        blinds();
+        dealCards();
+        bettingRound();
+        collect();
+        dealFlop();
+        bettingRound();
+        collect();
+        dealTurn();
+        bettingRound();
+        collect();
+        dealRiver();
+        bettingRound();
+        collect();
+        showdown();
+    }
 
-        // DEAL_CARDS (two cards to each player)
-            // DEAL_CARD (Player 1)
-            // DEAL_CARD (Player 2)
-            // DEAL_CARD (Player 1)
-            // DEAL_CARD (Player 2)
+    public void printGameInfo() {
+        logger.info("Poker Hand #{}: Hold'em No Limit ({}/{}) - {}",
+                id,
+                smallBlind,
+                bigBlind,
+                new Date());
+    }
 
-        // PLAYER_ACTION ...
-        // FLOP
-        // PLAYER_ACTION ...
-        // TURN
-        // PLAYER_ACTION ...
-        // RIVER
-        // PLAYER_ACTION ...
-        // RESOLVE_POTS
+    public void printTableInfo() {
+        logger.info("Table '{}' {}-max Seat #{} is the button",
+                tableName,
+                seats.size(),
+                buttonAt);
+    }
+
+    public void printTableSeatsInfo() {
+        for (Seat seat : seats) {
+            if (seat.getPlayer() == null) continue;
+
+            logger.info("Seat {}: {} ({} in chips) ",
+                    seat.getSeatIndex() + 1,
+                    seat.getPlayer().getPlayerName(),
+                    seat.getStack());
+        }
+    }
+
+    public void printTableSeatCardsInfo() throws NotationException {
+        for (Seat seat : seats) {
+            if (seat.getPlayer() == null) continue;
+
+            final long cards = seat.getCards();
+
+            if (Long.bitCount(cards) != 2) throw new RuntimeException("Unexpected number of cards after deal");
+
+            final String handNotation = getCardsNotation(seat.getCards());
+
+            logger.info("Dealt to {} [{}]", seat.getPlayer().getPlayerName(), handNotation);
+        }
+    }
+
+    public void printSummary() throws NotationException {
+        logger.info("*** SUMMARY ***");
+        logger.info("Total pot {} | Rake {}", delivered, 0);
+        logger.info("Board [{}]", getCardsNotation(cards));
+
+        for (Seat seat : seats) {
+            if (seat.getPlayer() == null) continue;
+
+            final Player player = seat.getPlayer();
+
+            logger.info("Seat {}: {} stack {}",
+                    seat.getSeatIndex(),
+                    player.getPlayerName(),
+                    seat.getStack());
+        }
+    }
+
+    private String getCardsNotation(long cards) throws NotationException {
+        final String cardsNotation = HandUtil.toNotation(cards);
+
+        final List<String> cn = new ArrayList<>();
+        for (int i = 0; i < cardsNotation.length(); i += 2) {
+            final String cardNotation = cardsNotation.substring(i, i+2);
+            cn.add(cardNotation);
+        }
+
+        return String.join(" ", cn);
     }
 }

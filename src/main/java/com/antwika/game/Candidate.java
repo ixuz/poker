@@ -1,13 +1,15 @@
 package com.antwika.game;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.Objects;
-
 @Data
-@AllArgsConstructor
 public class Candidate {
+    private String potName = "Pot";
     private Seat seat;
     private int amount;
+
+    public Candidate(Seat seat, int amount) {
+        setSeat(seat);
+        setAmount(amount);
+    }
 }
