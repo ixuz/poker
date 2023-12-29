@@ -13,11 +13,9 @@ public class GameTest {
         game.join(player1);
         game.join(player2);
         game.join(player3);
-        game.startGame();
-        game.gameLoop();
+        game.dealHand();
         game.leave(player1);
         game.leave(player2);
         game.leave(player3);
-        game.stopGame();
     }
 }

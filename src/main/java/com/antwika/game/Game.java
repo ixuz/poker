@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Game extends EventHandler {
     private static Logger logger = LoggerFactory.getLogger(Game.class);
@@ -90,14 +89,6 @@ public class Game extends EventHandler {
             }
         }
         logger.info("{} left the game", player);
-    }
-
-    public void startGame() throws NotationException {
-
-    }
-
-    public void stopGame() {
-        logger.info("Game is stopped");
     }
 
     public void drawButtonPosition() throws NotationException {
@@ -455,7 +446,7 @@ public class Game extends EventHandler {
         }*/
     }
 
-    public void gameLoop() throws NotationException {
+    public void dealHand() throws NotationException {
         incrementHandId();
         printGameInfo();
         drawButtonPosition();
