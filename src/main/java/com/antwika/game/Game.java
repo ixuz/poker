@@ -91,7 +91,7 @@ public class Game extends EventHandler {
         available.setPostedSmallBlindLastRound(false);
         available.setPostedBigBlindLastRound(false);
 
-        logger.info("{}: joined the game at seat #{}", player.getPlayerName(), available.getSeatIndex());
+        logger.info("{}: joined the game at seat #{}", player.getPlayerName(), available.getSeatIndex() + 1);
     }
 
     public void leave(Player player) {
@@ -200,29 +200,28 @@ public class Game extends EventHandler {
     }
 
     public void blinds() {
-        final Seat smallBlindSeat = nextSeat(buttonAt, 0, true);
-        final Seat bigBlindSeat = nextSeat(buttonAt, 1, true);
-
-        int smallBlindCommitAmount = Math.min(smallBlindSeat.getStack(), smallBlind);
-        smallBlindSeat.setStack(smallBlindSeat.getStack() - smallBlindCommitAmount);
-        smallBlindSeat.setCommitted(smallBlindSeat.getCommitted() + smallBlindCommitAmount);
-        // smallBlindSeat.setHasActed(true);
-        actionAt = nextSeat(smallBlindSeat.getSeatIndex(), 0, true).getSeatIndex();
-        logger.info("{}: posts small blind {}",
-                smallBlindSeat.getPlayer().getPlayerName(),
-                smallBlindCommitAmount);
-
-        int bigBlindCommitAmount = Math.min(bigBlindSeat.getStack(), bigBlind);
-        bigBlindSeat.setStack(bigBlindSeat.getStack() - bigBlindCommitAmount);
-        bigBlindSeat.setCommitted(bigBlindSeat.getCommitted() + bigBlindCommitAmount);
-        // bigBlindSeat.setHasActed(true);
-        actionAt = nextSeat(bigBlindSeat.getSeatIndex(), 0, true).getSeatIndex();
-        logger.info("{}: posts big blind {}",
-                bigBlindSeat.getPlayer().getPlayerName(),
-                bigBlindCommitAmount);
-
+        forcePostBlind(buttonAt, 0, smallBlind);
+        forcePostBlind(buttonAt, 1, bigBlind);
         totalBet = bigBlind;
         lastRaise = bigBlind;
+    }
+
+    public void forcePostBlind(int buttonAt, int blindIndex, int blindAmount) {
+        final Seat seat = nextSeat(buttonAt, blindIndex, true);
+        final Player player = seat.getPlayer();
+
+        int commit = Math.min(seat.getStack(), blindAmount);
+        seat.setStack(seat.getStack() - commit);
+        seat.setCommitted(seat.getCommitted() + commit);
+
+        actionAt = nextSeat(seat.getSeatIndex(), 0, true).getSeatIndex();
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%s: posts blind %d", player.getPlayerName(), commit));
+        if (seat.getStack() == 0) {
+            sb.append(" and is all-in");
+        }
+        logger.info(sb.toString());
     }
 
     private int getPlayerRemainingCount() {
@@ -234,6 +233,16 @@ public class Game extends EventHandler {
                 .filter(i -> i.isHasFolded())
                 .toList();
         return playerSeats.size() - foldedSeats.size();
+    }
+
+    public int getNumberOfPlayersThatCanAct() {
+        final List<Seat> playerSeats = seats.stream()
+                .filter(i -> i.getPlayer() != null)
+                .filter(i -> i.getStack() > 0)
+                .filter(i -> i.getCards() > 0L)
+                .filter(i -> !i.isHasFolded())
+                .toList();
+        return playerSeats.size();
     }
 
     public void bettingRound() {
@@ -248,6 +257,10 @@ public class Game extends EventHandler {
         while (true) {
             if (getPlayerRemainingCount() == 1) {
                 logger.debug("All but one player has folded, hand must end");
+                break;
+            }
+
+            if (getNumberOfPlayersThatCanAct() < 2) {
                 break;
             }
 
