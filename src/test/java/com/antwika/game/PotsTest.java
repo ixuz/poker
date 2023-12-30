@@ -251,7 +251,7 @@ public class PotsTest {
         final List<Pot> pots = List.of();
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0);
+        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 10);
 
         // Assert
         assertEquals(0, winners.size());
@@ -263,7 +263,7 @@ public class PotsTest {
         final List<Pot> pots = List.of(new Pot(1, List.of()));
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0);
+        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 10);
 
         // Assert
         assertEquals(0, winners.size());
@@ -279,7 +279,7 @@ public class PotsTest {
         final List<Pot> pots = List.of(new Pot(1, candidates));
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0);
+        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 1);
 
         // Assert
         assertEquals(1, winners.size());
@@ -303,7 +303,7 @@ public class PotsTest {
         final List<Pot> pots = List.of(new Pot(1, candidates));
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0);
+        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
 
         // Assert
         assertEquals(1, winners.size());
@@ -327,7 +327,7 @@ public class PotsTest {
         final List<Pot> pots = List.of(new Pot(1, candidates));
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0);
+        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
 
         // Assert
         assertEquals(2, winners.size());
@@ -368,7 +368,7 @@ public class PotsTest {
         );
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0);
+        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 3);
 
         // Assert
         assertEquals(2, winners.size());
@@ -430,7 +430,7 @@ public class PotsTest {
         );
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0);
+        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 6);
 
         // Assert
         assertEquals(5, winners.size());
@@ -522,7 +522,7 @@ public class PotsTest {
         assertEquals(200, pots.get(4).getTotalAmount());
 
         // Determine winnings
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0);
+        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 4);
 
         assertEquals(5, winners.size());
 
@@ -636,7 +636,7 @@ public class PotsTest {
         );
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0);
+        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
 
         // Assert
         assertEquals(2, winners.size());

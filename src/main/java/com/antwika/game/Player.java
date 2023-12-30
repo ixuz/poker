@@ -36,8 +36,9 @@ public class Player extends EventHandler {
         if (event.player != this) return null;
         logger.debug("event: { toCall: {}, minBet: {}, minRaise: {} }", event.toCall, event.minBet, event.minRaise);
 
+        int rand = prng.nextInt(100);
+
         if (event.toCall == 0) {
-            int rand = prng.nextInt(100);
             if (rand < 75) {
                 return new PlayerActionResponse(this, event.game, "CHECK", 0);
             } else {
@@ -56,8 +57,9 @@ public class Player extends EventHandler {
                 return new PlayerActionResponse(this, event.game, "BET", actualBet);
             }
         } else {
-            int rand = prng.nextInt(100);
-            if (rand < 75) {
+            if (rand < 50) {
+                return new PlayerActionResponse(this, event.game, "FOLD", 0);
+            } else if (rand < 75) {
                 return new PlayerActionResponse(this, event.game, "CALL", event.toCall);
             } else {
                 Seat seat = event.game.getSeat(this);

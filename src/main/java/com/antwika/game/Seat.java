@@ -14,6 +14,7 @@ public class Seat {
     private int seatIndex;
     private int stack;
     private boolean hasActed;
+    private boolean hasFolded;
     private int committed;
     private int totalCommitted;
     private Long cards;

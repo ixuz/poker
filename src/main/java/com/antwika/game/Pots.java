@@ -100,7 +100,7 @@ public class Pots {
         private String groupId;
     }
 
-    public static List<Candidate> determineWinners(List<Pot> pots, long communityCards, int buttonAt) {
+    public static List<Candidate> determineWinners(List<Pot> pots, long communityCards, int buttonAt, int seatCount) {
         final List<Pot> potsCopy = new ArrayList<>(pots);
         final List<Pot> collapsedPots = collapsePots(potsCopy);
 
@@ -112,7 +112,7 @@ public class Pots {
         while (!collapsedPots.isEmpty()) {
             potIndex += 1;
             final Pot pot = collapsedPots.remove(0);
-            final List<Candidate> candidates = pot.getCandidates();
+            final List<Candidate> candidates = pot.getCandidates().stream().filter(i -> !i.getSeat().isHasFolded()).toList();
 
             final List<CandidateEvaluation> evaluations = candidates.stream()
                     .map(i -> {
@@ -168,7 +168,8 @@ public class Pots {
                     for (int i = 0; i < sortedWinnersBySeatIndex.size(); i += 1) {
                         final Candidate aWinner = sortedWinnersBySeatIndex.get(i);
                         final int seatIndex = aWinner.getSeat().getSeatIndex();
-                        if (seatIndex > buttonAt) {
+                        int seatIndexAfterButton = (buttonAt + 1) % seatCount;
+                        if (seatIndex >= seatIndexAfterButton) {
                             firstWinnerIndexAfterButton = i;
                             break;
                         }
