@@ -45,6 +45,8 @@ public class Game extends EventHandler {
 
     private int delivered = 0;
 
+    private int chipsInPlay = 0;
+
     private static final String GAME_TYPE = "Hold'em No Limit";
 
     public Game(long prngSeed, String tableName, int seatCount, int smallBlind, int bigBlind) {
@@ -64,7 +66,6 @@ public class Game extends EventHandler {
     }
 
     public void open() throws NotationException {
-        drawButtonPosition();
         logger.info("Game #{}: {} {}-max ({}/{}) opened.", gameId, GAME_TYPE, seats.size(), smallBlind, bigBlind);
     }
 
@@ -98,9 +99,9 @@ public class Game extends EventHandler {
             if (seat.getPlayer() == player) {
                 seat.setPlayer(null);
                 seat.setStack(0);
+                logger.info("{}: left the game", player.getPlayerName());
             }
         }
-        logger.info("{}: left the game", player.getPlayerName());
     }
 
     public void drawButtonPosition() throws NotationException {
@@ -116,6 +117,7 @@ public class Game extends EventHandler {
         }
 
         final List<Seat> seatCardByRankAndSuit = seats.stream()
+                .filter(i -> i.getPlayer() != null)
                 .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_SUIT_INDEX.get(e.getCards())))
                 .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_RANK_INDEX.get(e.getCards())))
                 .toList();
@@ -146,7 +148,18 @@ public class Game extends EventHandler {
         logger.debug("Button is at seat #{}", buttonAt);
     }
 
-    public void newHand() {
+    public boolean canDealNextHand() {
+        final List<Seat> activeSeats = new ArrayList<>();
+        for (Seat seat : seats) {
+            if (seat.getPlayer() == null) continue;
+            if (seat.getStack() == 0) continue;
+            activeSeats.add(seat);
+        }
+
+        return activeSeats.size() > 1;
+    }
+
+    public void newHand() throws NotationException {
         totalBet = 0;
         lastRaise = 0;
         cards = 0L;
@@ -155,12 +168,31 @@ public class Game extends EventHandler {
 
         handId += 1L;
 
+        final List<Seat> bustedSeats = new ArrayList<>();
+        for (Seat seat : seats) {
+            if (seat.getStack() == 0) {
+                bustedSeats.add(seat);
+            }
+        }
+
+        for (Seat seat : bustedSeats) {
+            final Player player = seat.getPlayer();
+            if (player == null) continue;
+            seat.setPlayer(null);
+            logger.info("{} was forced to leave the game (busted)", player.getPlayerName());
+        }
+
+        chipsInPlay = 0;
         for (Seat seat : seats) {
             seat.setCards(0L);
             seat.setHasActed(false);
             seat.setHasFolded(false);
+            chipsInPlay += seat.getStack();
         }
 
+        if (handId == 1) {
+            drawButtonPosition();
+        }
         if (handId > 1) {
             final Seat nextButtonSeat = nextSeat(buttonAt, 0, true);
             buttonAt = nextButtonSeat.getSeatIndex();
@@ -171,21 +203,23 @@ public class Game extends EventHandler {
         final Seat smallBlindSeat = nextSeat(buttonAt, 0, true);
         final Seat bigBlindSeat = nextSeat(buttonAt, 1, true);
 
-        smallBlindSeat.setStack(smallBlindSeat.getStack() - smallBlind);
-        smallBlindSeat.setCommitted(smallBlindSeat.getCommitted() + smallBlind);
+        int smallBlindCommitAmount = Math.min(smallBlindSeat.getStack(), smallBlind);
+        smallBlindSeat.setStack(smallBlindSeat.getStack() - smallBlindCommitAmount);
+        smallBlindSeat.setCommitted(smallBlindSeat.getCommitted() + smallBlindCommitAmount);
         // smallBlindSeat.setHasActed(true);
         actionAt = nextSeat(smallBlindSeat.getSeatIndex(), 0, true).getSeatIndex();
         logger.info("{}: posts small blind {}",
                 smallBlindSeat.getPlayer().getPlayerName(),
-                smallBlind);
+                smallBlindCommitAmount);
 
-        bigBlindSeat.setStack(bigBlindSeat.getStack() - bigBlind);
-        bigBlindSeat.setCommitted(bigBlindSeat.getCommitted() + bigBlind);
+        int bigBlindCommitAmount = Math.min(bigBlindSeat.getStack(), bigBlind);
+        bigBlindSeat.setStack(bigBlindSeat.getStack() - bigBlindCommitAmount);
+        bigBlindSeat.setCommitted(bigBlindSeat.getCommitted() + bigBlindCommitAmount);
         // bigBlindSeat.setHasActed(true);
         actionAt = nextSeat(bigBlindSeat.getSeatIndex(), 0, true).getSeatIndex();
         logger.info("{}: posts big blind {}",
                 bigBlindSeat.getPlayer().getPlayerName(),
-                bigBlind);
+                bigBlindCommitAmount);
 
         totalBet = bigBlind;
         lastRaise = bigBlind;
@@ -229,11 +263,13 @@ public class Game extends EventHandler {
 
             final Player player = seat.getPlayer();
 
-            final int toCall = totalBet - seat.getCommitted();
+            // final int toCall = totalBet - seat.getCommitted();
+            final int toCall = Math.min(seat.getStack(), totalBet - seat.getCommitted());
             final int minCompleteRaise = Math.max(lastRaise, bigBlind);
             final int minCompleteBet = totalBet + minCompleteRaise;
             final int minRaise = Math.min(seat.getStack(), Math.max(lastRaise, bigBlind));
             final int minBet = totalBet + minRaise - seat.getCommitted();
+            final int smallestValidRaise = Math.min(totalBet + bigBlind, seat.getStack());
 
             if (toCall > 0) {
                 logger.debug("{}, {} to call", seat.getPlayer(), toCall);
@@ -241,7 +277,7 @@ public class Game extends EventHandler {
                 logger.debug("{}, Check or bet?", seat.getPlayer());
             }
 
-            final Event response = player.handle(new PlayerActionRequest(player, this, toCall, minBet, minRaise));
+            final Event response = player.handle(new PlayerActionRequest(player, this, totalBet, toCall, minBet, smallestValidRaise));
 
             if (response instanceof PlayerActionResponse e) {
                 if (e.action.equals("FOLD")) {
@@ -252,6 +288,10 @@ public class Game extends EventHandler {
                     seat.setHasActed(true);
                     logger.info("{}: checks", seat.getPlayer().getPlayerName());
                 } else if (e.action.equals("BET")) {
+                    if (e.amount > seat.getStack()) {
+                        throw new RuntimeException("Player can not bet a greater amount than his remaining stack!");
+                    }
+
                     seat.setHasActed(true);
                     seat.setCommitted(seat.getCommitted() + e.amount);
                     seat.setStack(seat.getStack() - e.amount);
@@ -260,10 +300,17 @@ public class Game extends EventHandler {
                     final StringBuilder sb = new StringBuilder();
                     sb.append(String.format("%s: bets %d", seat.getPlayer().getPlayerName(), e.amount));
                     if (seat.getStack() == 0) {
-                        sb.append("and is all-in");
+                        sb.append(" and is all-in");
                     }
                     logger.info(sb.toString());
                 } else if (e.action.equals("RAISE")) {
+                    if (e.amount > seat.getStack()) {
+                        throw new RuntimeException("Player can not raise a greater amount than his remaining stack!");
+                    }
+
+                    if (e.amount < smallestValidRaise) {
+                        throw new RuntimeException("Player must at least raise by one full big blind, or raise all-in for less");
+                    }
                     int raise = e.amount - totalBet;
                     seat.setHasActed(true);
                     seat.setCommitted(seat.getCommitted() + e.amount);
@@ -273,19 +320,23 @@ public class Game extends EventHandler {
                         lastRaise = e.amount;
                     }
                     final StringBuilder sb = new StringBuilder();
-                    sb.append(String.format("%s: raises %d to %d", seat.getPlayer().getPlayerName(), raise, totalBet));
+                    sb.append(String.format("%s: raises to %d", seat.getPlayer().getPlayerName(), seat.getCommitted()));
                     if (seat.getStack() == 0) {
-                        sb.append("and is all-in");
+                        sb.append(" and is all-in");
                     }
                     logger.info(sb.toString());
                 } else if (e.action.equals("CALL")) {
+                    if (e.amount > seat.getStack()) {
+                        throw new RuntimeException("Player can not call a greater amount than his remaining stack!");
+                    }
+
                     seat.setHasActed(true);
                     seat.setCommitted(seat.getCommitted() + e.amount);
                     seat.setStack(seat.getStack() - e.amount);
                     final StringBuilder sb = new StringBuilder();
                     sb.append(String.format("%s: calls %d", seat.getPlayer().getPlayerName(), e.amount));
                     if (seat.getStack() == 0) {
-                        sb.append("and is all-in");
+                        sb.append(" and is all-in");
                     }
                     logger.info(sb.toString());
                 }
@@ -335,6 +386,12 @@ public class Game extends EventHandler {
 
         lastRaise = 0;
         totalBet = 0;
+
+        int totalStacks = seats.stream().filter(i -> i.getPlayer() != null).mapToInt(Seat::getStack).sum();
+        int totalPot = getTotalPot(false);
+        if (totalStacks + totalPot != chipsInPlay) {
+            throw new RuntimeException("Invalid amount of chips");
+        }
     }
 
     public Seat nextSeat(int fromSeat, int skips, boolean mustAct) {
@@ -391,6 +448,7 @@ public class Game extends EventHandler {
         cards |= flop;
         try {
             logger.info("*** FLOP *** [{}]", getCardsNotation(flop));
+            logger.info("Total pot: {}", getTotalPot(false));
         } catch (NotationException e) {
             throw new RuntimeException(e);
         }
@@ -403,6 +461,7 @@ public class Game extends EventHandler {
 
         try {
             logger.info("*** TURN *** [{}] [{}]", getCardsNotation(flop), getCardsNotation(turn));
+            logger.info("Total pot: {}", getTotalPot(false));
         } catch (NotationException e) {
             throw new RuntimeException(e);
         }
@@ -415,6 +474,7 @@ public class Game extends EventHandler {
 
         try {
             logger.info("*** RIVER *** [{}] [{}]", getCardsNotation(flopAndTurn), getCardsNotation(river));
+            logger.info("Total pot: {}", getTotalPot(false));
         } catch (NotationException e) {
             throw new RuntimeException(e);
         }
@@ -476,6 +536,13 @@ public class Game extends EventHandler {
                     player.getPlayerName(),
                     amount,
                     winner.getPotName());
+        }
+        pots.clear();
+
+        int totalStacks = seats.stream().filter(i -> i.getPlayer() != null).mapToInt(Seat::getStack).sum();
+        int totalPot = getTotalPot(false);
+        if (totalStacks + totalPot != chipsInPlay) {
+            throw new RuntimeException("Invalid amount of chips");
         }
 
         printSummary();
@@ -614,8 +681,11 @@ public class Game extends EventHandler {
         logger.info("Total pot {} | Rake {}", delivered, 0);
         logger.info("Board [{}]", getCardsNotation(cards));
 
+        int chipsInPlay = 0;
         for (Seat seat : seats) {
             if (seat.getPlayer() == null) continue;
+
+            chipsInPlay += seat.getStack();
 
             final Player player = seat.getPlayer();
 
@@ -624,6 +694,7 @@ public class Game extends EventHandler {
                     player.getPlayerName(),
                     seat.getStack());
         }
+        logger.info("Total chips in play {}", chipsInPlay);
     }
 
     private String getCardsNotation(long cards) throws NotationException {

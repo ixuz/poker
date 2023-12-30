@@ -38,11 +38,13 @@ public class Player extends EventHandler {
 
         int rand = prng.nextInt(100);
 
+        final Seat seat = event.game.getSeat(this);
+        boolean canRaise = event.toCall < seat.getStack();
+
         if (event.toCall == 0) {
             if (rand < 75) {
                 return new PlayerActionResponse(this, event.game, "CHECK", 0);
             } else {
-                Seat seat = event.game.getSeat(this);
                 int totalPot = event.game.getTotalPot(true);
                 int lastRaise = event.game.getLastRaise();
                 int deadMoney = totalPot - lastRaise;
@@ -59,10 +61,7 @@ public class Player extends EventHandler {
         } else {
             if (rand < 50) {
                 return new PlayerActionResponse(this, event.game, "FOLD", 0);
-            } else if (rand < 75) {
-                return new PlayerActionResponse(this, event.game, "CALL", event.toCall);
-            } else {
-                Seat seat = event.game.getSeat(this);
+            } else if (canRaise && rand < 75) {
                 int totalPot = event.game.getTotalPot(true);
                 int lastRaise = event.game.getLastRaise();
                 int deadMoney = totalPot - lastRaise;
@@ -72,7 +71,11 @@ public class Player extends EventHandler {
                 int myRaise = (int) (myFullPotSizeRaise * myBetSizePercentage);
                 int actualRaise = Math.min(myRaise, myStack);
 
-                return new PlayerActionResponse(this, event.game, "RAISE", actualRaise);
+                int finalRaise = Math.max(actualRaise, event.minRaise);
+
+                return new PlayerActionResponse(this, event.game, "RAISE", finalRaise);
+            } else {
+                return new PlayerActionResponse(this, event.game, "CALL", event.toCall);
             }
         }
 

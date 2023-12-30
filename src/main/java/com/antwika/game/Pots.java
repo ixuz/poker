@@ -88,7 +88,9 @@ public class Pots {
                 }
             }
             eligible.removeAll(ineligible);
-            collapsed.add(new Pot(pot.getAmountPerCandidate(), eligible));
+            final Pot p = new Pot(pot.getAmountPerCandidate(), eligible);
+            p.setTotalAmount(pot.getTotalAmount());
+            collapsed.add(p);
         }
 
         for (int i = 0; i < collapsed.size() - 1; i++) {
