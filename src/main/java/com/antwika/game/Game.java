@@ -17,7 +17,9 @@ public class Game extends EventHandler {
 
     private String tableName;
 
-    private long id = 0L;
+    private long gameId = 0L;
+
+    private long handId = 0L;
 
     private List<Seat> seats = new ArrayList<>();
 
@@ -43,6 +45,8 @@ public class Game extends EventHandler {
 
     private int delivered = 0;
 
+    private static final String GAME_TYPE = "Hold'em No Limit";
+
     public Game(long prngSeed, String tableName, int seatCount, int smallBlind, int bigBlind) {
         this.prng = new Random(prngSeed);
         this.tableName = tableName;
@@ -57,7 +61,15 @@ public class Game extends EventHandler {
 
         deck = new Deck(prng.nextInt());
 
-        logger.info("Game with {} seats opened", seats.size());
+    }
+
+    public void open() throws NotationException {
+        drawButtonPosition();
+        logger.info("Game #{}: {} {}-max ({}/{}) opened.", gameId, GAME_TYPE, seats.size(), smallBlind, bigBlind);
+    }
+
+    public void close() {
+        logger.info("Game #{}: {} {}-max ({}/{}) closed.", gameId, GAME_TYPE, seats.size(), smallBlind, bigBlind);
     }
 
     public void join(Player player) {
@@ -78,7 +90,7 @@ public class Game extends EventHandler {
         available.setPostedSmallBlindLastRound(false);
         available.setPostedBigBlindLastRound(false);
 
-        logger.info("{} joined the game at seat #{}", player, available.getSeatIndex());
+        logger.info("{}: joined the game at seat #{}", player.getPlayerName(), available.getSeatIndex());
     }
 
     public void leave(Player player) {
@@ -88,7 +100,7 @@ public class Game extends EventHandler {
                 seat.setStack(0);
             }
         }
-        logger.info("{} left the game", player);
+        logger.info("{}: left the game", player.getPlayerName());
     }
 
     public void drawButtonPosition() throws NotationException {
@@ -135,7 +147,7 @@ public class Game extends EventHandler {
     }
 
     public void newHand() {
-        id += 1L;
+        handId += 1L;
         for (Seat seat : seats) {
             seat.setHasActed(false);
             seat.setHasFolded(false);
@@ -483,7 +495,6 @@ public class Game extends EventHandler {
     public void dealHand() throws NotationException {
         newHand();
         printGameInfo();
-        drawButtonPosition();
         deck.resetAndShuffle();
         printTableInfo();
         printTableSeatsInfo();
@@ -510,8 +521,9 @@ public class Game extends EventHandler {
     }
 
     public void printGameInfo() {
-        logger.info("Poker Hand #{}: Hold'em No Limit ({}/{}) - {}",
-                id,
+        logger.info("Poker Hand #{}: {} ({}/{}) - {}",
+                handId,
+                GAME_TYPE,
                 getSmallBlind(),
                 getBigBlind(),
                 new Date());
