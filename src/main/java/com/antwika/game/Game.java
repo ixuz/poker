@@ -147,10 +147,23 @@ public class Game extends EventHandler {
     }
 
     public void newHand() {
+        totalBet = 0;
+        lastRaise = 0;
+        cards = 0L;
+        delivered = 0;
+        pots.clear();
+
         handId += 1L;
+
         for (Seat seat : seats) {
+            seat.setCards(0L);
             seat.setHasActed(false);
             seat.setHasFolded(false);
+        }
+
+        if (handId > 1) {
+            final Seat nextButtonSeat = nextSeat(buttonAt, 0, true);
+            buttonAt = nextButtonSeat.getSeatIndex();
         }
     }
 
@@ -160,7 +173,7 @@ public class Game extends EventHandler {
 
         smallBlindSeat.setStack(smallBlindSeat.getStack() - smallBlind);
         smallBlindSeat.setCommitted(smallBlindSeat.getCommitted() + smallBlind);
-        smallBlindSeat.setHasActed(true);
+        // smallBlindSeat.setHasActed(true);
         actionAt = nextSeat(smallBlindSeat.getSeatIndex(), 0, true).getSeatIndex();
         logger.info("{}: posts small blind {}",
                 smallBlindSeat.getPlayer().getPlayerName(),
@@ -168,7 +181,7 @@ public class Game extends EventHandler {
 
         bigBlindSeat.setStack(bigBlindSeat.getStack() - bigBlind);
         bigBlindSeat.setCommitted(bigBlindSeat.getCommitted() + bigBlind);
-        bigBlindSeat.setHasActed(true);
+        // bigBlindSeat.setHasActed(true);
         actionAt = nextSeat(bigBlindSeat.getSeatIndex(), 0, true).getSeatIndex();
         logger.info("{}: posts big blind {}",
                 bigBlindSeat.getPlayer().getPlayerName(),
@@ -278,10 +291,43 @@ public class Game extends EventHandler {
                 }
             }
 
-            actionAt = seatAfter.getSeatIndex();
+            if (hasAllPlayersActed()) {
+                break;
+            }
+
+            actionAt = nextSeat(actionAt, 0, true).getSeatIndex();
         }
 
         logger.debug("Betting round ended");
+    }
+
+    public boolean hasAllPlayersActed() {
+        int highestCommit = 0;
+        for (Seat seat : seats) {
+            if (highestCommit < seat.getCommitted()) {
+                highestCommit = seat.getCommitted();
+            }
+        }
+
+        for (Seat seat : seats) {
+            if (seat.getStack() == 0) {
+                continue;
+            }
+
+            if (seat.isHasFolded()) {
+                continue;
+            }
+
+            if (!seat.isHasActed()) {
+                return false;
+            }
+
+            if (seat.getCommitted() != highestCommit) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void collect() {
@@ -302,9 +348,9 @@ public class Game extends EventHandler {
             if (seat.getPlayer() == null) continue;
 
             if (mustAct) {
-                if (!seat.isHasActed()) {
+                if (!seat.isHasActed() && !seat.isHasFolded()) {
                     nextSeat = seat;
-                } else if (seat.getCommitted() < totalBet && seat.getStack() > 0) {
+                } else if (seat.getCommitted() < totalBet && seat.getStack() > 0 && !seat.isHasFolded()) {
                     nextSeat = seat;
                 }
             } else {
@@ -493,6 +539,7 @@ public class Game extends EventHandler {
     }
 
     public void dealHand() throws NotationException {
+        logger.info("--- HAND BEGIN ---");
         newHand();
         printGameInfo();
         deck.resetAndShuffle();
@@ -518,6 +565,7 @@ public class Game extends EventHandler {
             collect();
         }
         showdown();
+        logger.info("--- HAND END ---");
     }
 
     public void printGameInfo() {

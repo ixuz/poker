@@ -16,6 +16,10 @@ public class GameTest {
         game.join(player3);
         game.open();
         game.dealHand();
+        game.dealHand();
+        game.dealHand();
+        game.dealHand();
+        game.dealHand();
         game.close();
         game.leave(player1);
         game.leave(player2);

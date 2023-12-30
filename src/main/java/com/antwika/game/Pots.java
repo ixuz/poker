@@ -67,11 +67,29 @@ public class Pots {
     public static boolean hasSameCandidates(Pot pot1, Pot pot2) {
         final List<Seat> potCandidates1 = pot1.getCandidates().stream().map(Candidate::getSeat).filter(i -> !i.isHasFolded()).toList();
         final List<Seat> potCandidates2 = pot2.getCandidates().stream().map(Candidate::getSeat).filter(i -> !i.isHasFolded()).toList();
-        return potCandidates1.equals(potCandidates2);
+
+        if (potCandidates1.size() != potCandidates2.size()) return false;
+
+        final List<Seat> scratch = new ArrayList<>(potCandidates1);
+        scratch.removeAll(potCandidates2);
+
+        return scratch.isEmpty();
     }
 
     public static List<Pot> collapsePots(List<Pot> pots) {
-        final List<Pot> collapsed = new ArrayList<>(pots);
+        final List<Pot> collapsed = new ArrayList<>();
+
+        for (Pot pot : pots) {
+            final List<Candidate> ineligible = new ArrayList<>();
+            final List<Candidate> eligible = new ArrayList<>(pot.getCandidates());
+            for (Candidate candidate : pot.getCandidates()) {
+                if (candidate.getSeat().isHasFolded()) {
+                    ineligible.add(candidate);
+                }
+            }
+            eligible.removeAll(ineligible);
+            collapsed.add(new Pot(pot.getAmountPerCandidate(), eligible));
+        }
 
         for (int i = 0; i < collapsed.size() - 1; i++) {
             final Pot currentPot = collapsed.get(i);

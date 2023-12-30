@@ -524,16 +524,14 @@ public class PotsTest {
         // Determine winnings
         final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 4);
 
-        assertEquals(4, winners.size());
+        assertEquals(3, winners.size());
 
-        assertEquals(400, winners.get(0).getAmount());
+        assertEquals(1400, winners.get(0).getAmount());
         assertEquals(seat1, winners.get(0).getSeat());
-        assertEquals(1000, winners.get(1).getAmount());
+        assertEquals(750, winners.get(1).getAmount());
         assertEquals(seat1, winners.get(1).getSeat());
-        assertEquals(750, winners.get(2).getAmount());
-        assertEquals(seat1, winners.get(2).getSeat());
-        assertEquals(300, winners.get(3).getAmount());
-        assertEquals(seat3, winners.get(3).getSeat());
+        assertEquals(300, winners.get(2).getAmount());
+        assertEquals(seat3, winners.get(2).getSeat());
 
         // Deliver winnings
         for (Candidate candidate : winners) {
