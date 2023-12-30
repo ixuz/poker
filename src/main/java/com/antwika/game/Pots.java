@@ -46,12 +46,27 @@ public class Pots {
             sorted.removeAll(sorted.stream().filter(i -> i.getCommitted() == 0).toList());
         }
 
+        if (!pots.isEmpty()) {
+            final int lastSidePotIndex = pots.size() - 1;
+            final Pot lastSidePot = pots.get(lastSidePotIndex);
+
+            if (lastSidePot.getCandidates().size() == 1) {
+                final Candidate candidate = lastSidePot.getCandidates().get(0);
+                final Seat seat = candidate.getSeat();
+                final Player player = seat.getPlayer();
+                final int amount = lastSidePot.getTotalAmount();
+                seat.setStack(seat.getStack() + amount);
+                pots.remove(lastSidePot);
+                logger.info("Uncalled bet ({}) returned to {}", lastSidePot.getTotalAmount(), player.getPlayerName());
+            }
+        }
+
         return pots;
     }
 
     public static boolean hasSameCandidates(Pot pot1, Pot pot2) {
-        final List<Seat> potCandidates1 = pot1.getCandidates().stream().map(Candidate::getSeat).toList();
-        final List<Seat> potCandidates2 = pot2.getCandidates().stream().map(Candidate::getSeat).toList();
+        final List<Seat> potCandidates1 = pot1.getCandidates().stream().map(Candidate::getSeat).filter(i -> !i.isHasFolded()).toList();
+        final List<Seat> potCandidates2 = pot2.getCandidates().stream().map(Candidate::getSeat).filter(i -> !i.isHasFolded()).toList();
         return potCandidates1.equals(potCandidates2);
     }
 

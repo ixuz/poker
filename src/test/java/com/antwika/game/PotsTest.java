@@ -47,9 +47,10 @@ public class PotsTest {
     }
 
     @Test
-    public void collectBets_whenOnlyOneCandidate_onlyMainPot() {
+    public void collectBets_whenOnlyOneCandidate_returnUncalledBet() {
         // Arrange
         final Seat seat1 = new Seat();
+        seat1.setPlayer(new Player(1L, "Alice"));
         seat1.setSeatIndex(0);
         seat1.setCommitted(1);
         final List<Seat> seats = List.of(seat1);
@@ -58,13 +59,10 @@ public class PotsTest {
         final List<Pot> pots = Pots.collectBets(seats);
 
         // Assert
-        assertEquals(1, pots.size());
+        assertEquals(0, pots.size());
 
-        final Pot mainPot = pots.get(0);
-        assertEquals(1, mainPot.getTotalAmount());
-        assertEquals(1, mainPot.getAmountPerCandidate());
-        assertEquals(1, mainPot.getCandidates().size());
-        assertEquals(seat1, mainPot.getCandidates().get(0).getSeat());
+        assertEquals(0, seat1.getCommitted());
+        assertEquals(1, seat1.getStack());
     }
 
     @Test
@@ -455,18 +453,22 @@ public class PotsTest {
     public void determineWinners_afterSeriesOfCollects() throws NotationException {
         // Arrange
         final Seat seat1 = new Seat();
+        seat1.setPlayer(new Player(1L, "Alice"));
         seat1.setSeatIndex(0);
         seat1.setCommitted(0);
         seat1.setCards(HandUtil.fromNotation("AcAd").getBitmask());
         final Seat seat2 = new Seat();
+        seat2.setPlayer(new Player(2L, "Bob"));
         seat2.setSeatIndex(1);
         seat2.setCommitted(0);
         seat2.setCards(HandUtil.fromNotation("Td9d").getBitmask());
         final Seat seat3 = new Seat();
+        seat3.setPlayer(new Player(3L, "Charlie"));
         seat3.setSeatIndex(2);
         seat3.setCommitted(0);
         seat3.setCards(HandUtil.fromNotation("Th9h").getBitmask());
         final Seat seat4 = new Seat();
+        seat4.setPlayer(new Player(4L, "David"));
         seat4.setSeatIndex(3);
         seat4.setCommitted(0);
         seat4.setCards(HandUtil.fromNotation("4h5h").getBitmask());
@@ -509,7 +511,7 @@ public class PotsTest {
         assertEquals(0, seat3.getCommitted());
         assertEquals(0, seat4.getCommitted());
 
-        assertEquals(5, pots.size());
+        assertEquals(4, pots.size());
         assertEquals(100, pots.get(0).getAmountPerCandidate());
         assertEquals(400, pots.get(0).getTotalAmount());
         assertEquals(250, pots.get(1).getAmountPerCandidate());
@@ -518,13 +520,11 @@ public class PotsTest {
         assertEquals(750, pots.get(2).getTotalAmount());
         assertEquals(150, pots.get(3).getAmountPerCandidate());
         assertEquals(300, pots.get(3).getTotalAmount());
-        assertEquals(200, pots.get(4).getAmountPerCandidate());
-        assertEquals(200, pots.get(4).getTotalAmount());
 
         // Determine winnings
         final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 4);
 
-        assertEquals(5, winners.size());
+        assertEquals(4, winners.size());
 
         assertEquals(400, winners.get(0).getAmount());
         assertEquals(seat1, winners.get(0).getSeat());
@@ -534,8 +534,6 @@ public class PotsTest {
         assertEquals(seat1, winners.get(2).getSeat());
         assertEquals(300, winners.get(3).getAmount());
         assertEquals(seat3, winners.get(3).getSeat());
-        assertEquals(200, winners.get(4).getAmount());
-        assertEquals(seat4, winners.get(4).getSeat());
 
         // Deliver winnings
         for (Candidate candidate : winners) {
