@@ -17,8 +17,6 @@ public class GameTest {
 
         final Game game = new Game(1L, "Lacuna I", 6, 5, 10);
 
-        game.open();
-
         game.join(player1);
         game.join(player2);
         game.join(player3);
@@ -30,8 +28,6 @@ public class GameTest {
             game.dealHand();
             Thread.sleep(200L);
         }
-
-        game.close();
 
         game.leave(player1);
         game.leave(player2);

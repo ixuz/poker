@@ -6,6 +6,7 @@ import com.antwika.common.util.HandUtil;
 import com.antwika.eval.core.IEvaluation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +18,9 @@ public class Game extends EventHandler {
 
     private String tableName;
 
-    private long gameId = 0L;
-
     private long handId = 0L;
 
-    private List<Seat> seats = new ArrayList<>();
+    private final List<Seat> seats = new ArrayList<>();
 
     private int buttonAt = 0;
 
@@ -39,8 +38,10 @@ public class Game extends EventHandler {
 
     private final Random prng;
 
+    @Getter
     private final int smallBlind;
 
+    @Getter
     private final int bigBlind;
 
     private int delivered = 0;
@@ -65,23 +66,12 @@ public class Game extends EventHandler {
 
     }
 
-    public void open() throws NotationException {
-        logger.info("Game #{}: {} {}-max ({}/{}) opened.", gameId, GAME_TYPE, seats.size(), smallBlind, bigBlind);
-    }
-
-    public void close() {
-        logger.info("Game #{}: {} {}-max ({}/{}) closed.", gameId, GAME_TYPE, seats.size(), smallBlind, bigBlind);
+    public Seat firstAvailableSeat() {
+        return seats.stream().filter(seat -> seat.getPlayer() == null).findFirst().orElse(null);
     }
 
     public void join(Player player) {
-        Seat available = null;
-        for (Seat seat : seats) {
-            if (seat.getPlayer() == null) {
-                available = seat;
-                break;
-            }
-        }
-
+        final Seat available = firstAvailableSeat();
         if (available == null) return;
 
         available.setPlayer(player);
@@ -95,52 +85,38 @@ public class Game extends EventHandler {
     }
 
     public void leave(Player player) {
-        for (Seat seat : seats) {
-            if (seat.getPlayer() == player) {
-                seat.setPlayer(null);
-                seat.setStack(0);
-                logger.info("{}: left the game", player.getPlayerName());
-            }
-        }
+        final Seat seat = getSeat(player);
+        if (seat == null) return;
+
+        seat.setPlayer(null);
+        seat.setStack(0);
+
+        logger.info("{}: left the game", player.getPlayerName());
     }
 
-    public void drawButtonPosition() throws NotationException {
+    public void drawButtonPosition() {
         logger.debug("Drawing cards to determine button position...");
         deck.resetAndShuffle();
 
-        for (final Seat seat : seats) {
-            if (seat.getPlayer() == null) continue;
+        seats.stream()
+                .filter(seat -> seat.getPlayer() != null)
+                .forEach(seat -> seat.setCards(deck.draw()));
 
-            long card = deck.draw();
-            seat.setCards(card);
-            logger.debug("Seat #{} got card: {}", seat.getSeatIndex(), HandUtil.toNotation(card));
-        }
-
-        final List<Seat> seatCardByRankAndSuit = seats.stream()
+        final List<Seat> sortedByCard = seats.stream()
                 .filter(i -> i.getPlayer() != null)
                 .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_SUIT_INDEX.get(e.getCards())))
                 .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_RANK_INDEX.get(e.getCards())))
                 .toList();
 
-        Seat seatWithHighestCardAndSuit = null;
-        for (int i = seats.size() - 1; i >= 0; i -= 1) {
-            final Seat seat = seats.get(i);
+        final Seat winner = sortedByCard.get(sortedByCard.size() - 1);
 
-            if (seat.getPlayer() == null) continue;
-
-            seatWithHighestCardAndSuit = seat;
-            break;
-        }
-
-        if (seatWithHighestCardAndSuit == null) {
+        if (winner == null) {
             throw new RuntimeException("Failed to draw card for the button position!");
         }
 
-        moveButtonTo(seatWithHighestCardAndSuit.getSeatIndex());
+        moveButtonTo(winner.getSeatIndex());
 
-        for (final Seat seat : seats) {
-            seat.setCards(0L);
-        }
+        seats.forEach(seat -> seat.setCards(0L));
     }
 
     public void moveButtonTo(int seatIndex) {
@@ -276,10 +252,7 @@ public class Game extends EventHandler {
 
             final Player player = seat.getPlayer();
 
-            // final int toCall = totalBet - seat.getCommitted();
             final int toCall = Math.min(seat.getStack(), totalBet - seat.getCommitted());
-            final int minCompleteRaise = Math.max(lastRaise, bigBlind);
-            final int minCompleteBet = totalBet + minCompleteRaise;
             final int minRaise = Math.min(seat.getStack(), Math.max(lastRaise, bigBlind));
             final int minBet = totalBet + minRaise - seat.getCommitted();
             final int smallestValidRaise = Math.min(totalBet + bigBlind, seat.getStack());
@@ -292,68 +265,7 @@ public class Game extends EventHandler {
 
             final Event response = player.handle(new PlayerActionRequest(player, this, totalBet, toCall, minBet, smallestValidRaise));
 
-            if (response instanceof PlayerActionResponse e) {
-                if (e.action.equals("FOLD")) {
-                    seat.setHasActed(true);
-                    seat.setHasFolded(true);
-                    logger.info("{}: folds", seat.getPlayer().getPlayerName());
-                } else if (e.action.equals("CHECK")) {
-                    seat.setHasActed(true);
-                    logger.info("{}: checks", seat.getPlayer().getPlayerName());
-                } else if (e.action.equals("BET")) {
-                    if (e.amount > seat.getStack()) {
-                        throw new RuntimeException("Player can not bet a greater amount than his remaining stack!");
-                    }
-
-                    seat.setHasActed(true);
-                    seat.setCommitted(seat.getCommitted() + e.amount);
-                    seat.setStack(seat.getStack() - e.amount);
-                    totalBet = seat.getCommitted();
-                    lastRaise = e.amount;
-                    final StringBuilder sb = new StringBuilder();
-                    sb.append(String.format("%s: bets %d", seat.getPlayer().getPlayerName(), e.amount));
-                    if (seat.getStack() == 0) {
-                        sb.append(" and is all-in");
-                    }
-                    logger.info(sb.toString());
-                } else if (e.action.equals("RAISE")) {
-                    if (e.amount > seat.getStack()) {
-                        throw new RuntimeException("Player can not raise a greater amount than his remaining stack!");
-                    }
-
-                    if (e.amount < smallestValidRaise) {
-                        throw new RuntimeException("Player must at least raise by one full big blind, or raise all-in for less");
-                    }
-                    int raise = e.amount - totalBet;
-                    seat.setHasActed(true);
-                    seat.setCommitted(seat.getCommitted() + e.amount);
-                    seat.setStack(seat.getStack() - e.amount);
-                    if (seat.getCommitted() > totalBet) {
-                        totalBet = seat.getCommitted();
-                        lastRaise = e.amount;
-                    }
-                    final StringBuilder sb = new StringBuilder();
-                    sb.append(String.format("%s: raises to %d", seat.getPlayer().getPlayerName(), seat.getCommitted()));
-                    if (seat.getStack() == 0) {
-                        sb.append(" and is all-in");
-                    }
-                    logger.info(sb.toString());
-                } else if (e.action.equals("CALL")) {
-                    if (e.amount > seat.getStack()) {
-                        throw new RuntimeException("Player can not call a greater amount than his remaining stack!");
-                    }
-
-                    seat.setHasActed(true);
-                    seat.setCommitted(seat.getCommitted() + e.amount);
-                    seat.setStack(seat.getStack() - e.amount);
-                    final StringBuilder sb = new StringBuilder();
-                    sb.append(String.format("%s: calls %d", seat.getPlayer().getPlayerName(), e.amount));
-                    if (seat.getStack() == 0) {
-                        sb.append(" and is all-in");
-                    }
-                    logger.info(sb.toString());
-                }
-            }
+            handleEvent(response);
 
             if (hasAllPlayersActed()) {
                 break;
@@ -363,6 +275,77 @@ public class Game extends EventHandler {
         }
 
         logger.debug("Betting round ended");
+    }
+
+    public void handleEvent(Event event) {
+        if (event instanceof PlayerActionResponse e) {
+            handlePlayerActionResponse(e);
+        }
+    }
+
+    public void handlePlayerActionResponse(PlayerActionResponse e) {
+        final Game game = e.game;
+        final Seat seat = game.getSeat(e.player);
+        final int smallestValidRaise = Math.min(totalBet + bigBlind, seat.getStack());
+
+        if (e.action.equals("FOLD")) {
+            seat.setHasFolded(true);
+            logger.info("{}: folds", seat.getPlayer().getPlayerName());
+        } else if (e.action.equals("CHECK")) {
+            logger.info("{}: checks", seat.getPlayer().getPlayerName());
+        } else if (e.action.equals("BET")) {
+            if (e.amount > seat.getStack()) {
+                throw new RuntimeException("Player can not bet a greater amount than his remaining stack!");
+            }
+
+            seat.setCommitted(seat.getCommitted() + e.amount);
+            seat.setStack(seat.getStack() - e.amount);
+            totalBet = seat.getCommitted();
+            lastRaise = e.amount;
+            final StringBuilder sb = new StringBuilder();
+            sb.append(String.format("%s: bets %d", seat.getPlayer().getPlayerName(), e.amount));
+            if (seat.getStack() == 0) {
+                sb.append(" and is all-in");
+            }
+            logger.info(sb.toString());
+        } else if (e.action.equals("RAISE")) {
+            if (e.amount > seat.getStack()) {
+                throw new RuntimeException("Player can not raise a greater amount than his remaining stack!");
+            }
+
+            if (e.amount < smallestValidRaise) {
+                throw new RuntimeException("Player must at least raise by one full big blind, or raise all-in for less");
+            }
+            seat.setCommitted(seat.getCommitted() + e.amount);
+            seat.setStack(seat.getStack() - e.amount);
+            if (seat.getCommitted() > totalBet) {
+                totalBet = seat.getCommitted();
+                lastRaise = e.amount;
+            }
+            final StringBuilder sb = new StringBuilder();
+            sb.append(String.format("%s: raises to %d", seat.getPlayer().getPlayerName(), seat.getCommitted()));
+            if (seat.getStack() == 0) {
+                sb.append(" and is all-in");
+            }
+            logger.info(sb.toString());
+        } else if (e.action.equals("CALL")) {
+            if (e.amount > seat.getStack()) {
+                throw new RuntimeException("Player can not call a greater amount than his remaining stack!");
+            }
+
+            seat.setCommitted(seat.getCommitted() + e.amount);
+            seat.setStack(seat.getStack() - e.amount);
+            final StringBuilder sb = new StringBuilder();
+            sb.append(String.format("%s: calls %d", seat.getPlayer().getPlayerName(), e.amount));
+            if (seat.getStack() == 0) {
+                sb.append(" and is all-in");
+            }
+            logger.info(sb.toString());
+        } else {
+            throw new RuntimeException("Player action response unknown");
+        }
+
+        seat.setHasActed(true);
     }
 
     public boolean hasAllPlayersActed() {
@@ -559,63 +542,6 @@ public class Game extends EventHandler {
         }
 
         printSummary();
-
-        /*final IHandProcessor handProcessor = new TexasHoldemProcessor();
-
-        final List<SeatHand> seatHands = new ArrayList<>();
-
-        for (Seat seat : seats) {
-            long hand = cards | seat.getCards();
-            seatHands.add(new SeatHand(seat, hand, HandEvaluatorUtil.evaluate(handProcessor, hand), null));
-        }
-
-        seatHands.sort((e1, e2) -> {
-            try {
-                return HandEvaluatorUtil.compare(handProcessor, e1.hand, e2.hand);
-            } catch (HandEvaluatorException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        Collections.reverse(seatHands);
-
-        // TODO: Group winners
-        List<String> orderedGroupIds = new ArrayList<>();
-
-        for (SeatHand seatHand : seatHands) {
-            final StringBuilder groupIdBuilder = new StringBuilder();
-            IEvaluation evaluation = seatHand.evaluation;
-            final long handType = evaluation.getHandType();
-            groupIdBuilder.append(String.format("handType=%d", handType));
-            final int[] kickers = evaluation.getKickers();
-            if (kickers.length > 0) {
-                groupIdBuilder.append("&kickers=");
-                for (int i = 0; i < kickers.length; i += 1) {
-                    int kicker = kickers[i];
-                    groupIdBuilder.append(kicker);
-                    if (i < kickers.length - 1) {
-                        groupIdBuilder.append(",");
-                    }
-                }
-            }
-
-            final String groupId = groupIdBuilder.toString();
-            seatHand.groupId = groupId;
-
-            if (orderedGroupIds.isEmpty() || !orderedGroupIds.get(orderedGroupIds.size() - 1).equals(groupId)) {
-                orderedGroupIds.add(groupId);
-            }
-        }
-
-        final Map<String, List<SeatHand>> groupedWinners = seatHands.stream().collect(Collectors.groupingBy(item -> item.groupId));
-
-        for (String groupId : orderedGroupIds) {
-            logger.info("Winner groupId: {}", groupId);
-            List<SeatHand> winners = groupedWinners.get(groupId);
-            for (SeatHand winner : winners) {
-                logger.info("  Winner : {}", winner.seat.getPlayer());
-            }
-        }*/
     }
 
     public void dealHand() throws NotationException {
@@ -720,13 +646,5 @@ public class Game extends EventHandler {
         }
 
         return String.join(" ", cn);
-    }
-
-    public int getSmallBlind() {
-        return smallBlind;
-    }
-
-    public int getBigBlind() {
-        return bigBlind;
     }
 }
