@@ -263,6 +263,10 @@ public class Game extends EventHandler {
                 logger.debug("{}, Check or bet?", seat.getPlayer());
             }
 
+            if (seat.getStack() == 0) {
+                break;
+            }
+
             final Event response = player.handle(new PlayerActionRequest(player, this, totalBet, toCall, minBet, smallestValidRaise));
 
             handleEvent(response);
@@ -271,7 +275,12 @@ public class Game extends EventHandler {
                 break;
             }
 
-            actionAt = nextSeat(actionAt, 0, true).getSeatIndex();
+            final Seat theNextSeat = nextSeat(actionAt, 0, true);
+            if (theNextSeat == null) {
+                break;
+            }
+
+            actionAt = theNextSeat.getSeatIndex();
         }
 
         logger.debug("Betting round ended");
@@ -296,6 +305,9 @@ public class Game extends EventHandler {
         } else if (e.action.equals("BET")) {
             if (e.amount > seat.getStack()) {
                 throw new RuntimeException("Player can not bet a greater amount than his remaining stack!");
+            }
+            if (e.amount == 0) {
+                throw new RuntimeException("Player can not bet a zero amount!");
             }
 
             seat.setCommitted(seat.getCommitted() + e.amount);

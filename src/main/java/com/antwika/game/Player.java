@@ -40,47 +40,33 @@ public class Player extends EventHandler {
 
         final Game game = event.getGame();
         final Seat seat = game.getSeat(this);
-        final int totalPot = game.getTotalPot(true);
         boolean canRaise = event.getToCall() < seat.getStack();
 
         if (event.getToCall() == 0) {
             if (rand < 75) {
                 return new PlayerActionResponse(this, game, "CHECK", 0);
             } else {
-                int lastRaise = game.getLastRaise();
-                int deadMoney = totalPot - lastRaise;
-                int myFullPotSizeRaise = lastRaise * 3 + deadMoney;
-                int myStack = seat.getStack();
-                int myCommitted = seat.getCommitted();
-                float myBetSizePercentage = 0.5f;
-                int myRaise = (int) (myFullPotSizeRaise * myBetSizePercentage);
-                int actualRaise = Math.min(myRaise, myStack);
-                int actualBet = myCommitted + actualRaise;
-
-                return new PlayerActionResponse(this, game, "BET", actualBet);
+                return new PlayerActionResponse(this, game, "BET", calcBetSize(game, this, 0.75f));
             }
         } else {
             if (rand < 50) {
                 return new PlayerActionResponse(this, game, "FOLD", 0);
             } else if (canRaise && rand < 75) {
-                int lastRaise = game.getLastRaise();
-                int deadMoney = totalPot - lastRaise;
-                int myFullPotSizeRaise = lastRaise * 3 + deadMoney;
-                int myStack = seat.getStack();
-                float myBetSizePercentage = 0.5f;
-                int myRaise = (int) (myFullPotSizeRaise * myBetSizePercentage);
-                int actualRaise = Math.min(myRaise, myStack);
-
-                int finalRaise = Math.max(actualRaise, event.getMinRaise());
-
-                return new PlayerActionResponse(this, game, "RAISE", finalRaise);
+                return new PlayerActionResponse(this, game, "RAISE", calcBetSize(game, this, 0.75f));
             } else {
                 return new PlayerActionResponse(this, game, "CALL", event.getToCall());
             }
         }
+    }
 
-        // return new PlayerActionResponse(this, event.game, "BET", event.minBet);
-
-        // return new PlayerActionResponse(this, event.game, "CALL", event.toCall);
+    public static int calcBetSize(Game game, Player player, float betSizePercent) {
+        final Seat seat = game.getSeat(player);
+        int lastRaise = game.getLastRaise();
+        int totalPot = game.getTotalPot(true);
+        int deadMoney = totalPot - lastRaise;
+        int desiredBet = (int) ((lastRaise * 3 + deadMoney) * betSizePercent);
+        int minimumBet = Math.min(seat.getStack(), game.getBigBlind());
+        int bet = Math.max(desiredBet, minimumBet);
+        return Math.min(seat.getStack(), bet);
     }
 }
