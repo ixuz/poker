@@ -16,10 +16,11 @@ public class Player extends EventHandler {
     @Getter
     private final String playerName;
 
-    private final Random prng;
+    @Getter
+    private Prng prng;
 
     public Player(long prngSeed, String playerName) {
-        this.prng = new Random(prngSeed);
+        this.prng = new Prng(prngSeed);
         this.playerName = playerName;
     }
 
@@ -62,7 +63,7 @@ public class Player extends EventHandler {
     public static int calcBetSize(Game game, Player player, float betSizePercent) {
         final Seat seat = game.getSeat(player);
         int lastRaise = game.getLastRaise();
-        int totalPot = game.getTotalPot(true);
+        int totalPot = GameUtil.countTotalPotAndCommitted(game);
         int deadMoney = totalPot - lastRaise;
         int desiredBet = (int) ((lastRaise * 3 + deadMoney) * betSizePercent);
         int minimumBet = Math.min(seat.getStack(), game.getBigBlind());

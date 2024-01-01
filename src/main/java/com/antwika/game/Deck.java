@@ -1,21 +1,22 @@
 package com.antwika.game;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class Deck {
     private static final Logger logger = LoggerFactory.getLogger(Deck.class);
     private final List<Long> cards = new ArrayList<>();
 
-    private final Random prng;
+    @Getter
+    private final Prng prng;
 
     public Deck(long prngSeed) {
-        this.prng = new Random(prngSeed);
+        this.prng = new Prng(prngSeed);
     }
 
     public void resetAndShuffle() {
@@ -23,7 +24,7 @@ public class Deck {
         for (int i = 0; i < 52; i += 1) {
             cards.add(1L << i);
         }
-        Collections.shuffle(cards, prng);
+        Collections.shuffle(cards, prng.getRandomInstance());
         logger.debug("Deck shuffled");
     }
 

@@ -9,7 +9,6 @@ import java.util.Date;
 public class GameLog {
     private static final Logger logger = LoggerFactory.getLogger(GameLog.class);
 
-
     public static void printGameInfo(Game game) {
         logger.info("Poker Hand #{}: {} ({}/{}) - {}",
                 game.getHandId(),

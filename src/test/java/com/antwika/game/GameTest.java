@@ -2,6 +2,7 @@ package com.antwika.game;
 
 import com.antwika.common.exception.NotationException;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 public class GameTest {
@@ -17,23 +18,20 @@ public class GameTest {
 
         final Game game = new Game(1L, "Lacuna I", 6, 5, 10);
 
-        game.join(player1);
-        game.join(player2);
-        game.join(player3);
-        game.join(player4);
-        game.join(player5);
-        game.join(player6);
+        GameUtil.seat(game, player1, 0, 1000);
+        GameUtil.seat(game, player2, 1, 1000);
+        GameUtil.seat(game, player3, 2, 1000);
+        GameUtil.seat(game, player4, 3, 1000);
+        GameUtil.seat(game, player5, 4, 1000);
+        GameUtil.seat(game, player6, 5, 1000);
 
-        while (game.canDealNextHand()) {
+        game.startGame();
+
+        while (game.canStartHand()) {
             game.dealHand();
             Thread.sleep(200L);
         }
 
-        game.leave(player1);
-        game.leave(player2);
-        game.leave(player3);
-        game.leave(player4);
-        game.leave(player5);
-        game.leave(player6);
+        game.stopGame();
     }
 }
