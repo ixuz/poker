@@ -432,24 +432,29 @@ public class HandEvaluatorUtilTest {
                     HandEvaluatorUtil.evaluate(handProcessor, hand);
                 }
                 long endTime = System.nanoTime();
-                String iterationString = "";
-                if (iterations >= 1000000000000L) {
-                    iterationString += (iterations / 1000000000000L) + "t";
-                } else if (iterations >= 1000000000L) {
-                    iterationString += (iterations / 1000000000L) + "b";
-                } else if (iterations >= 1000000L) {
-                    iterationString += (iterations / 1000000L) + "m";
-                } else if (iterations >= 1000L) {
-                    iterationString += (iterations / 1000L) + "k";
-                } else {
-                    iterationString += (iterations);
-                }
+                String iterationString = getString(iterations);
                 long deltaTimeMs = (endTime - startTime) / 1000L / 1000L;
 
                 float handsPerSec = ((float)iterations / deltaTimeMs) / 1000L;
                 System.out.printf("Hands evaluated: %s (%.1fm hands/sec), delta time: %sms%n", iterationString, handsPerSec, deltaTimeMs);
             }
         }
+    }
+
+    private static String getString(long iterations) {
+        String iterationString = "";
+        if (iterations >= 1000000000000L) {
+            iterationString += (iterations / 1000000000000L) + "t";
+        } else if (iterations >= 1000000000L) {
+            iterationString += (iterations / 1000000000L) + "b";
+        } else if (iterations >= 1000000L) {
+            iterationString += (iterations / 1000000L) + "m";
+        } else if (iterations >= 1000L) {
+            iterationString += (iterations / 1000L) + "k";
+        } else {
+            iterationString += iterations;
+        }
+        return iterationString;
     }
 
     @Disabled

@@ -183,10 +183,9 @@ public class Pots {
 
                 List<Candidate> groupWinners = new ArrayList<>();
                 for (CandidateEvaluation e : group) {
-                    int candidatePortion = portion;
-                    delivered += candidatePortion;
+                    delivered += portion;
 
-                    final Candidate candidate = new Candidate(e.candidate.getSeat(), candidatePortion);
+                    final Candidate candidate = new Candidate(e.candidate.getSeat(), portion);
 
                     if (potIndex == 0) candidate.setPotName("Main pot");
                     else candidate.setPotName("Side pot #" + potIndex);
@@ -199,20 +198,7 @@ public class Pots {
                             .sorted(Comparator.comparingInt(e -> e.getSeat().getSeatIndex()))
                             .toList();
 
-                    Integer firstWinnerIndexAfterButton = null;
-                    for (int i = 0; i < sortedWinnersBySeatIndex.size(); i += 1) {
-                        final Candidate aWinner = sortedWinnersBySeatIndex.get(i);
-                        final int seatIndex = aWinner.getSeat().getSeatIndex();
-                        int seatIndexAfterButton = (buttonAt + 1) % seatCount;
-                        if (seatIndex >= seatIndexAfterButton) {
-                            firstWinnerIndexAfterButton = i;
-                            break;
-                        }
-                    }
-
-                    if (firstWinnerIndexAfterButton == null) {
-                        throw new RuntimeException("Could not find the first candidate after the button");
-                    }
+                    Integer firstWinnerIndexAfterButton = getFirstWinnerIndexAfterButton(buttonAt, seatCount, sortedWinnersBySeatIndex);
 
                     for (int i = 0; i < sortedWinnersBySeatIndex.size(); i += 1) {
                         if (rest == 0) break;
@@ -236,6 +222,24 @@ public class Pots {
         }
 
         return winners;
+    }
+
+    private static Integer getFirstWinnerIndexAfterButton(int buttonAt, int seatCount, List<Candidate> sortedWinnersBySeatIndex) {
+        Integer firstWinnerIndexAfterButton = null;
+        for (int i = 0; i < sortedWinnersBySeatIndex.size(); i += 1) {
+            final Candidate aWinner = sortedWinnersBySeatIndex.get(i);
+            final int seatIndex = aWinner.getSeat().getSeatIndex();
+            int seatIndexAfterButton = (buttonAt + 1) % seatCount;
+            if (seatIndex >= seatIndexAfterButton) {
+                firstWinnerIndexAfterButton = i;
+                break;
+            }
+        }
+
+        if (firstWinnerIndexAfterButton == null) {
+            throw new RuntimeException("Could not find the first candidate after the button");
+        }
+        return firstWinnerIndexAfterButton;
     }
 
     private static String groupId(IEvaluation evaluation) {

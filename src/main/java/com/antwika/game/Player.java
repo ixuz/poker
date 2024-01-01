@@ -17,7 +17,7 @@ public class Player extends EventHandler {
     private final String playerName;
 
     @Getter
-    private Prng prng;
+    private final Prng prng;
 
     public Player(long prngSeed, String playerName) {
         this.prng = new Prng(prngSeed);

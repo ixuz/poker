@@ -49,7 +49,7 @@ public class Game extends EventHandler {
     private final Deck deck;
 
     @Getter
-    private Prng prng;
+    private final Prng prng;
 
     @Getter
     private final int smallBlind;
