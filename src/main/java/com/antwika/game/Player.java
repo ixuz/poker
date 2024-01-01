@@ -40,7 +40,7 @@ public class Player extends EventHandler {
         int rand = prng.nextInt(100);
 
         final Game game = event.getGame();
-        final Seat seat = game.getSeat(this);
+        final Seat seat = GameUtil.getSeat(game, this);
         boolean canRaise = event.getToCall() < seat.getStack();
 
         if (event.getToCall() == 0) {
@@ -61,7 +61,7 @@ public class Player extends EventHandler {
     }
 
     public static int calcBetSize(Game game, Player player, float betSizePercent) {
-        final Seat seat = game.getSeat(player);
+        final Seat seat = GameUtil.getSeat(game, player);
         int lastRaise = game.getLastRaise();
         int totalPot = GameUtil.countTotalPotAndCommitted(game);
         int deadMoney = totalPot - lastRaise;

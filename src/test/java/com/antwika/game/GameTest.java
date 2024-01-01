@@ -28,7 +28,7 @@ public class GameTest {
         GameUtil.startGame(game);
 
         while (GameUtil.canStartHand(game)) {
-            game.dealHand();
+            GameUtil.hand(game);
             Thread.sleep(200L);
         }
 
