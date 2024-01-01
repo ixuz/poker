@@ -30,12 +30,15 @@ public class Game extends EventHandler {
     private int actionAt = 0;
 
     @Getter
+    @Setter
     private int totalBet = 0;
 
     @Getter
+    @Setter
     private int lastRaise = 0;
 
     @Getter
+    @Setter
     private Long cards = 0L;
 
     @Getter
@@ -56,6 +59,7 @@ public class Game extends EventHandler {
     @Getter
     private int delivered = 0;
 
+    @Getter
     private int chipsInPlay = 0;
 
     @Getter
@@ -250,39 +254,8 @@ public class Game extends EventHandler {
         return GameUtil.hasAllPlayersActed(this);
     }
 
-    public void collect() {
-        pots.addAll(Pots.collectBets(seats));
-
-        lastRaise = 0;
-        totalBet = 0;
-
-        int totalStacks = GameUtil.countAllStacks(this);
-        int totalPot = GameUtil.countTotalPot(this);
-        if (totalStacks + totalPot != chipsInPlay) {
-            throw new RuntimeException("Invalid amount of chips");
-        }
-    }
-
     public Seat nextSeat(int fromSeat, int skips, boolean mustAct) {
         return GameUtil.findNextSeatToAct(this, fromSeat, skips, mustAct);
-    }
-
-    public void dealCards() throws NotationException {
-        logger.info("*** HOLE CARDS ***");
-        for (int i = 0; i < seats.size() * 2; i += 1) {
-            final int seatIndex = (actionAt + i + 1) % seats.size();
-            final Seat seat = seats.get(seatIndex);
-            if (seat.getPlayer() == null) continue;
-            final long card = deck.draw();
-            seat.setCards(seat.getCards() | card);
-            try {
-                logger.debug("Deal card {} to {}", HandUtil.toNotation(card), seat.getPlayer());
-            } catch (NotationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        GameLog.printTableSeatCardsInfo(this);
     }
 
     public void dealCommunityCards(int count) {
@@ -351,23 +324,24 @@ public class Game extends EventHandler {
         GameLog.printTableInfo(this);
         GameLog.printTableSeatsInfo(this);
         GameUtil.forcePostBlinds(this, List.of(smallBlind, bigBlind));
-        dealCards();
+        GameUtil.dealCards(this);
+
         bettingRound();
-        collect();
+        GameUtil.collect(this);
         if (GameUtil.countPlayersRemainingInHand(this) > 1) {
-            dealCommunityCards(3);
+            GameUtil.dealCommunityCards(this, 3);
             bettingRound();
-            collect();
+            GameUtil.collect(this);
         }
         if (GameUtil.countPlayersRemainingInHand(this) > 1) {
-            dealCommunityCards(1);
+            GameUtil.dealCommunityCards(this, 1);
             bettingRound();
-            collect();
+            GameUtil.collect(this);
         }
         if (GameUtil.countPlayersRemainingInHand(this) > 1) {
-            dealCommunityCards(1);
+            GameUtil.dealCommunityCards(this, 1);
             bettingRound();
-            collect();
+            GameUtil.collect(this);
         }
         showdown();
         endHand();

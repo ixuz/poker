@@ -71,10 +71,6 @@ public class GameUtil {
         return countTotalPot(game) + countTotalCommitted(game);
     }
 
-    public static int countTotalInPlay(Game game) {
-        return countAllStacks(game) + countTotalPotAndCommitted(game);
-    }
-
     public static int countPlayersRemainingInHand(Game game) {
         return game.getSeats().stream()
                 .filter(seat -> seat.getPlayer() != null)
@@ -102,12 +98,6 @@ public class GameUtil {
 
     public static void unseat(List<Seat> seats) {
         seats.forEach(GameUtil::unseat);
-    }
-
-    public static void unseat(Game game, Player player) {
-        game.getSeats().stream()
-                .filter(seat -> seat.getPlayer() == player)
-                .forEach(GameUtil::unseat);
     }
 
     public static void unseatAll(Game game) {
@@ -282,5 +272,63 @@ public class GameUtil {
 
     public static void pushButton(Game game) {
         game.setButtonAt(findNextSeatToAct(game, game.getButtonAt(), 0, false).getSeatIndex());
+    }
+
+    public static void dealCommunityCards(Game game, int count) {
+        long prev = game.getCards();
+        long add = 0L;
+        for (int i = 0; i < count; i += 1) {
+            add |= game.getDeck().draw();
+        }
+
+        game.setCards(game.getCards() | add);
+
+        try {
+            final StringBuilder sb = new StringBuilder();
+            sb.append(String.format("*** %s ***", GameUtil.getStreetName(game)));
+            if (prev != 0L) {
+                sb.append(String.format(" [%s]", GameUtil.toNotation(prev)));
+            }
+            if (add != 0L) {
+                sb.append(String.format(" [%s]", GameUtil.toNotation(add)));
+            }
+            logger.info(sb.toString());
+            logger.info("Total pot: {}", GameUtil.countTotalPot(game));
+        } catch (NotationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void dealCards(Game game) throws NotationException {
+        final List<Seat> seats = game.getSeats();
+        logger.info("*** HOLE CARDS ***");
+        for (int i = 0; i < seats.size() * 2; i += 1) {
+            final int seatIndex = (game.getActionAt() + i + 1) % seats.size();
+            final Seat seat = seats.get(seatIndex);
+            if (seat.getPlayer() == null) continue;
+            final long card = game.getDeck().draw();
+            seat.setCards(seat.getCards() | card);
+            try {
+                logger.debug("Deal card {} to {}", HandUtil.toNotation(card), seat.getPlayer());
+            } catch (NotationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        GameLog.printTableSeatCardsInfo(game);
+    }
+
+    public static void collect(Game game) {
+        final List<Seat> seats = game.getSeats();
+        game.getPots().addAll(Pots.collectBets(seats));
+
+        game.setLastRaise(0);
+        game.setTotalBet(0);
+
+        int totalStacks = GameUtil.countAllStacks(game);
+        int totalPot = GameUtil.countTotalPot(game);
+        if (totalStacks + totalPot != game.getChipsInPlay()) {
+            throw new RuntimeException("Invalid amount of chips");
+        }
     }
 }
