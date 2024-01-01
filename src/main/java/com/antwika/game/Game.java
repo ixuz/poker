@@ -16,12 +16,16 @@ import java.util.*;
 public class Game extends EventHandler {
     private static final Logger logger = LoggerFactory.getLogger(Game.class);
 
+    @Getter
     private final String tableName;
 
+    @Getter
     private long handId = 0L;
 
+    @Getter
     private final List<Seat> seats = new ArrayList<>();
 
+    @Getter
     private int buttonAt = 0;
 
     private int actionAt = 0;
@@ -31,6 +35,7 @@ public class Game extends EventHandler {
     @Getter
     private int lastRaise = 0;
 
+    @Getter
     private Long cards = 0L;
 
     private final List<Pot> pots = new ArrayList<>();
@@ -45,11 +50,13 @@ public class Game extends EventHandler {
     @Getter
     private final int bigBlind;
 
+    @Getter
     private int delivered = 0;
 
     private int chipsInPlay = 0;
 
-    private static final String GAME_TYPE = "Hold'em No Limit";
+    @Getter
+    private final String gameType = "Hold'em No Limit";
 
     public Game(long prngSeed, String tableName, int seatCount, int smallBlind, int bigBlind) {
         this.prng = new Random(prngSeed);
@@ -455,14 +462,47 @@ public class Game extends EventHandler {
             }
         }
 
-        printTableSeatCardsInfo();
+        GameLog.printTableSeatCardsInfo(this);
+    }
+
+    public String getStage() {
+        return switch (Long.bitCount(cards)) {
+            case 3 -> "FLOP";
+            case 4 -> "TURN";
+            case 5 -> "RIVER";
+            default -> "PREFLOP";
+        };
+    }
+
+    public void dealCommunityCards(int count) {
+        long prev = getCards();
+        long add = 0L;
+        for (int i = 0; i < count; i += 1) {
+            add |= deck.draw();
+        }
+        cards |= add;
+
+        try {
+            final StringBuilder sb = new StringBuilder();
+            sb.append(String.format("*** %s ***", getStage()));
+            if (prev != 0L) {
+                sb.append(String.format(" [%s]", GameUtil.toNotation(prev)));
+            }
+            if (add != 0L) {
+                sb.append(String.format(" [%s]", GameUtil.toNotation(add)));
+            }
+            logger.info(sb.toString());
+            logger.info("Total pot: {}", getTotalPot(false));
+        } catch (NotationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void dealFlop() {
         long flop = deck.draw() | deck.draw() | deck.draw();
         cards |= flop;
         try {
-            logger.info("*** FLOP *** [{}]", getCardsNotation(flop));
+            logger.info("*** FLOP *** [{}]", GameUtil.toNotation(flop));
             logger.info("Total pot: {}", getTotalPot(false));
         } catch (NotationException e) {
             throw new RuntimeException(e);
@@ -475,7 +515,7 @@ public class Game extends EventHandler {
         cards |= turn;
 
         try {
-            logger.info("*** TURN *** [{}] [{}]", getCardsNotation(flop), getCardsNotation(turn));
+            logger.info("*** TURN *** [{}] [{}]", GameUtil.toNotation(flop), GameUtil.toNotation(turn));
             logger.info("Total pot: {}", getTotalPot(false));
         } catch (NotationException e) {
             throw new RuntimeException(e);
@@ -488,23 +528,11 @@ public class Game extends EventHandler {
         cards |= river;
 
         try {
-            logger.info("*** RIVER *** [{}] [{}]", getCardsNotation(flopAndTurn), getCardsNotation(river));
+            logger.info("*** RIVER *** [{}] [{}]", GameUtil.toNotation(flopAndTurn), GameUtil.toNotation(river));
             logger.info("Total pot: {}", getTotalPot(false));
         } catch (NotationException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Data
-    @AllArgsConstructor
-    @ToString(onlyExplicitlyIncluded = true)
-    public static class SeatHand {
-        @ToString.Include
-        public Seat seat;
-        public long hand;
-        @ToString.Include
-        public IEvaluation evaluation;
-        public String groupId;
     }
 
     public int getTotalPot(boolean includeCommitted) {
@@ -518,12 +546,10 @@ public class Game extends EventHandler {
     }
 
     public Seat getSeat(Player player) {
-        for (Seat seat : seats) {
-            if (seat.getPlayer() == player) {
-                return seat;
-            }
-        }
-        return null;
+        return seats.stream()
+                .filter(i -> i.getPlayer() == player)
+                .findFirst()
+                .orElse(null);
     }
 
     public void showdown() throws NotationException {
@@ -551,16 +577,16 @@ public class Game extends EventHandler {
             throw new RuntimeException("Invalid amount of chips");
         }
 
-        printSummary();
+        GameLog.printSummary(this);
     }
 
     public void dealHand() throws NotationException {
         logger.info("--- HAND BEGIN ---");
         newHand();
-        printGameInfo();
+        GameLog.printGameInfo(this);
         deck.resetAndShuffle();
-        printTableInfo();
-        printTableSeatsInfo();
+        GameLog.printTableInfo(this);
+        GameLog.printTableSeatsInfo(this);
         blinds();
         dealCards();
         bettingRound();
@@ -582,79 +608,5 @@ public class Game extends EventHandler {
         }
         showdown();
         logger.info("--- HAND END ---");
-    }
-
-    public void printGameInfo() {
-        logger.info("Poker Hand #{}: {} ({}/{}) - {}",
-                handId,
-                GAME_TYPE,
-                getSmallBlind(),
-                getBigBlind(),
-                new Date());
-    }
-
-    public void printTableInfo() {
-        logger.info("Table '{}' {}-max Seat #{} is the button",
-                tableName,
-                seats.size(),
-                buttonAt + 1);
-    }
-
-    public void printTableSeatsInfo() {
-        for (Seat seat : seats) {
-            if (seat.getPlayer() == null) continue;
-
-            logger.info("Seat {}: {} ({} in chips) ",
-                    seat.getSeatIndex() + 1,
-                    seat.getPlayer().getPlayerName(),
-                    seat.getStack());
-        }
-    }
-
-    public void printTableSeatCardsInfo() throws NotationException {
-        for (Seat seat : seats) {
-            if (seat.getPlayer() == null) continue;
-
-            final long cards = seat.getCards();
-
-            if (Long.bitCount(cards) != 2) throw new RuntimeException("Unexpected number of cards after deal");
-
-            final String handNotation = getCardsNotation(seat.getCards());
-
-            logger.info("Dealt to {} [{}]", seat.getPlayer().getPlayerName(), handNotation);
-        }
-    }
-
-    public void printSummary() throws NotationException {
-        logger.info("*** SUMMARY ***");
-        logger.info("Total pot {} | Rake {}", delivered, 0);
-        logger.info("Board [{}]", getCardsNotation(cards));
-
-        int chipsInPlay = 0;
-        for (Seat seat : seats) {
-            if (seat.getPlayer() == null) continue;
-
-            chipsInPlay += seat.getStack();
-
-            final Player player = seat.getPlayer();
-
-            logger.info("Seat {}: {} stack {}",
-                    seat.getSeatIndex(),
-                    player.getPlayerName(),
-                    seat.getStack());
-        }
-        logger.info("Total chips in play {}", chipsInPlay);
-    }
-
-    private String getCardsNotation(long cards) throws NotationException {
-        final String cardsNotation = HandUtil.toNotation(cards);
-
-        final List<String> cn = new ArrayList<>();
-        for (int i = 0; i < cardsNotation.length(); i += 2) {
-            final String cardNotation = cardsNotation.substring(i, i+2);
-            cn.add(cardNotation);
-        }
-
-        return String.join(" ", cn);
     }
 }
