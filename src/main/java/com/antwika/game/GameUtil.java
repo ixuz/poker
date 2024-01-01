@@ -247,7 +247,7 @@ public class GameUtil {
         final Player player = seat.getPlayer();
 
         int commitAmount = Math.min(seat.getStack(), blindAmount);
-        game.commit(seat, commitAmount);
+        GameUtil.commit(seat, commitAmount);
 
         game.setActionAt(game.nextSeat(seat.getSeatIndex(), 0, true).getSeatIndex());
 

@@ -196,7 +196,7 @@ public class Game extends EventHandler {
             throw new RuntimeException("Player can not bet a zero amount!");
         }
 
-        commit(seat, playerActionResponse.amount);
+        GameUtil.commit(seat, playerActionResponse.amount);
         totalBet = seat.getCommitted();
         lastRaise = playerActionResponse.amount;
         final StringBuilder sb = new StringBuilder();
@@ -217,7 +217,8 @@ public class Game extends EventHandler {
         if (playerActionResponse.amount < smallestValidRaise) {
             throw new RuntimeException("Player must at least raise by one full big blind, or raise all-in for less");
         }
-        commit(seat, playerActionResponse.amount);
+
+        GameUtil.commit(seat, playerActionResponse.amount);
         if (seat.getCommitted() > totalBet) {
             totalBet = seat.getCommitted();
             lastRaise = playerActionResponse.amount;
@@ -236,17 +237,13 @@ public class Game extends EventHandler {
             throw new RuntimeException("Player can not call a greater amount than his remaining stack!");
         }
 
-        commit(seat, playerActionResponse.amount);
+        GameUtil.commit(seat, playerActionResponse.amount);
         final StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s: calls %d", seat.getPlayer().getPlayerName(), playerActionResponse.amount));
         if (seat.getStack() == 0) {
             sb.append(" and is all-in");
         }
         logger.info(sb.toString());
-    }
-
-    public void commit(Seat seat, int amount) {
-        GameUtil.commit(seat, amount);
     }
 
     public boolean hasAllPlayersActed() {
