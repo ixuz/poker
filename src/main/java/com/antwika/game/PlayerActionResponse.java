@@ -4,8 +4,9 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class PlayerActionResponse extends Event {
+    public enum Type { FOLD, CHECK, CALL, BET, RAISE }
     public Player player;
     public Game game;
-    public String action;
+    public Type action;
     public int amount;
 }

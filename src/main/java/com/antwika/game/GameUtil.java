@@ -181,6 +181,33 @@ public class GameUtil {
                 .isEmpty();
     }
 
+    public static int getNumberOfPlayersLeftToAct(Game game) {
+        final List<Seat> playerSeats = game.getSeats().stream()
+                .filter(i -> i.getPlayer() != null)
+                .filter(i -> i.getStack() > 0)
+                .filter(i -> i.getCards() > 0L)
+                .filter(i -> !i.isHasFolded())
+                .toList();
+        return playerSeats.size();
+    }
+
+    public static void prepareBettingRound(Game game) {
+        if (Long.bitCount(game.getCards()) != 0) {
+            for (Seat seat : game.getSeats()) {
+                seat.setHasActed(false);
+            }
+            game.setActionAt(findNextSeatToAct(game, game.getButtonAt(), 0, true).getSeatIndex());
+        }
+    }
+
+    public static void startGame(Game game) {
+        drawButtonSeatIndex(game);
+    }
+
+    public static void stopGame(Game game) {
+        unseatAll(game);
+    }
+
     public static void drawButtonSeatIndex(Game game) {
         logger.debug("Drawing cards to determine button position...");
         final Deck deck = game.getDeck();
@@ -251,5 +278,9 @@ public class GameUtil {
         if (amount <= 0) throw new RuntimeException("Commit must be greater than zero");
         seat.setStack(seat.getStack() - amount);
         seat.setCommitted(seat.getCommitted() + amount);
+    }
+
+    public static void pushButton(Game game) {
+        game.setButtonAt(findNextSeatToAct(game, game.getButtonAt(), 0, false).getSeatIndex());
     }
 }

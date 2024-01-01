@@ -25,13 +25,13 @@ public class GameTest {
         GameUtil.seat(game, player5, 4, 1000);
         GameUtil.seat(game, player6, 5, 1000);
 
-        game.startGame();
+        GameUtil.startGame(game);
 
-        while (game.canStartHand()) {
+        while (GameUtil.canStartHand(game)) {
             game.dealHand();
             Thread.sleep(200L);
         }
 
-        game.stopGame();
+        GameUtil.stopGame(game);
     }
 }

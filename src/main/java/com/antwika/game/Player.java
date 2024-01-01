@@ -45,17 +45,17 @@ public class Player extends EventHandler {
 
         if (event.getToCall() == 0) {
             if (rand < 75) {
-                return new PlayerActionResponse(this, game, "CHECK", 0);
+                return new PlayerActionResponse(this, game, PlayerActionResponse.Type.CHECK, 0);
             } else {
-                return new PlayerActionResponse(this, game, "BET", calcBetSize(game, this, 0.75f));
+                return new PlayerActionResponse(this, game, PlayerActionResponse.Type.BET, calcBetSize(game, this, 0.75f));
             }
         } else {
             if (rand < 50) {
-                return new PlayerActionResponse(this, game, "FOLD", 0);
+                return new PlayerActionResponse(this, game, PlayerActionResponse.Type.FOLD, 0);
             } else if (canRaise && rand < 75) {
-                return new PlayerActionResponse(this, game, "RAISE", calcBetSize(game, this, 0.75f));
+                return new PlayerActionResponse(this, game, PlayerActionResponse.Type.RAISE, calcBetSize(game, this, 0.75f));
             } else {
-                return new PlayerActionResponse(this, game, "CALL", event.getToCall());
+                return new PlayerActionResponse(this, game, PlayerActionResponse.Type.CALL, event.getToCall());
             }
         }
     }
