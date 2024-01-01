@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 public class Game extends EventHandler {
-    private static Logger logger = LoggerFactory.getLogger(Game.class);
+    private static final Logger logger = LoggerFactory.getLogger(Game.class);
 
-    private String tableName;
+    private final String tableName;
 
     private long handId = 0L;
 
@@ -28,6 +28,7 @@ public class Game extends EventHandler {
 
     private int totalBet = 0;
 
+    @Getter
     private int lastRaise = 0;
 
     private Long cards = 0L;
@@ -135,7 +136,7 @@ public class Game extends EventHandler {
         return activeSeats.size() > 1;
     }
 
-    public void newHand() throws NotationException {
+    public void newHand() {
         totalBet = 0;
         lastRaise = 0;
         cards = 0L;
@@ -205,7 +206,7 @@ public class Game extends EventHandler {
                 .toList();
         final List<Seat> foldedSeats = seats.stream()
                 .filter(i -> i.getPlayer() != null)
-                .filter(i -> i.isHasFolded())
+                .filter(Seat::isHasFolded)
                 .toList();
         return playerSeats.size() - foldedSeats.size();
     }
@@ -497,7 +498,7 @@ public class Game extends EventHandler {
     @Data
     @AllArgsConstructor
     @ToString(onlyExplicitlyIncluded = true)
-    public class SeatHand {
+    public static class SeatHand {
         @ToString.Include
         public Seat seat;
         public long hand;
@@ -507,21 +508,13 @@ public class Game extends EventHandler {
     }
 
     public int getTotalPot(boolean includeCommitted) {
-        int sum = 0;
+        int sum = pots.stream().mapToInt(Pot::getTotalAmount).sum();
 
-        for (Pot pot : pots) {
-            sum += pot.getTotalAmount();
-        }
-
-        for (Seat seat : seats) {
-            sum += seat.getCommitted();
+        if (includeCommitted) {
+            sum += seats.stream().mapToInt(Seat::getCommitted).sum();
         }
 
         return sum;
-    }
-
-    public int getLastRaise() {
-        return lastRaise;
     }
 
     public Seat getSeat(Player player) {
@@ -541,7 +534,6 @@ public class Game extends EventHandler {
         for (Candidate winner : winners) {
             final Seat seat = winner.getSeat();
             final Player player = seat.getPlayer();
-            int seatIndex = seat.getSeatIndex();
             int amount = winner.getAmount();
             delivered += amount;
             winner.getSeat().setStack(seat.getStack() + amount);
