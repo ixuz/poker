@@ -1,6 +1,5 @@
 package com.antwika.game;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;

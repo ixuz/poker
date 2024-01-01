@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
 public class HandEvaluatorUtilTest {
     @Test
     @Tag("IntegrationTest")
-    public void findStraightFlush() throws NotationException, HandEvaluatorException {
+    public void findStraightFlush() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         Assertions.assertEquals(BitmaskUtil.STRAIGHT_FLUSH, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("Ac2c3c4c5c7c2d")).getHandType());
         assertEquals(BitmaskUtil.STRAIGHT_FLUSH, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcKcQcJcTc7c2d")).getHandType());
@@ -39,7 +39,7 @@ public class HandEvaluatorUtilTest {
 
     @Test
     @Tag("IntegrationTest")
-    public void findQuads() throws NotationException, HandEvaluatorException {
+    public void findQuads() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         assertEquals(BitmaskUtil.QUADS, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcAdAhAsKd7c2d")).getHandType());
         assertEquals(BitmaskUtil.QUADS, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcAd5hKcKdKhKs")).getHandType());
@@ -49,7 +49,7 @@ public class HandEvaluatorUtilTest {
 
     @Test
     @Tag("IntegrationTest")
-    public void findFullHouse() throws NotationException, HandEvaluatorException {
+    public void findFullHouse() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         assertEquals(BitmaskUtil.FULL_HOUSE, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcAdAhKsKd7c2d")).getHandType());
         assertEquals(BitmaskUtil.FULL_HOUSE, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcAdKhKsKd7c2d")).getHandType());
@@ -59,7 +59,7 @@ public class HandEvaluatorUtilTest {
 
     @Test
     @Tag("IntegrationTest")
-    public void findFlush() throws NotationException, HandEvaluatorException {
+    public void findFlush() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         assertEquals(BitmaskUtil.FLUSH, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcQcTc8c4c6s2s")).getHandType());
         assertEquals(BitmaskUtil.FLUSH, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AdQdTd8d4d6s2s")).getHandType());
@@ -69,7 +69,7 @@ public class HandEvaluatorUtilTest {
 
     @Test
     @Tag("IntegrationTest")
-    public void findStraight() throws NotationException, HandEvaluatorException {
+    public void findStraight() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         assertEquals(BitmaskUtil.STRAIGHT, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcKdQhJsTc7d2h")).getHandType());
         assertEquals(BitmaskUtil.STRAIGHT, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcTd9h8s7c6d2h")).getHandType());
@@ -78,7 +78,7 @@ public class HandEvaluatorUtilTest {
 
     @Test
     @Tag("IntegrationTest")
-    public void findTrips() throws NotationException, HandEvaluatorException {
+    public void findTrips() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         assertEquals(BitmaskUtil.TRIPS, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcAdAhQsTs7s2s")).getHandType());
         assertEquals(BitmaskUtil.TRIPS, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AsQcQdQhTs7s2s")).getHandType());
@@ -89,7 +89,7 @@ public class HandEvaluatorUtilTest {
 
     @Test
     @Tag("IntegrationTest")
-    public void findTwoPair() throws NotationException, HandEvaluatorException {
+    public void findTwoPair() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcAdKcKdQcQdJc"));
         assertEquals(BitmaskUtil.TWO_PAIR, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcAdKhKs7c5d2h")).getHandType());
@@ -104,7 +104,7 @@ public class HandEvaluatorUtilTest {
     @Test
     @Tag("IntegrationTest")
     @Tag("RegressionTest")
-    public void findTwoPairKickers() throws NotationException, HandEvaluatorException {
+    public void findTwoPairKickers() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         assertEquals(3, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcAdKcKdQcQdJc")).getKickersCount());
         assertEquals(ACE_INDEX, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcAdKcKdQcQdJc")).getKickers()[0]);
@@ -114,7 +114,7 @@ public class HandEvaluatorUtilTest {
 
     @Test
     @Tag("IntegrationTest")
-    public void findPair() throws NotationException, HandEvaluatorException {
+    public void findPair() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         assertEquals(BitmaskUtil.PAIR, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcAdTc8d6h4s2c")).getHandType());
         assertEquals(BitmaskUtil.PAIR, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcTcTd8d6h4s2c")).getHandType());
@@ -127,7 +127,7 @@ public class HandEvaluatorUtilTest {
     @Test
     @Tag("IntegrationTest")
     @Tag("RegressionTest")
-    public void findPairKickers() throws NotationException, HandEvaluatorException {
+    public void findPairKickers() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         assertEquals(4, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcQdQh8s6c")).getKickersCount());
         assertEquals(QUEEN_INDEX, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcQdQh8s6c")).getKickers()[0]);
@@ -138,7 +138,7 @@ public class HandEvaluatorUtilTest {
 
     @Test
     @Tag("IntegrationTest")
-    public void findHighCard() throws NotationException, HandEvaluatorException {
+    public void findHighCard() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("Ac8d7h6s4c3d2h"));
         assertEquals(BitmaskUtil.HIGH_CARD, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("AcQdTh8s4c6d2h")).getHandType());
@@ -149,14 +149,14 @@ public class HandEvaluatorUtilTest {
 
     @Test
     @Tag("IntegrationTest")
-    public void findNone() throws NotationException, HandEvaluatorException {
+    public void findNone() throws NotationException {
         final IHandProcessor handProcessor = new TexasHoldemProcessor();
         assertEquals(BitmaskUtil.NONE, HandEvaluatorUtil.evaluate(handProcessor, HandUtil.fromNotation("")).getHandType());
     }
 
     @Test
     @Tag("UnitTest")
-    public void evaluate_processorReturnsNullEvaluation_returnToEmptyEvaluation() throws NotationException, HandEvaluatorException {
+    public void evaluate_processorReturnsNullEvaluation_returnToEmptyEvaluation() throws NotationException {
         final IHandData mockHandData = mock(IHandData.class);
         final List<IEvaluation> constructionEvaluationInstances = new ArrayList<>();
         final Map<IEvaluation, List<?>> constructionEvaluationArgs = new HashMap<>();

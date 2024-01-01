@@ -1,7 +1,5 @@
 package com.antwika.game;
 
-import com.antwika.common.exception.NotationException;
-import com.antwika.common.util.HandUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;

@@ -15,7 +15,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Pots {
     private static final Logger logger = LoggerFactory.getLogger(Pots.class);
@@ -198,7 +197,7 @@ public class Pots {
                             .sorted(Comparator.comparingInt(e -> e.getSeat().getSeatIndex()))
                             .toList();
 
-                    Integer firstWinnerIndexAfterButton = getFirstWinnerIndexAfterButton(buttonAt, seatCount, sortedWinnersBySeatIndex);
+                    int firstWinnerIndexAfterButton = getFirstWinnerIndexAfterButton(buttonAt, seatCount, sortedWinnersBySeatIndex);
 
                     for (int i = 0; i < sortedWinnersBySeatIndex.size(); i += 1) {
                         if (rest == 0) break;

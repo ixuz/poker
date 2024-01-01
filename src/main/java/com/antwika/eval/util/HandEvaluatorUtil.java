@@ -40,7 +40,7 @@ public class HandEvaluatorUtil {
                 .build();
     }
 
-    public static IEvaluation evaluate(IHandProcessor handProcessor, IHand hand) throws HandEvaluatorException {
+    public static IEvaluation evaluate(IHandProcessor handProcessor, IHand hand) {
         return evaluate(handProcessor, hand.getBitmask());
     }
 

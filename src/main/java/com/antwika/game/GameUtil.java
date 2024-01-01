@@ -56,7 +56,7 @@ public class GameUtil {
     }
 
     public static int countAllStacks(Game game) {
-        return game.getSeats().stream().mapToInt(seat -> seat.getStack()).sum();
+        return game.getSeats().stream().mapToInt(Seat::getStack).sum();
     }
 
     public static int countTotalPot(Game game) {

@@ -2,7 +2,6 @@ package com.antwika.game;
 
 import com.antwika.common.exception.NotationException;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 public class GameTest {

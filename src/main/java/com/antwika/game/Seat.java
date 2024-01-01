@@ -3,9 +3,6 @@ package com.antwika.game;
 import lombok.Data;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
 @ToString(onlyExplicitlyIncluded = true)
 public class Seat {

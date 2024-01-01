@@ -3,7 +3,6 @@ package com.antwika.eval.processor;
 import com.antwika.eval.core.IEvaluation;
 import com.antwika.eval.core.IHandData;
 import com.antwika.eval.core.IHandProcessorData;
-import com.antwika.common.exception.BitmaskException;
 import com.antwika.common.exception.NotationException;
 import com.antwika.common.util.BitmaskUtil;
 import com.antwika.eval.util.HandDataUtil;
@@ -63,7 +62,7 @@ public class FlushProcessorTest {
     }
 
     @Test
-    public void process_findsFlush() throws NotationException, BitmaskException {
+    public void process_findsFlush() throws NotationException {
         // Arrange
         try (MockedStatic<HandProcessorDataUtil> staticHandProcessorDataUtil = mockStatic(HandProcessorDataUtil.class)) {
             final FlushProcessor flushProcessor = new FlushProcessor();
@@ -83,7 +82,7 @@ public class FlushProcessorTest {
     }
 
     @Test
-    public void process_doesNotFindFlush() throws NotationException, BitmaskException {
+    public void process_doesNotFindFlush() throws NotationException {
         // Arrange
         try (MockedStatic<HandProcessorDataUtil> staticHandProcessorDataUtil = mockStatic(HandProcessorDataUtil.class)) {
             final FlushProcessor flushProcessor = new FlushProcessor();
