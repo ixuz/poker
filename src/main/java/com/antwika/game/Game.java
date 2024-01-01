@@ -186,14 +186,13 @@ public class Game extends EventHandler {
         final Seat seat = nextSeat(buttonAt, blindIndex, true);
         final Player player = seat.getPlayer();
 
-        int commit = Math.min(seat.getStack(), blindAmount);
-        seat.setStack(seat.getStack() - commit);
-        seat.setCommitted(seat.getCommitted() + commit);
+        int commitAmount = Math.min(seat.getStack(), blindAmount);
+        commit(seat, commitAmount);
 
         actionAt = nextSeat(seat.getSeatIndex(), 0, true).getSeatIndex();
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s: posts blind %d", player.getPlayerName(), commit));
+        sb.append(String.format("%s: posts blind %d", player.getPlayerName(), commitAmount));
         if (seat.getStack() == 0) {
             sb.append(" and is all-in");
         }
@@ -297,67 +296,74 @@ public class Game extends EventHandler {
         final Seat seat = game.getSeat(e.player);
         final int smallestValidRaise = Math.min(totalBet + bigBlind, seat.getStack());
 
-        if (e.action.equals("FOLD")) {
-            seat.setHasFolded(true);
-            logger.info("{}: folds", seat.getPlayer().getPlayerName());
-        } else if (e.action.equals("CHECK")) {
-            logger.info("{}: checks", seat.getPlayer().getPlayerName());
-        } else if (e.action.equals("BET")) {
-            if (e.amount > seat.getStack()) {
-                throw new RuntimeException("Player can not bet a greater amount than his remaining stack!");
+        switch (e.action) {
+            case "FOLD" -> {
+                seat.setHasFolded(true);
+                logger.info("{}: folds", seat.getPlayer().getPlayerName());
             }
-            if (e.amount == 0) {
-                throw new RuntimeException("Player can not bet a zero amount!");
-            }
+            case "CHECK" -> logger.info("{}: checks", seat.getPlayer().getPlayerName());
+            case "BET" -> {
+                if (e.amount > seat.getStack()) {
+                    throw new RuntimeException("Player can not bet a greater amount than his remaining stack!");
+                }
+                if (e.amount == 0) {
+                    throw new RuntimeException("Player can not bet a zero amount!");
+                }
 
-            seat.setCommitted(seat.getCommitted() + e.amount);
-            seat.setStack(seat.getStack() - e.amount);
-            totalBet = seat.getCommitted();
-            lastRaise = e.amount;
-            final StringBuilder sb = new StringBuilder();
-            sb.append(String.format("%s: bets %d", seat.getPlayer().getPlayerName(), e.amount));
-            if (seat.getStack() == 0) {
-                sb.append(" and is all-in");
-            }
-            logger.info(sb.toString());
-        } else if (e.action.equals("RAISE")) {
-            if (e.amount > seat.getStack()) {
-                throw new RuntimeException("Player can not raise a greater amount than his remaining stack!");
-            }
-
-            if (e.amount < smallestValidRaise) {
-                throw new RuntimeException("Player must at least raise by one full big blind, or raise all-in for less");
-            }
-            seat.setCommitted(seat.getCommitted() + e.amount);
-            seat.setStack(seat.getStack() - e.amount);
-            if (seat.getCommitted() > totalBet) {
+                commit(seat, e.amount);
                 totalBet = seat.getCommitted();
                 lastRaise = e.amount;
+                final StringBuilder sb = new StringBuilder();
+                sb.append(String.format("%s: bets %d", seat.getPlayer().getPlayerName(), e.amount));
+                if (seat.getStack() == 0) {
+                    sb.append(" and is all-in");
+                }
+                logger.info(sb.toString());
             }
-            final StringBuilder sb = new StringBuilder();
-            sb.append(String.format("%s: raises to %d", seat.getPlayer().getPlayerName(), seat.getCommitted()));
-            if (seat.getStack() == 0) {
-                sb.append(" and is all-in");
-            }
-            logger.info(sb.toString());
-        } else if (e.action.equals("CALL")) {
-            if (e.amount > seat.getStack()) {
-                throw new RuntimeException("Player can not call a greater amount than his remaining stack!");
-            }
+            case "RAISE" -> {
+                if (e.amount > seat.getStack()) {
+                    throw new RuntimeException("Player can not raise a greater amount than his remaining stack!");
+                }
 
-            seat.setCommitted(seat.getCommitted() + e.amount);
-            seat.setStack(seat.getStack() - e.amount);
-            final StringBuilder sb = new StringBuilder();
-            sb.append(String.format("%s: calls %d", seat.getPlayer().getPlayerName(), e.amount));
-            if (seat.getStack() == 0) {
-                sb.append(" and is all-in");
+                if (e.amount < smallestValidRaise) {
+                    throw new RuntimeException("Player must at least raise by one full big blind, or raise all-in for less");
+                }
+                commit(seat, e.amount);
+                if (seat.getCommitted() > totalBet) {
+                    totalBet = seat.getCommitted();
+                    lastRaise = e.amount;
+                }
+                final StringBuilder sb = new StringBuilder();
+                sb.append(String.format("%s: raises to %d", seat.getPlayer().getPlayerName(), seat.getCommitted()));
+                if (seat.getStack() == 0) {
+                    sb.append(" and is all-in");
+                }
+                logger.info(sb.toString());
             }
-            logger.info(sb.toString());
-        } else {
-            throw new RuntimeException("Player action response unknown");
+            case "CALL" -> {
+                if (e.amount > seat.getStack()) {
+                    throw new RuntimeException("Player can not call a greater amount than his remaining stack!");
+                }
+
+                commit(seat, e.amount);
+                final StringBuilder sb = new StringBuilder();
+                sb.append(String.format("%s: calls %d", seat.getPlayer().getPlayerName(), e.amount));
+                if (seat.getStack() == 0) {
+                    sb.append(" and is all-in");
+                }
+                logger.info(sb.toString());
+            }
+            default -> throw new RuntimeException("Player action response unknown");
         }
 
         seat.setHasActed(true);
+    }
+
+    private void commit(Seat seat, int amount) {
+        if (seat.getStack() < amount) throw new RuntimeException("Commit amount is greater than the available stack");
+        if (amount <= 0) throw new RuntimeException("Commit must be greater than zero");
+        seat.setStack(seat.getStack() - amount);
+        seat.setCommitted(seat.getCommitted() + amount);
     }
 
     public boolean hasAllPlayersActed() {
