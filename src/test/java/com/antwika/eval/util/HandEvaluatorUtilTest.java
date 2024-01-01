@@ -392,35 +392,11 @@ public class HandEvaluatorUtilTest {
     @Disabled
     @Test
     public void test_evaluateAllHands() {
-        long startTime = System.nanoTime();
         long start = 0L;
         long max = 10000000000L;
         long iterations = 0L;
         for (long hand = start; hand < 0b1111111111111111111111111111111111111111111111111111L; hand++, iterations++) {
             if (hand >= max) break;
-
-            /*if (hand % 100000000L == 0) {
-                System.out.println("Iterations: " + iterations);
-            }
-*/
-            if (Long.bitCount(hand) > 7) continue;
-            // Evaluation evaluation = evaluate(hand);
-
-            /* if (hand >= max) break;
-            if (hand % 100000000L == 0) {
-                long currentTime = System.nanoTime();
-                long processed = hand - start;
-                long handRemaining = max - hand;
-                float deltaTimeSecs = ((float)(currentTime - startTime) / 1000L) / 1000f;
-                float processedPerSec = processed/deltaTimeSecs;
-                float estimatedTimeLeftSecs = handRemaining / processedPerSec;
-                float estimatedTimeLeftMins = estimatedTimeLeftSecs / 1000 / 60;
-                System.out.printf("%d/%d (%.1fm hands/sec), hands remaining: %dm, estimated time remaining: %.0fm%n", hand, max, processedPerSec/1000, handRemaining/1000000, estimatedTimeLeftMins);
-            }
-            if (Long.bitCount(hand) > 7) continue;
-            Evaluation evaluation = evaluate(hand); */
-            // String kickers = evaluation.kickers().stream().map(kicker -> "" + kicker).collect(Collectors.joining(","));
-            // System.out.println("Hand: " + Hand.toText(hand) + ", kickers: " + kickers);
         }
     }
 
