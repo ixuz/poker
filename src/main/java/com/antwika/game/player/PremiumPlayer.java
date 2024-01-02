@@ -1,6 +1,5 @@
 package com.antwika.game.player;
 
-import com.antwika.common.util.BitmaskUtil;
 import com.antwika.eval.core.IEvaluation;
 import com.antwika.eval.core.IHandProcessor;
 import com.antwika.eval.processor.TexasHoldemProcessor;
@@ -14,16 +13,12 @@ import com.antwika.game.util.GameDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.antwika.common.util.BitmaskUtil.*;
 
 public class PremiumPlayer extends Player {
     private static final Logger logger = LoggerFactory.getLogger(PremiumPlayer.class);
 
-    private IHandProcessor handProcessor = new TexasHoldemProcessor();
+    private final IHandProcessor handProcessor = new TexasHoldemProcessor();
 
     public PremiumPlayer(long prngSeed, String playerName) {
         super(prngSeed, playerName);

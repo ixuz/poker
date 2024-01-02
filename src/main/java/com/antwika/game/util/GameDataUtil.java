@@ -194,7 +194,7 @@ public class GameDataUtil {
                 .toList()
                 .size();
 
-        return notMatchedBetCount <= 0;
+        return notMatchedBetCount == 0;
     }
 
     public static int getNumberOfPlayersLeftToAct(GameData gameData) {
@@ -306,7 +306,9 @@ public class GameDataUtil {
         long add = 0L;
         final DeckData deckData = gameData.getDeckData();
         for (int i = 0; i < count; i += 1) {
-            add |= DeckUtil.draw(deckData);
+            Long card = DeckUtil.draw(deckData);
+            if (card == null) throw new RuntimeException("The card drawn from the deck is null");
+            add |= card;
         }
 
         gameData.setCards(gameData.getCards() | add);
@@ -346,7 +348,8 @@ public class GameDataUtil {
             final int seatIndex = (gameData.getActionAt() + i + 1) % seats.size();
             final Seat seat = seats.get(seatIndex);
             if (seat.getPlayer() == null) continue;
-            final long card = DeckUtil.draw(deckData);
+            Long card = DeckUtil.draw(deckData);
+            if (card == null) throw new RuntimeException("The card drawn from the deck is null");
             seat.setCards(seat.getCards() | card);
             try {
                 logger.debug("Deal card {} to {}", HandUtil.toNotation(card), seat.getPlayer());

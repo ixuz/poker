@@ -10,11 +10,11 @@ import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Getter
 @ToString(onlyExplicitlyIncluded = true)
 public abstract class Player extends EventHandler {
     private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
-    @Getter
     private final PlayerData playerData;
 
     public Player(long prngSeed, String playerName) {

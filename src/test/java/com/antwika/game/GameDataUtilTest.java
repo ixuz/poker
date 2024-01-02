@@ -2,18 +2,12 @@ package com.antwika.game;
 
 import com.antwika.common.exception.NotationException;
 import com.antwika.game.data.GameData;
-import com.antwika.game.data.Seat;
 import com.antwika.game.player.Player;
 import com.antwika.game.player.PremiumPlayer;
 import com.antwika.game.player.RandomPlayer;
 import com.antwika.game.util.GameDataUtil;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 public class GameDataUtilTest {
     @Test

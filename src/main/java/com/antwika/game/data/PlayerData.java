@@ -8,15 +8,14 @@ import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Getter
 @Data
 @AllArgsConstructor
 public class PlayerData {
     private static final Logger logger = LoggerFactory.getLogger(PlayerData.class);
 
     @ToString.Include
-    @Getter
     private final String playerName;
 
-    @Getter
     private final Prng prng;
 }
