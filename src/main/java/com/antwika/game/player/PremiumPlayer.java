@@ -37,12 +37,12 @@ public class PremiumPlayer extends Player {
                 if (!hasGoodHand(gameData, cards)) {
                     return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.CHECK, 0);
                 }
-                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.BET, GameDataUtil.calcBetSize(gameData, this, 0.75f));
+                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.BET, GameDataUtil.calcBetSize(gameData, this, 1.0f));
             } else {
                 if (!hasGoodHand(gameData, cards)) {
                     return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.FOLD, 0);
                 }
-                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.RAISE, GameDataUtil.calcBetSize(gameData, this, 0.75f));
+                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.RAISE, GameDataUtil.calcBetSize(gameData, this, 1.0f));
             }
         } else {
             return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.FOLD, 0);
