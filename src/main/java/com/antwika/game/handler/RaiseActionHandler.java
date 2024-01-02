@@ -24,9 +24,8 @@ public class RaiseActionHandler implements IActionHandler {
 
         final PlayerActionResponse action = (PlayerActionResponse) event;
 
-        final Game game = action.game;
-        final GameData gameData = game.getGameData();
-        final Seat seat = GameUtil.getSeat(game, action.player);
+        final GameData gameData = action.getGameData();
+        final Seat seat = GameUtil.getSeat(gameData, action.player);
         if (action.amount > seat.getStack()) {
             throw new RuntimeException("Player can not raise a greater amount than his remaining stack!");
         }

@@ -1,7 +1,7 @@
 package com.antwika.game.log;
 
 import com.antwika.common.exception.NotationException;
-import com.antwika.game.Game;
+import com.antwika.game.data.GameData;
 import com.antwika.game.player.Player;
 import com.antwika.game.data.Seat;
 import com.antwika.game.util.GameUtil;
@@ -13,24 +13,24 @@ import java.util.Date;
 public class GameLog {
     private static final Logger logger = LoggerFactory.getLogger(GameLog.class);
 
-    public static void printGameInfo(Game game) {
+    public static void printGameInfo(GameData gameData) {
         logger.info("Poker Hand #{}: {} ({}/{}) - {}",
-                game.getGameData().getHandId(),
-                game.getGameData().getGameType(),
-                game.getGameData().getSmallBlind(),
-                game.getGameData().getBigBlind(),
+                gameData.getHandId(),
+                gameData.getGameType(),
+                gameData.getSmallBlind(),
+                gameData.getBigBlind(),
                 new Date());
     }
 
-    public static void printTableInfo(Game game) {
+    public static void printTableInfo(GameData gameData) {
         logger.info("Table '{}' {}-max Seat #{} is the button",
-                game.getGameData().getTableName(),
-                game.getGameData().getSeats().size(),
-                game.getGameData().getButtonAt() + 1);
+                gameData.getTableName(),
+                gameData.getSeats().size(),
+                gameData.getButtonAt() + 1);
     }
 
-    public static void printTableSeatsInfo(Game game) {
-        for (Seat seat : game.getGameData().getSeats()) {
+    public static void printTableSeatsInfo(GameData gameData) {
+        for (Seat seat : gameData.getSeats()) {
             if (seat.getPlayer() == null) continue;
 
             logger.info("Seat {}: {} ({} in chips) ",
@@ -40,8 +40,8 @@ public class GameLog {
         }
     }
 
-    public static void printTableSeatCardsInfo(Game game) throws NotationException {
-        for (Seat seat : game.getGameData().getSeats()) {
+    public static void printTableSeatCardsInfo(GameData gameData) throws NotationException {
+        for (Seat seat : gameData.getSeats()) {
             if (seat.getPlayer() == null) continue;
 
             final long cards = seat.getCards();
@@ -52,13 +52,13 @@ public class GameLog {
         }
     }
 
-    public static void printSummary(Game game) throws NotationException {
+    public static void printSummary(GameData gameData) throws NotationException {
         logger.info("*** SUMMARY ***");
-        logger.info("Total pot {} | Rake {}", game.getGameData().getDelivered(), 0);
-        logger.info("Board [{}]", GameUtil.toNotation(game.getGameData().getCards()));
+        logger.info("Total pot {} | Rake {}", gameData.getDelivered(), 0);
+        logger.info("Board [{}]", GameUtil.toNotation(gameData.getCards()));
 
         int chipsInPlay = 0;
-        for (Seat seat : game.getGameData().getSeats()) {
+        for (Seat seat : gameData.getSeats()) {
             if (seat.getPlayer() == null) continue;
 
             chipsInPlay += seat.getStack();

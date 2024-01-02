@@ -1,6 +1,7 @@
 package com.antwika.game.handler;
 
 import com.antwika.game.*;
+import com.antwika.game.data.GameData;
 import com.antwika.game.data.Seat;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.PlayerActionResponse;
@@ -23,8 +24,8 @@ public class BetActionHandler implements IActionHandler {
 
         final PlayerActionResponse action = (PlayerActionResponse) event;
 
-        final Game game = action.game;
-        final Seat seat = GameUtil.getSeat(game, action.player);
+        final GameData gameData = action.getGameData();
+        final Seat seat = GameUtil.getSeat(gameData, action.player);
         if (action.amount > seat.getStack()) {
             throw new RuntimeException("Player can not bet a greater amount than his remaining stack!");
         }
@@ -33,8 +34,8 @@ public class BetActionHandler implements IActionHandler {
         }
 
         GameUtil.commit(seat, action.amount);
-        game.getGameData().setTotalBet(seat.getCommitted());
-        game.getGameData().setLastRaise(action.amount);
+        gameData.setTotalBet(seat.getCommitted());
+        gameData.setLastRaise(action.amount);
         final StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s: bets %d", seat.getPlayer().getPlayerData().getPlayerName(), action.amount));
         if (seat.getStack() == 0) {

@@ -1,6 +1,7 @@
 package com.antwika.game.handler;
 
 import com.antwika.game.*;
+import com.antwika.game.data.GameData;
 import com.antwika.game.data.Seat;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.PlayerActionResponse;
@@ -23,8 +24,8 @@ public class CheckActionHandler implements IActionHandler {
 
         final PlayerActionResponse action = (PlayerActionResponse) event;
 
-        final Game game = action.game;
-        final Seat seat = GameUtil.getSeat(game, action.player);
+        final GameData gameData = action.getGameData();
+        final Seat seat = GameUtil.getSeat(gameData, action.player);
         seat.setHasActed(true);
         logger.info("{}: checks", seat.getPlayer().getPlayerData().getPlayerName());
         seat.setHasActed(true);

@@ -1,7 +1,7 @@
 package com.antwika.game.player;
 
-import com.antwika.game.Game;
 import com.antwika.game.common.Prng;
+import com.antwika.game.data.GameData;
 import com.antwika.game.data.PlayerData;
 import com.antwika.game.data.Seat;
 import com.antwika.game.event.IEvent;
@@ -40,34 +40,34 @@ public class Player extends EventHandler {
 
         int rand = getPlayerData().getPrng().nextInt(100);
 
-        final Game game = event.getGame();
-        final Seat seat = GameUtil.getSeat(game, this);
+        final GameData gameData = event.getGameData();
+        final Seat seat = GameUtil.getSeat(gameData, this);
         boolean canRaise = event.getToCall() < seat.getStack();
 
         if (event.getToCall() == 0) {
             if (rand < 75) {
-                return new PlayerActionResponse(this, game, PlayerActionResponse.Type.CHECK, 0);
+                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.CHECK, 0);
             } else {
-                return new PlayerActionResponse(this, game, PlayerActionResponse.Type.BET, calcBetSize(game, this, 0.75f));
+                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.BET, calcBetSize(gameData, this, 0.75f));
             }
         } else {
             if (rand < 50) {
-                return new PlayerActionResponse(this, game, PlayerActionResponse.Type.FOLD, 0);
+                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.FOLD, 0);
             } else if (canRaise && rand < 75) {
-                return new PlayerActionResponse(this, game, PlayerActionResponse.Type.RAISE, calcBetSize(game, this, 0.75f));
+                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.RAISE, calcBetSize(gameData, this, 0.75f));
             } else {
-                return new PlayerActionResponse(this, game, PlayerActionResponse.Type.CALL, event.getToCall());
+                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.CALL, event.getToCall());
             }
         }
     }
 
-    public static int calcBetSize(Game game, Player player, float betSizePercent) {
-        final Seat seat = GameUtil.getSeat(game, player);
-        int lastRaise = game.getGameData().getLastRaise();
-        int totalPot = GameUtil.countTotalPotAndCommitted(game);
+    public static int calcBetSize(GameData gameData, Player player, float betSizePercent) {
+        final Seat seat = GameUtil.getSeat(gameData, player);
+        int lastRaise = gameData.getLastRaise();
+        int totalPot = GameUtil.countTotalPotAndCommitted(gameData);
         int deadMoney = totalPot - lastRaise;
         int desiredBet = (int) ((lastRaise * 3 + deadMoney) * betSizePercent);
-        int minimumBet = Math.min(seat.getStack(), game.getGameData().getBigBlind());
+        int minimumBet = Math.min(seat.getStack(), gameData.getBigBlind());
         int bet = Math.max(desiredBet, minimumBet);
         return Math.min(seat.getStack(), bet);
     }
