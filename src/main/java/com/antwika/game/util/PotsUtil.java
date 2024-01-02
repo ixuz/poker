@@ -1,10 +1,14 @@
-package com.antwika.game;
+package com.antwika.game.util;
 
 import com.antwika.eval.core.IEvaluation;
 import com.antwika.eval.core.IHandProcessor;
 import com.antwika.eval.exception.HandEvaluatorException;
 import com.antwika.eval.processor.TexasHoldemProcessor;
 import com.antwika.eval.util.HandEvaluatorUtil;
+import com.antwika.game.data.CandidateData;
+import com.antwika.game.Player;
+import com.antwika.game.data.Pot;
+import com.antwika.game.data.Seat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.slf4j.Logger;
@@ -16,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Pots {
-    private static final Logger logger = LoggerFactory.getLogger(Pots.class);
+public class PotsUtil {
+    private static final Logger logger = LoggerFactory.getLogger(PotsUtil.class);
 
     public static List<Pot> collectBets(List<Seat> seats) {
         final List<Pot> pots = new ArrayList<>();
@@ -29,14 +33,14 @@ public class Pots {
 
         while (!sorted.isEmpty()) {
             int potAmount = 0;
-            final List<Candidate> candidates = new ArrayList<>();
+            final List<CandidateData> candidates = new ArrayList<>();
             for (int i = 0; i < sorted.size(); i += 1) {
                 final Seat seat = sorted.get(i);
                 if (i == 0) {
                     potAmount = seat.getCommitted();
                 }
 
-                candidates.add(new Candidate(seat, potAmount));
+                candidates.add(new CandidateData(seat, potAmount));
                 seat.setCommitted(seat.getCommitted() - potAmount);
             }
 
@@ -50,13 +54,13 @@ public class Pots {
             final Pot lastSidePot = pots.get(lastSidePotIndex);
 
             if (lastSidePot.getCandidates().size() == 1) {
-                final Candidate candidate = lastSidePot.getCandidates().get(0);
+                final CandidateData candidate = lastSidePot.getCandidates().get(0);
                 final Seat seat = candidate.getSeat();
                 final Player player = seat.getPlayer();
                 final int amount = lastSidePot.getTotalAmount();
                 seat.setStack(seat.getStack() + amount);
                 pots.remove(lastSidePot);
-                logger.info("Uncalled bet ({}) returned to {}", lastSidePot.getTotalAmount(), player.getPlayerName());
+                logger.info("Uncalled bet ({}) returned to {}", lastSidePot.getTotalAmount(), player.getPlayerData().getPlayerName());
             }
         }
 
@@ -64,8 +68,8 @@ public class Pots {
     }
 
     public static boolean hasSameCandidates(Pot pot1, Pot pot2) {
-        final List<Seat> potCandidates1 = pot1.getCandidates().stream().map(Candidate::getSeat).filter(i -> !i.isHasFolded()).toList();
-        final List<Seat> potCandidates2 = pot2.getCandidates().stream().map(Candidate::getSeat).filter(i -> !i.isHasFolded()).toList();
+        final List<Seat> potCandidates1 = pot1.getCandidates().stream().map(CandidateData::getSeat).filter(i -> !i.isHasFolded()).toList();
+        final List<Seat> potCandidates2 = pot2.getCandidates().stream().map(CandidateData::getSeat).filter(i -> !i.isHasFolded()).toList();
 
         if (potCandidates1.size() != potCandidates2.size()) return false;
 
@@ -79,9 +83,9 @@ public class Pots {
         final List<Pot> collapsed = new ArrayList<>();
 
         for (Pot pot : pots) {
-            final List<Candidate> ineligible = new ArrayList<>();
-            final List<Candidate> eligible = new ArrayList<>(pot.getCandidates());
-            for (Candidate candidate : pot.getCandidates()) {
+            final List<CandidateData> ineligible = new ArrayList<>();
+            final List<CandidateData> eligible = new ArrayList<>(pot.getCandidates());
+            for (CandidateData candidate : pot.getCandidates()) {
                 if (candidate.getSeat().isHasFolded()) {
                     ineligible.add(candidate);
                 }
@@ -103,8 +107,8 @@ public class Pots {
             nextPot.setTotalAmount(nextPot.getTotalAmount() + currentPot.getTotalAmount());
             nextPot.setAmountPerCandidate(nextPot.getAmountPerCandidate() + currentPot.getAmountPerCandidate());
 
-            for (Candidate nextPotCandidate : nextPot.getCandidates()) {
-                for (Candidate currentPotCandidate : currentPot.getCandidates()) {
+            for (CandidateData nextPotCandidate : nextPot.getCandidates()) {
+                for (CandidateData currentPotCandidate : currentPot.getCandidates()) {
                     if (currentPotCandidate.getSeat() == nextPotCandidate.getSeat()) {
                         nextPotCandidate.setAmount(nextPotCandidate.getAmount() + currentPotCandidate.getAmount());
                     }
@@ -129,24 +133,24 @@ public class Pots {
     @Data
     @AllArgsConstructor
     public static class CandidateEvaluation {
-        private Candidate candidate;
+        private CandidateData candidate;
         private IEvaluation evaluation;
         private String groupId;
     }
 
-    public static List<Candidate> determineWinners(List<Pot> pots, long communityCards, int buttonAt, int seatCount) {
+    public static List<CandidateData> determineWinners(List<Pot> pots, long communityCards, int buttonAt, int seatCount) {
         final List<Pot> potsCopy = new ArrayList<>(pots);
         final List<Pot> collapsedPots = collapsePots(potsCopy);
 
         final IHandProcessor processor = new TexasHoldemProcessor();
 
-        final List<Candidate> winners = new ArrayList<>();
+        final List<CandidateData> winners = new ArrayList<>();
 
         int potIndex = -1;
         while (!collapsedPots.isEmpty()) {
             potIndex += 1;
             final Pot pot = collapsedPots.remove(0);
-            final List<Candidate> candidates = pot.getCandidates().stream().filter(i -> !i.getSeat().isHasFolded()).toList();
+            final List<CandidateData> candidates = pot.getCandidates().stream().filter(i -> !i.getSeat().isHasFolded()).toList();
 
             final List<CandidateEvaluation> evaluations = candidates.stream()
                     .map(i -> {
@@ -178,11 +182,11 @@ public class Pots {
                 int portion = remainingPot / winnerCount;
                 int rest = remainingPot - portion * winnerCount;
 
-                List<Candidate> groupWinners = new ArrayList<>();
+                List<CandidateData> groupWinners = new ArrayList<>();
                 for (CandidateEvaluation e : group) {
                     delivered += portion;
 
-                    final Candidate candidate = new Candidate(e.candidate.getSeat(), portion);
+                    final CandidateData candidate = new CandidateData(e.candidate.getSeat(), portion);
 
                     if (potIndex == 0) candidate.setPotName("Main pot");
                     else candidate.setPotName("Side pot #" + potIndex);
@@ -191,7 +195,7 @@ public class Pots {
                 }
 
                 if (rest > 0) {
-                    final List<Candidate> sortedWinnersBySeatIndex = groupWinners.stream()
+                    final List<CandidateData> sortedWinnersBySeatIndex = groupWinners.stream()
                             .sorted(Comparator.comparingInt(e -> e.getSeat().getSeatIndex()))
                             .toList();
 
@@ -202,7 +206,7 @@ public class Pots {
                         if (rest < 0) throw new RuntimeException("The rest pot must never be negative");
 
                         final int seatIndex = (firstWinnerIndexAfterButton + i) % sortedWinnersBySeatIndex.size();
-                        final Candidate aWinner = sortedWinnersBySeatIndex.get(seatIndex);
+                        final CandidateData aWinner = sortedWinnersBySeatIndex.get(seatIndex);
 
                         aWinner.setAmount(aWinner.getAmount() + 1);
                         delivered += 1;
@@ -219,10 +223,10 @@ public class Pots {
         return winners;
     }
 
-    private static Integer getFirstWinnerIndexAfterButton(int buttonAt, int seatCount, List<Candidate> sortedWinnersBySeatIndex) {
+    private static Integer getFirstWinnerIndexAfterButton(int buttonAt, int seatCount, List<CandidateData> sortedWinnersBySeatIndex) {
         Integer firstWinnerIndexAfterButton = null;
         for (int i = 0; i < sortedWinnersBySeatIndex.size(); i += 1) {
-            final Candidate aWinner = sortedWinnersBySeatIndex.get(i);
+            final CandidateData aWinner = sortedWinnersBySeatIndex.get(i);
             final int seatIndex = aWinner.getSeat().getSeatIndex();
             int seatIndexAfterButton = (buttonAt + 1) % seatCount;
             if (seatIndex >= seatIndexAfterButton) {

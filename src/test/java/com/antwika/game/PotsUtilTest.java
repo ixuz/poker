@@ -2,6 +2,10 @@ package com.antwika.game;
 
 import com.antwika.common.exception.NotationException;
 import com.antwika.common.util.HandUtil;
+import com.antwika.game.data.CandidateData;
+import com.antwika.game.data.Pot;
+import com.antwika.game.data.Seat;
+import com.antwika.game.util.PotsUtil;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,15 +16,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PotsTest {
-    private static final Logger logger = LoggerFactory.getLogger(PotsTest.class);
+public class PotsUtilTest {
+    private static final Logger logger = LoggerFactory.getLogger(PotsUtilTest.class);
     @Test
     public void collectBets_whenNoCandidates_noPots() {
         // Arrange
         final List<Seat> seats = List.of();
 
         // Act
-        final List<Pot> pots = Pots.collectBets(seats);
+        final List<Pot> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(0, pots.size());
@@ -38,7 +42,7 @@ public class PotsTest {
         final List<Seat> seats = List.of(seat1, seat2);
 
         // Act
-        final List<Pot> pots = Pots.collectBets(seats);
+        final List<Pot> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(0, pots.size());
@@ -54,7 +58,7 @@ public class PotsTest {
         final List<Seat> seats = List.of(seat1);
 
         // Act
-        final List<Pot> pots = Pots.collectBets(seats);
+        final List<Pot> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(0, pots.size());
@@ -75,7 +79,7 @@ public class PotsTest {
         final List<Seat> seats = List.of(seat1, seat2);
 
         // Act
-        final List<Pot> pots = Pots.collectBets(seats);
+        final List<Pot> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(1, pots.size());
@@ -103,7 +107,7 @@ public class PotsTest {
         final List<Seat> seats = List.of(seat1, seat2, seat3);
 
         // Act
-        final List<Pot> pots = Pots.collectBets(seats);
+        final List<Pot> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(1, pots.size());
@@ -132,7 +136,7 @@ public class PotsTest {
         final List<Seat> seats = List.of(seat1, seat2, seat3);
 
         // Act
-        final List<Pot> pots = Pots.collectBets(seats);
+        final List<Pot> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(2, pots.size());
@@ -171,7 +175,7 @@ public class PotsTest {
         final List<Seat> seats = List.of(seat1, seat2, seat3, seat4);
 
         // Act
-        final List<Pot> pots = Pots.collectBets(seats);
+        final List<Pot> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(2, pots.size());
@@ -211,7 +215,7 @@ public class PotsTest {
         final List<Seat> seats = List.of(seat1, seat2, seat3, seat4);
 
         // Act
-        final List<Pot> pots = Pots.collectBets(seats);
+        final List<Pot> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(3, pots.size());
@@ -247,7 +251,7 @@ public class PotsTest {
         final List<Pot> pots = List.of();
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 10);
+        final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 10);
 
         // Assert
         assertEquals(0, winners.size());
@@ -259,7 +263,7 @@ public class PotsTest {
         final List<Pot> pots = List.of(new Pot(1, List.of()));
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 10);
+        final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 10);
 
         // Assert
         assertEquals(0, winners.size());
@@ -271,11 +275,11 @@ public class PotsTest {
         final Seat seat1 = new Seat();
         seat1.setSeatIndex(0);
         seat1.setCards(HandUtil.fromNotation("AcQd").getBitmask());
-        final List<Candidate> candidates = List.of(new Candidate(seat1, 1));
+        final List<CandidateData> candidates = List.of(new CandidateData(seat1, 1));
         final List<Pot> pots = List.of(new Pot(1, candidates));
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 1);
+        final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 1);
 
         // Assert
         assertEquals(1, winners.size());
@@ -292,14 +296,14 @@ public class PotsTest {
         final Seat seat2 = new Seat();
         seat2.setSeatIndex(1);
         seat2.setCards(HandUtil.fromNotation("AhJs").getBitmask());
-        final List<Candidate> candidates = List.of(
-                new Candidate(seat1, 1),
-                new Candidate(seat2, 1)
+        final List<CandidateData> candidates = List.of(
+                new CandidateData(seat1, 1),
+                new CandidateData(seat2, 1)
         );
         final List<Pot> pots = List.of(new Pot(1, candidates));
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
+        final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
 
         // Assert
         assertEquals(1, winners.size());
@@ -316,14 +320,14 @@ public class PotsTest {
         final Seat seat2 = new Seat();
         seat2.setSeatIndex(1);
         seat2.setCards(HandUtil.fromNotation("AhAs").getBitmask());
-        final List<Candidate> candidates = List.of(
-                new Candidate(seat1, 1),
-                new Candidate(seat2, 1)
+        final List<CandidateData> candidates = List.of(
+                new CandidateData(seat1, 1),
+                new CandidateData(seat2, 1)
         );
         final List<Pot> pots = List.of(new Pot(1, candidates));
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
+        final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
 
         // Assert
         assertEquals(2, winners.size());
@@ -350,21 +354,21 @@ public class PotsTest {
         final List<Pot> pots = List.of(
                 new Pot(1,
                         List.of(
-                                new Candidate(seat1, 1),
-                                new Candidate(seat2, 1),
-                                new Candidate(seat3, 1)
+                                new CandidateData(seat1, 1),
+                                new CandidateData(seat2, 1),
+                                new CandidateData(seat3, 1)
                         )
                 ),
                 new Pot(4,
                         List.of(
-                                new Candidate(seat2, 4),
-                                new Candidate(seat3, 4)
+                                new CandidateData(seat2, 4),
+                                new CandidateData(seat3, 4)
                         )
                 )
         );
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 3);
+        final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 3);
 
         // Assert
         assertEquals(2, winners.size());
@@ -400,33 +404,33 @@ public class PotsTest {
         final List<Pot> pots = List.of(
                 new Pot(1,
                         List.of(
-                                new Candidate(seat1, 1),
-                                new Candidate(seat2, 1),
-                                new Candidate(seat3, 1),
-                                new Candidate(seat4, 1),
-                                new Candidate(seat5, 1),
-                                new Candidate(seat6, 1)
+                                new CandidateData(seat1, 1),
+                                new CandidateData(seat2, 1),
+                                new CandidateData(seat3, 1),
+                                new CandidateData(seat4, 1),
+                                new CandidateData(seat5, 1),
+                                new CandidateData(seat6, 1)
                         )
                 ),
                 new Pot(4,
                         List.of(
-                                new Candidate(seat2, 4),
-                                new Candidate(seat3, 4),
-                                new Candidate(seat4, 4),
-                                new Candidate(seat5, 4),
-                                new Candidate(seat6, 4)
+                                new CandidateData(seat2, 4),
+                                new CandidateData(seat3, 4),
+                                new CandidateData(seat4, 4),
+                                new CandidateData(seat5, 4),
+                                new CandidateData(seat6, 4)
                         )
                 ),
                 new Pot(6,
                         List.of(
-                                new Candidate(seat5, 6),
-                                new Candidate(seat6, 6)
+                                new CandidateData(seat5, 6),
+                                new CandidateData(seat6, 6)
                         )
                 )
         );
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 6);
+        final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 6);
 
         // Assert
         assertEquals(5, winners.size());
@@ -485,7 +489,7 @@ public class PotsTest {
         seat4.setCommitted(seat4.getCommitted() + 80); // CO: Call
 
         // Collect
-        pots.addAll(Pots.collectBets(seats));
+        pots.addAll(PotsUtil.collectBets(seats));
         assertEquals(0, seat1.getCommitted());
         assertEquals(0, seat2.getCommitted());
         assertEquals(0, seat3.getCommitted());
@@ -503,7 +507,7 @@ public class PotsTest {
         seat3.setCommitted(seat3.getCommitted() + 400); // BB: Call (all-in)
 
         // Collect
-        pots.addAll(Pots.collectBets(seats));
+        pots.addAll(PotsUtil.collectBets(seats));
         assertEquals(0, seat1.getCommitted());
         assertEquals(0, seat2.getCommitted());
         assertEquals(0, seat3.getCommitted());
@@ -520,7 +524,7 @@ public class PotsTest {
         assertEquals(300, pots.get(3).getTotalAmount());
 
         // Determine winnings
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 4);
+        final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 4);
 
         assertEquals(3, winners.size());
 
@@ -532,7 +536,7 @@ public class PotsTest {
         assertEquals(seat3, winners.get(2).getSeat());
 
         // Deliver winnings
-        for (Candidate candidate : winners) {
+        for (CandidateData candidate : winners) {
             logger.info("Seat #{} won {}", candidate.getSeat().getSeatIndex(), candidate.getAmount());
         }
     }
@@ -540,15 +544,15 @@ public class PotsTest {
     @Test
     public void equality() {
         final Seat seat = new Seat();
-        final Candidate candidate1 = new Candidate(seat, 100);
-        final Candidate candidate2 = new Candidate(seat, 100);
-        final Candidate candidate3 = new Candidate(seat, 200);
-        final Candidate candidate4 = new Candidate(seat, 200);
-        final List<Candidate> candidates1 = List.of(candidate1, candidate2);
-        final List<Candidate> candidates2 = List.of(candidate3, candidate4);
+        final CandidateData candidate1 = new CandidateData(seat, 100);
+        final CandidateData candidate2 = new CandidateData(seat, 100);
+        final CandidateData candidate3 = new CandidateData(seat, 200);
+        final CandidateData candidate4 = new CandidateData(seat, 200);
+        final List<CandidateData> candidates1 = List.of(candidate1, candidate2);
+        final List<CandidateData> candidates2 = List.of(candidate3, candidate4);
         final Pot pot1 = new Pot(200, candidates1);
         final Pot pot2 = new Pot(200, candidates2);
-        assertTrue(Pots.hasSameCandidates(pot1, pot2));
+        assertTrue(PotsUtil.hasSameCandidates(pot1, pot2));
     }
 
     @Test
@@ -560,18 +564,18 @@ public class PotsTest {
 
         final List<Pot> pots = List.of(
                 new Pot(100, List.of(
-                        new Candidate(seat1, 100),
-                        new Candidate(seat2, 100)
+                        new CandidateData(seat1, 100),
+                        new CandidateData(seat2, 100)
                 )),
                 new Pot(250, List.of(
-                        new Candidate(seat1, 250),
-                        new Candidate(seat2, 250),
-                        new Candidate(seat3, 250)
+                        new CandidateData(seat1, 250),
+                        new CandidateData(seat2, 250),
+                        new CandidateData(seat3, 250)
                 ))
         );
 
         // Act
-        final List<Pot> collapsed = Pots.collapsePots(pots);
+        final List<Pot> collapsed = PotsUtil.collapsePots(pots);
 
         // Assert
         assertEquals(2, collapsed.size());
@@ -589,17 +593,17 @@ public class PotsTest {
 
         final List<Pot> pots = List.of(
                 new Pot(100, List.of(
-                        new Candidate(seat1, 100),
-                        new Candidate(seat2, 100)
+                        new CandidateData(seat1, 100),
+                        new CandidateData(seat2, 100)
                 )),
                 new Pot(250, List.of(
-                        new Candidate(seat1, 250),
-                        new Candidate(seat2, 250)
+                        new CandidateData(seat1, 250),
+                        new CandidateData(seat2, 250)
                 ))
         );
 
         // Act
-        final List<Pot> collapsed = Pots.collapsePots(pots);
+        final List<Pot> collapsed = PotsUtil.collapsePots(pots);
 
         // Assert
         assertEquals(1, collapsed.size());
@@ -616,13 +620,13 @@ public class PotsTest {
         final Seat seat2 = new Seat();
         seat2.setSeatIndex(1);
         seat2.setCards(HandUtil.fromNotation("AhAs").getBitmask());
-        final List<Candidate> candidates1 = List.of(
-                new Candidate(seat1, 1),
-                new Candidate(seat2, 1)
+        final List<CandidateData> candidates1 = List.of(
+                new CandidateData(seat1, 1),
+                new CandidateData(seat2, 1)
         );
-        final List<Candidate> candidates2 = List.of(
-                new Candidate(seat1, 2),
-                new Candidate(seat2, 2)
+        final List<CandidateData> candidates2 = List.of(
+                new CandidateData(seat1, 2),
+                new CandidateData(seat2, 2)
         );
         final List<Pot> pots = List.of(
                 new Pot(1, candidates1),
@@ -630,7 +634,7 @@ public class PotsTest {
         );
 
         // Act
-        final List<Candidate> winners = Pots.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
+        final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
 
         // Assert
         assertEquals(2, winners.size());

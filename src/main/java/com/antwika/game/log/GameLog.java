@@ -1,6 +1,10 @@
-package com.antwika.game;
+package com.antwika.game.log;
 
 import com.antwika.common.exception.NotationException;
+import com.antwika.game.Game;
+import com.antwika.game.Player;
+import com.antwika.game.data.Seat;
+import com.antwika.game.util.GameUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +35,7 @@ public class GameLog {
 
             logger.info("Seat {}: {} ({} in chips) ",
                     seat.getSeatIndex() + 1,
-                    seat.getPlayer().getPlayerName(),
+                    seat.getPlayer().getPlayerData().getPlayerName(),
                     seat.getStack());
         }
     }
@@ -44,7 +48,7 @@ public class GameLog {
 
             if (Long.bitCount(cards) != 2) throw new RuntimeException("Unexpected number of cards after deal");
 
-            logger.info("Dealt to {} [{}]", seat.getPlayer().getPlayerName(), GameUtil.toNotation(seat.getCards()));
+            logger.info("Dealt to {} [{}]", seat.getPlayer().getPlayerData().getPlayerName(), GameUtil.toNotation(seat.getCards()));
         }
     }
 
@@ -63,7 +67,7 @@ public class GameLog {
 
             logger.info("Seat {}: {} stack {}",
                     seat.getSeatIndex(),
-                    player.getPlayerName(),
+                    player.getPlayerData().getPlayerName(),
                     seat.getStack());
         }
         logger.info("Total chips in play {}", chipsInPlay);

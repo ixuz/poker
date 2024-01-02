@@ -1,5 +1,6 @@
 package com.antwika.game;
 
+import com.antwika.game.common.Prng;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

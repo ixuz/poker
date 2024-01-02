@@ -1,4 +1,4 @@
-package com.antwika.game;
+package com.antwika.game.event;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,14 +9,14 @@ import java.util.concurrent.TimeUnit;
 
 public class EventHandler extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(EventHandler.class);
-    private final BlockingQueue<Event> events = new LinkedBlockingQueue<>();
+    private final BlockingQueue<IEvent> events = new LinkedBlockingQueue<>();
     private boolean running = false;
 
-    public synchronized boolean offer(Event event) throws InterruptedException {
+    public synchronized boolean offer(IEvent event) throws InterruptedException {
         return events.offer(event, 1L, TimeUnit.SECONDS);
     }
 
-    public synchronized Event handle(Event event) {
+    public synchronized IEvent handle(IEvent event) {
         return null;
     }
 

@@ -1,5 +1,13 @@
 package com.antwika.game;
 
+import com.antwika.game.common.Prng;
+import com.antwika.game.data.PlayerData;
+import com.antwika.game.data.Seat;
+import com.antwika.game.event.IEvent;
+import com.antwika.game.event.EventHandler;
+import com.antwika.game.event.PlayerActionRequest;
+import com.antwika.game.event.PlayerActionResponse;
+import com.antwika.game.util.GameUtil;
 import lombok.Getter;
 import lombok.ToString;
 import org.slf4j.Logger;
@@ -9,20 +17,15 @@ import org.slf4j.LoggerFactory;
 public class Player extends EventHandler {
     private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
-    @ToString.Include
     @Getter
-    private final String playerName;
-
-    @Getter
-    private final Prng prng;
+    private final PlayerData playerData;
 
     public Player(long prngSeed, String playerName) {
-        this.prng = new Prng(prngSeed);
-        this.playerName = playerName;
+        this.playerData = new PlayerData(playerName, new Prng(prngSeed));
     }
 
     @Override
-    public synchronized Event handle(Event event) {
+    public synchronized IEvent handle(IEvent event) {
         if (event instanceof PlayerActionRequest e) {
             return onPlayerActionRequest(e);
         }
@@ -30,11 +33,11 @@ public class Player extends EventHandler {
         return null;
     }
 
-    private Event onPlayerActionRequest(PlayerActionRequest event) {
+    private IEvent onPlayerActionRequest(PlayerActionRequest event) {
         if (event.getPlayer() != this) return null;
         logger.debug("event: { toCall: {}, minBet: {}, minRaise: {} }", event.getToCall(), event.getMinBet(), event.getMinRaise());
 
-        int rand = prng.nextInt(100);
+        int rand = getPlayerData().getPrng().nextInt(100);
 
         final Game game = event.getGame();
         final Seat seat = GameUtil.getSeat(game, this);

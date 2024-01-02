@@ -1,4 +1,4 @@
-package com.antwika.game;
+package com.antwika.game.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

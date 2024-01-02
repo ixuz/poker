@@ -1,8 +1,8 @@
 package com.antwika.game.handler;
 
-import com.antwika.game.Event;
+import com.antwika.game.event.IEvent;
 
 public interface IActionHandler {
-    boolean canHandle(Event event);
-    void handle(Event event);
+    boolean canHandle(IEvent event);
+    void handle(IEvent event);
 }

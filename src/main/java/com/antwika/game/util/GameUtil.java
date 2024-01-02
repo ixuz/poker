@@ -1,8 +1,16 @@
-package com.antwika.game;
+package com.antwika.game.util;
 
 import com.antwika.common.exception.NotationException;
 import com.antwika.common.util.BitmaskUtil;
 import com.antwika.common.util.HandUtil;
+import com.antwika.game.*;
+import com.antwika.game.data.CandidateData;
+import com.antwika.game.data.Pot;
+import com.antwika.game.data.Seat;
+import com.antwika.game.event.IEvent;
+import com.antwika.game.event.PlayerActionRequest;
+import com.antwika.game.handler.ActionHandler;
+import com.antwika.game.log.GameLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +39,7 @@ public class GameUtil {
         seat.setPlayer(player);
         seat.setStack(buyIn);
 
-        logger.info("{}: joined the game at seat #{}", player.getPlayerName(), seat.getSeatIndex() + 1);
+        logger.info("{}: joined the game at seat #{}", player.getPlayerData().getPlayerName(), seat.getSeatIndex() + 1);
     }
 
     public static void seat(Game game, Player player, int buyIn) {
@@ -99,7 +107,7 @@ public class GameUtil {
         seat.setPlayer(null);
         seat.setStack(0);
         if (player != null) {
-            logger.info("{}: left the game", player.getPlayerName());
+            logger.info("{}: left the game", player.getPlayerData().getPlayerName());
         }
     }
 
@@ -250,7 +258,7 @@ public class GameUtil {
         game.getGameData().setActionAt(GameUtil.findNextSeatToAct(game, seat.getSeatIndex(), 0, true).getSeatIndex());
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s: posts %s %d", player.getPlayerName(), getBlindName(blindIndex), commitAmount));
+        sb.append(String.format("%s: posts %s %d", player.getPlayerData().getPlayerName(), getBlindName(blindIndex), commitAmount));
         if (seat.getStack() == 0) {
             sb.append(" and is all-in");
         }
@@ -384,9 +392,9 @@ public class GameUtil {
                 break;
             }
 
-            final Event response = player.handle(new PlayerActionRequest(player, game, totalBet, toCall, minBet, smallestValidRaise));
+            final IEvent response = player.handle(new PlayerActionRequest(player, game, totalBet, toCall, minBet, smallestValidRaise));
 
-            game.handleEvent(response);
+            ActionHandler.handleEvent(response);
 
             if (GameUtil.hasAllPlayersActed(game)) {
                 break;
@@ -405,7 +413,7 @@ public class GameUtil {
 
     public static void collect(Game game) {
         final List<Seat> seats = game.getGameData().getSeats();
-        game.getGameData().getPots().addAll(Pots.collectBets(seats));
+        game.getGameData().getPots().addAll(PotsUtil.collectBets(seats));
 
         game.getGameData().setLastRaise(0);
         game.getGameData().setTotalBet(0);
@@ -424,10 +432,10 @@ public class GameUtil {
         final List<Seat> seats = game.getGameData().getSeats();
 
         logger.debug("Showdown");
-        final List<Pot> collapsed = Pots.collapsePots(pots);
-        final List<Candidate> winners = Pots.determineWinners(collapsed, cards, buttonAt, seats.size());
+        final List<Pot> collapsed = PotsUtil.collapsePots(pots);
+        final List<CandidateData> winners = PotsUtil.determineWinners(collapsed, cards, buttonAt, seats.size());
 
-        for (Candidate winner : winners) {
+        for (CandidateData winner : winners) {
             final Seat seat = winner.getSeat();
             final Player player = seat.getPlayer();
             int amount = winner.getAmount();
@@ -435,7 +443,7 @@ public class GameUtil {
             winner.getSeat().setStack(seat.getStack() + amount);
 
             logger.info("{} collected {} from {}",
-                    player.getPlayerName(),
+                    player.getPlayerData().getPlayerName(),
                     amount,
                     winner.getPotName());
         }

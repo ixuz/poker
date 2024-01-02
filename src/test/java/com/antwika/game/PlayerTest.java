@@ -1,5 +1,8 @@
 package com.antwika.game;
 
+import com.antwika.game.data.GameData;
+import com.antwika.game.data.Seat;
+import com.antwika.game.util.GameUtil;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
