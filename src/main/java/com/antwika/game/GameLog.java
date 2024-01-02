@@ -11,22 +11,22 @@ public class GameLog {
 
     public static void printGameInfo(Game game) {
         logger.info("Poker Hand #{}: {} ({}/{}) - {}",
-                game.getHandId(),
-                game.getGameType(),
-                game.getSmallBlind(),
-                game.getBigBlind(),
+                game.getGameData().getHandId(),
+                game.getGameData().getGameType(),
+                game.getGameData().getSmallBlind(),
+                game.getGameData().getBigBlind(),
                 new Date());
     }
 
     public static void printTableInfo(Game game) {
         logger.info("Table '{}' {}-max Seat #{} is the button",
-                game.getTableName(),
-                game.getSeats().size(),
-                game.getButtonAt() + 1);
+                game.getGameData().getTableName(),
+                game.getGameData().getSeats().size(),
+                game.getGameData().getButtonAt() + 1);
     }
 
     public static void printTableSeatsInfo(Game game) {
-        for (Seat seat : game.getSeats()) {
+        for (Seat seat : game.getGameData().getSeats()) {
             if (seat.getPlayer() == null) continue;
 
             logger.info("Seat {}: {} ({} in chips) ",
@@ -37,7 +37,7 @@ public class GameLog {
     }
 
     public static void printTableSeatCardsInfo(Game game) throws NotationException {
-        for (Seat seat : game.getSeats()) {
+        for (Seat seat : game.getGameData().getSeats()) {
             if (seat.getPlayer() == null) continue;
 
             final long cards = seat.getCards();
@@ -50,11 +50,11 @@ public class GameLog {
 
     public static void printSummary(Game game) throws NotationException {
         logger.info("*** SUMMARY ***");
-        logger.info("Total pot {} | Rake {}", game.getDelivered(), 0);
-        logger.info("Board [{}]", GameUtil.toNotation(game.getCards()));
+        logger.info("Total pot {} | Rake {}", game.getGameData().getDelivered(), 0);
+        logger.info("Board [{}]", GameUtil.toNotation(game.getGameData().getCards()));
 
         int chipsInPlay = 0;
-        for (Seat seat : game.getSeats()) {
+        for (Seat seat : game.getGameData().getSeats()) {
             if (seat.getPlayer() == null) continue;
 
             chipsInPlay += seat.getStack();

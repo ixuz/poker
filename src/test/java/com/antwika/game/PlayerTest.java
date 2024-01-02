@@ -12,10 +12,12 @@ public class PlayerTest {
         // Arrange
         try (MockedStatic<GameUtil> mockGameUtil = mockStatic(GameUtil.class)) {
             final Game game = mock(Game.class);
+            final GameData gameData = mock(GameData.class);
             final Player player = mock(Player.class);
             final Seat seat = mock(Seat.class);
             when(GameUtil.getSeat(game, player)).thenReturn(seat);
-            when(game.getLastRaise()).thenReturn(10);
+            when(game.getGameData()).thenReturn(gameData);
+            when(gameData.getLastRaise()).thenReturn(10);
             mockGameUtil.when(() -> GameUtil.countTotalPotAndCommitted(game)).thenReturn(30);
             when(seat.getStack()).thenReturn(1000);
 
@@ -31,11 +33,13 @@ public class PlayerTest {
         // Arrange
         try (MockedStatic<GameUtil> mockGameUtil = mockStatic(GameUtil.class)) {
             final Game game = mock(Game.class);
+            final GameData gameData = mock(GameData.class);
             final Player player = mock(Player.class);
             final Seat seat = mock(Seat.class);
 
             when(GameUtil.getSeat(game, player)).thenReturn(seat);
-            when(game.getLastRaise()).thenReturn(10);
+            when(game.getGameData()).thenReturn(gameData);
+            when(gameData.getLastRaise()).thenReturn(10);
             mockGameUtil.when(() -> GameUtil.countTotalPotAndCommitted(game)).thenReturn(30);
             when(seat.getStack()).thenReturn(1000);
 

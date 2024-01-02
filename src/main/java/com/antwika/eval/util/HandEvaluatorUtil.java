@@ -80,4 +80,12 @@ public class HandEvaluatorUtil {
             throw new HandEvaluatorException();
         }
     }
+
+    public static String toId(IEvaluation evaluation) {
+        final StringBuilder sb = new StringBuilder(String.valueOf(evaluation.getHandType()));
+        for (int kicker : evaluation.getKickers()) {
+            sb.append(":").append(kicker);
+        }
+        return sb.toString();
+    }
 }

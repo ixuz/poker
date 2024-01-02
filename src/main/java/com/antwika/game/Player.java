@@ -59,11 +59,11 @@ public class Player extends EventHandler {
 
     public static int calcBetSize(Game game, Player player, float betSizePercent) {
         final Seat seat = GameUtil.getSeat(game, player);
-        int lastRaise = game.getLastRaise();
+        int lastRaise = game.getGameData().getLastRaise();
         int totalPot = GameUtil.countTotalPotAndCommitted(game);
         int deadMoney = totalPot - lastRaise;
         int desiredBet = (int) ((lastRaise * 3 + deadMoney) * betSizePercent);
-        int minimumBet = Math.min(seat.getStack(), game.getBigBlind());
+        int minimumBet = Math.min(seat.getStack(), game.getGameData().getBigBlind());
         int bet = Math.max(desiredBet, minimumBet);
         return Math.min(seat.getStack(), bet);
     }

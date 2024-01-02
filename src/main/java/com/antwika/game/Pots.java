@@ -151,12 +151,11 @@ public class Pots {
             final List<CandidateEvaluation> evaluations = candidates.stream()
                     .map(i -> {
                         final IEvaluation evaluation = HandEvaluatorUtil.evaluate(processor, i.getSeat().getCards() | communityCards);
-                        final String groupId = groupId(evaluation);
+                        final String groupId = HandEvaluatorUtil.toId(evaluation);
                         return new CandidateEvaluation(i, evaluation, groupId);
                     })
                     .toList();
 
-            // evaluations.sort((e1, e2) -> HandEvaluatorUtil.compare(processor, e1.getHand(), e2.getHand()));
             final List<CandidateEvaluation> sortedEvaluations = evaluations.stream().sorted((e1, e2) -> {
                 try {
                     return -1 * HandEvaluatorUtil.compare(processor, e1.getEvaluation().getHand(), e2.getEvaluation().getHand());
@@ -174,7 +173,6 @@ public class Pots {
                 if (remainingPot == 0) break;
                 if (remainingPot < 0) throw new RuntimeException("The remaining pot must never be negative");
                 final List<CandidateEvaluation> group = groups.get(groupId);
-                int candidateCount = pot.getCandidates().size();
                 int winnerCount = group.size();
                 int delivered = 0;
                 int portion = remainingPot / winnerCount;
@@ -216,8 +214,6 @@ public class Pots {
 
                 winners.addAll(groupWinners);
             }
-
-            // logger.info("hello");
         }
 
         return winners;
@@ -239,14 +235,5 @@ public class Pots {
             throw new RuntimeException("Could not find the first candidate after the button");
         }
         return firstWinnerIndexAfterButton;
-    }
-
-    private static String groupId(IEvaluation evaluation) {
-        final StringBuilder sb = new StringBuilder(String.valueOf(evaluation.getHandType()));
-        for (int kicker : evaluation.getKickers()) {
-            sb.append(":");
-            sb.append(kicker);
-        }
-        return sb.toString();
     }
 }

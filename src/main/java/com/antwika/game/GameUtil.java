@@ -26,7 +26,7 @@ public class GameUtil {
     }
 
     public static void seat(Game game, Player player, int seatIndex, int buyIn) {
-        final Seat seat = game.getSeats().get(seatIndex);
+        final Seat seat = game.getGameData().getSeats().get(seatIndex);
         resetSeat(seat);
         seat.setPlayer(player);
         seat.setStack(buyIn);
@@ -52,19 +52,19 @@ public class GameUtil {
     }
 
     public static void resetAllSeats(Game game) {
-        game.getSeats().forEach(GameUtil::resetSeat);
+        game.getGameData().getSeats().forEach(GameUtil::resetSeat);
     }
 
     public static int countAllStacks(Game game) {
-        return game.getSeats().stream().mapToInt(Seat::getStack).sum();
+        return game.getGameData().getSeats().stream().mapToInt(Seat::getStack).sum();
     }
 
     public static int countTotalPot(Game game) {
-        return game.getPots().stream().mapToInt(Pot::getTotalAmount).sum();
+        return game.getGameData().getPots().stream().mapToInt(Pot::getTotalAmount).sum();
     }
 
     public static int countTotalCommitted(Game game) {
-        return game.getSeats().stream().mapToInt(Seat::getCommitted).sum();
+        return game.getGameData().getSeats().stream().mapToInt(Seat::getCommitted).sum();
     }
 
     public static int countTotalPotAndCommitted(Game game) {
@@ -72,7 +72,7 @@ public class GameUtil {
     }
 
     public static int countPlayersRemainingInHand(Game game) {
-        return game.getSeats().stream()
+        return game.getGameData().getSeats().stream()
                 .filter(seat -> seat.getPlayer() != null)
                 .filter(seat -> !seat.isHasFolded())
                 .toList()
@@ -80,14 +80,14 @@ public class GameUtil {
     }
 
     public static Seat getSeat(Game game, Player player) {
-        return game.getSeats().stream()
+        return game.getGameData().getSeats().stream()
                 .filter(i -> i.getPlayer() == player)
                 .findFirst()
                 .orElse(null);
     }
 
     public static String getStreetName(Game game) {
-        return switch (Long.bitCount(game.getCards())) {
+        return switch (Long.bitCount(game.getGameData().getCards())) {
             case 3 -> "FLOP";
             case 4 -> "TURN";
             case 5 -> "RIVER";
@@ -108,26 +108,26 @@ public class GameUtil {
     }
 
     public static void unseatAll(Game game) {
-        game.getSeats().stream()
+        game.getGameData().getSeats().stream()
                 .filter(seat -> seat.getPlayer() != null)
                 .forEach(GameUtil::unseat);
     }
 
     public static Seat findFirstAvailableSeat(Game game) {
-        return game.getSeats().stream()
+        return game.getGameData().getSeats().stream()
                 .filter(seat -> seat.getPlayer() == null)
                 .findFirst()
                 .orElse(null);
     }
 
     public static List<Seat> findAllBustedSeats(Game game) {
-        return game.getSeats().stream()
+        return game.getGameData().getSeats().stream()
                 .filter(seat -> seat.getStack() == 0)
                 .toList();
     }
 
     public static int findHighestCommit(Game game) {
-        return game.getSeats().stream()
+        return game.getGameData().getSeats().stream()
                 .mapToInt(Seat::getCommitted)
                 .max()
                 .orElse(0);
@@ -137,7 +137,7 @@ public class GameUtil {
         Seat nextSeat = null;
         int skipped = 0;
 
-        final List<Seat> seats = game.getSeats();
+        final List<Seat> seats = game.getGameData().getSeats();
 
         for (int i = 0; i < seats.size(); i += 1) {
             final int seatIndex = (fromSeat + i + 1) % seats.size();
@@ -148,7 +148,7 @@ public class GameUtil {
             if (mustAct) {
                 if (!seat.isHasActed() && !seat.isHasFolded()) {
                     nextSeat = seat;
-                } else if (seat.getCommitted() < game.getTotalBet() && seat.getStack() > 0 && !seat.isHasFolded()) {
+                } else if (seat.getCommitted() < game.getGameData().getTotalBet() && seat.getStack() > 0 && !seat.isHasFolded()) {
                     nextSeat = seat;
                 }
             } else {
@@ -169,7 +169,7 @@ public class GameUtil {
 
     public static boolean hasAllPlayersActed(Game game) {
         int highestCommit = GameUtil.findHighestCommit(game);
-        return game.getSeats().stream()
+        return game.getGameData().getSeats().stream()
                 .filter(seat -> seat.getStack() > 0)
                 .filter(seat -> !seat.isHasFolded())
                 .filter(seat -> !seat.isHasActed())
@@ -179,7 +179,7 @@ public class GameUtil {
     }
 
     public static int getNumberOfPlayersLeftToAct(Game game) {
-        final List<Seat> playerSeats = game.getSeats().stream()
+        final List<Seat> playerSeats = game.getGameData().getSeats().stream()
                 .filter(i -> i.getPlayer() != null)
                 .filter(i -> i.getStack() > 0)
                 .filter(i -> i.getCards() > 0L)
@@ -189,11 +189,11 @@ public class GameUtil {
     }
 
     public static void prepareBettingRound(Game game) {
-        if (Long.bitCount(game.getCards()) != 0) {
-            for (Seat seat : game.getSeats()) {
+        if (Long.bitCount(game.getGameData().getCards()) != 0) {
+            for (Seat seat : game.getGameData().getSeats()) {
                 seat.setHasActed(false);
             }
-            game.setActionAt(findNextSeatToAct(game, game.getButtonAt(), 0, true).getSeatIndex());
+            game.getGameData().setActionAt(findNextSeatToAct(game, game.getGameData().getButtonAt(), 0, true).getSeatIndex());
         }
     }
 
@@ -207,14 +207,14 @@ public class GameUtil {
 
     public static void drawButtonSeatIndex(Game game) {
         logger.debug("Drawing cards to determine button position...");
-        final Deck deck = game.getDeck();
+        final Deck deck = game.getGameData().getDeck();
         Deck.resetAndShuffle(deck);
 
-        game.getSeats().stream()
+        game.getGameData().getSeats().stream()
                 .filter(seat -> seat.getPlayer() != null)
                 .forEach(seat -> seat.setCards(Deck.draw(deck)));
 
-        final List<Seat> sortedByCard = game.getSeats().stream()
+        final List<Seat> sortedByCard = game.getGameData().getSeats().stream()
                 .filter(i -> i.getPlayer() != null)
                 .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_SUIT_INDEX.get(e.getCards())))
                 .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_RANK_INDEX.get(e.getCards())))
@@ -226,13 +226,13 @@ public class GameUtil {
             throw new RuntimeException("Failed to draw card for the button position!");
         }
 
-        game.setButtonAt(winner.getSeatIndex());
+        game.getGameData().setButtonAt(winner.getSeatIndex());
 
         resetAllSeats(game);
     }
 
     public static boolean canStartHand(Game game) {
-        return game.getSeats().stream()
+        return game.getGameData().getSeats().stream()
                 .filter(seat -> seat.getPlayer() != null)
                 .filter(seat -> seat.getStack() != 0)
                 .toList()
@@ -241,13 +241,13 @@ public class GameUtil {
 
     public static void forcePostBlind(Game game, int blindIndex, int blindAmount) {
 
-        final Seat seat = GameUtil.findNextSeatToAct(game, game.getButtonAt(), blindIndex, true);
+        final Seat seat = GameUtil.findNextSeatToAct(game, game.getGameData().getButtonAt(), blindIndex, true);
         final Player player = seat.getPlayer();
 
         int commitAmount = Math.min(seat.getStack(), blindAmount);
         GameUtil.commit(seat, commitAmount);
 
-        game.setActionAt(GameUtil.findNextSeatToAct(game, seat.getSeatIndex(), 0, true).getSeatIndex());
+        game.getGameData().setActionAt(GameUtil.findNextSeatToAct(game, seat.getSeatIndex(), 0, true).getSeatIndex());
 
         final StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s: posts %s %d", player.getPlayerName(), getBlindName(blindIndex), commitAmount));
@@ -279,17 +279,17 @@ public class GameUtil {
     }
 
     public static void pushButton(Game game) {
-        game.setButtonAt(findNextSeatToAct(game, game.getButtonAt(), 0, false).getSeatIndex());
+        game.getGameData().setButtonAt(findNextSeatToAct(game, game.getGameData().getButtonAt(), 0, false).getSeatIndex());
     }
 
     public static void dealCommunityCards(Game game, int count) {
-        long prev = game.getCards();
+        long prev = game.getGameData().getCards();
         long add = 0L;
         for (int i = 0; i < count; i += 1) {
-            add |= Deck.draw(game.getDeck());
+            add |= Deck.draw(game.getGameData().getDeck());
         }
 
-        game.setCards(game.getCards() | add);
+        game.getGameData().setCards(game.getGameData().getCards() | add);
 
         try {
             final StringBuilder sb = new StringBuilder();
@@ -309,23 +309,23 @@ public class GameUtil {
 
     public static void prepareHand(Game game) {
         logger.info("--- HAND BEGIN ---");
-        game.getPots().clear();
-        game.setHandId(game.getHandId() + 1L);
-        game.setCards(0L);
-        game.setDelivered(0);
-        game.setTotalBet(game.getBigBlind());
-        game.setLastRaise(game.getBigBlind());
-        game.setChipsInPlay(GameUtil.countAllStacks(game));
+        game.getGameData().getPots().clear();
+        game.getGameData().setHandId(game.getGameData().getHandId() + 1L);
+        game.getGameData().setCards(0L);
+        game.getGameData().setDelivered(0);
+        game.getGameData().setTotalBet(game.getGameData().getBigBlind());
+        game.getGameData().setLastRaise(game.getGameData().getBigBlind());
+        game.getGameData().setChipsInPlay(GameUtil.countAllStacks(game));
     }
 
     public static void dealCards(Game game) throws NotationException {
-        final List<Seat> seats = game.getSeats();
+        final List<Seat> seats = game.getGameData().getSeats();
         logger.info("*** HOLE CARDS ***");
         for (int i = 0; i < seats.size() * 2; i += 1) {
-            final int seatIndex = (game.getActionAt() + i + 1) % seats.size();
+            final int seatIndex = (game.getGameData().getActionAt() + i + 1) % seats.size();
             final Seat seat = seats.get(seatIndex);
             if (seat.getPlayer() == null) continue;
-            final long card = Deck.draw(game.getDeck());
+            final long card = Deck.draw(game.getGameData().getDeck());
             seat.setCards(seat.getCards() | card);
             try {
                 logger.debug("Deal card {} to {}", HandUtil.toNotation(card), seat.getPlayer());
@@ -350,8 +350,8 @@ public class GameUtil {
                 break;
             }
 
-            final List<Seat> seats = game.getSeats();
-            final int actionAt = game.getActionAt();
+            final List<Seat> seats = game.getGameData().getSeats();
+            final int actionAt = game.getGameData().getActionAt();
 
             final Seat seat = seats.get(actionAt);
 
@@ -360,15 +360,15 @@ public class GameUtil {
 
             if (seat.isHasFolded()) {
                 seat.setHasActed(true);
-                game.setActionAt(seatAfter.getSeatIndex());
+                game.getGameData().setActionAt(seatAfter.getSeatIndex());
                 continue;
             }
 
             final Player player = seat.getPlayer();
 
-            final int totalBet = game.getTotalBet();
-            final int bigBlind = game.getBigBlind();
-            final int lastRaise = game.getLastRaise();
+            final int totalBet = game.getGameData().getTotalBet();
+            final int bigBlind = game.getGameData().getBigBlind();
+            final int lastRaise = game.getGameData().getLastRaise();
             final int toCall = Math.min(seat.getStack(), totalBet - seat.getCommitted());
             final int minRaise = Math.min(seat.getStack(), Math.max(lastRaise, bigBlind));
             final int minBet = totalBet + minRaise - seat.getCommitted();
@@ -397,31 +397,31 @@ public class GameUtil {
                 break;
             }
 
-            game.setActionAt(theNextSeat.getSeatIndex());
+            game.getGameData().setActionAt(theNextSeat.getSeatIndex());
         }
 
         logger.debug("Betting round ended");
     }
 
     public static void collect(Game game) {
-        final List<Seat> seats = game.getSeats();
-        game.getPots().addAll(Pots.collectBets(seats));
+        final List<Seat> seats = game.getGameData().getSeats();
+        game.getGameData().getPots().addAll(Pots.collectBets(seats));
 
-        game.setLastRaise(0);
-        game.setTotalBet(0);
+        game.getGameData().setLastRaise(0);
+        game.getGameData().setTotalBet(0);
 
         int totalStacks = GameUtil.countAllStacks(game);
         int totalPot = GameUtil.countTotalPot(game);
-        if (totalStacks + totalPot != game.getChipsInPlay()) {
+        if (totalStacks + totalPot != game.getGameData().getChipsInPlay()) {
             throw new RuntimeException("Invalid amount of chips");
         }
     }
 
     public static void showdown(Game game) throws NotationException {
-        final List<Pot> pots = game.getPots();
-        final Long cards = game.getCards();
-        final int buttonAt = game.getButtonAt();
-        final List<Seat> seats = game.getSeats();
+        final List<Pot> pots = game.getGameData().getPots();
+        final Long cards = game.getGameData().getCards();
+        final int buttonAt = game.getGameData().getButtonAt();
+        final List<Seat> seats = game.getGameData().getSeats();
 
         logger.debug("Showdown");
         final List<Pot> collapsed = Pots.collapsePots(pots);
@@ -431,7 +431,7 @@ public class GameUtil {
             final Seat seat = winner.getSeat();
             final Player player = seat.getPlayer();
             int amount = winner.getAmount();
-            game.setDelivered(game.getDelivered() + amount);
+            game.getGameData().setDelivered(game.getGameData().getDelivered() + amount);
             winner.getSeat().setStack(seat.getStack() + amount);
 
             logger.info("{} collected {} from {}",
@@ -443,7 +443,7 @@ public class GameUtil {
 
         int totalStacks = seats.stream().filter(i -> i.getPlayer() != null).mapToInt(Seat::getStack).sum();
         int totalPot = GameUtil.countTotalPot(game);
-        if (totalStacks + totalPot != game.getChipsInPlay()) {
+        if (totalStacks + totalPot != game.getGameData().getChipsInPlay()) {
             throw new RuntimeException("Invalid amount of chips");
         }
 
@@ -456,10 +456,10 @@ public class GameUtil {
         GameUtil.resetAllSeats(game);
 
         GameLog.printGameInfo(game);
-        Deck.resetAndShuffle(game.getDeck());
+        Deck.resetAndShuffle(game.getGameData().getDeck());
         GameLog.printTableInfo(game);
         GameLog.printTableSeatsInfo(game);
-        GameUtil.forcePostBlinds(game, List.of(game.getSmallBlind(), game.getBigBlind()));
+        GameUtil.forcePostBlinds(game, List.of(game.getGameData().getSmallBlind(), game.getGameData().getBigBlind()));
         GameUtil.dealCards(game);
 
         GameUtil.bettingRound(game);
