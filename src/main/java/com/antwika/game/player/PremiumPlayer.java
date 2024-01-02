@@ -5,7 +5,7 @@ import com.antwika.eval.core.IHandProcessor;
 import com.antwika.eval.processor.TexasHoldemProcessor;
 import com.antwika.eval.util.HandEvaluatorUtil;
 import com.antwika.game.data.GameData;
-import com.antwika.game.data.Seat;
+import com.antwika.game.data.SeatData;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.PlayerActionRequest;
 import com.antwika.game.event.PlayerActionResponse;
@@ -27,7 +27,7 @@ public class PremiumPlayer extends Player {
     @Override
     protected IEvent onPlayerActionRequest(PlayerActionRequest event) {
         final GameData gameData = event.getGameData();
-        final Seat seat = GameDataUtil.getSeat(gameData, this);
+        final SeatData seat = GameDataUtil.getSeat(gameData, this);
 
         final long cards = seat.getCards();
         final int stack = seat.getStack();

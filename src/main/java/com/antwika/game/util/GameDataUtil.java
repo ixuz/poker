@@ -32,7 +32,7 @@ public class GameDataUtil {
     }
 
     public static void seat(GameData gameData, Player player, int seatIndex, int buyIn) {
-        final Seat seat = gameData.getSeats().get(seatIndex);
+        final SeatData seat = gameData.getSeats().get(seatIndex);
         resetSeat(seat);
         seat.setPlayer(player);
         seat.setStack(buyIn);
@@ -41,13 +41,13 @@ public class GameDataUtil {
     }
 
     public static void seat(GameData gameData, Player player, int buyIn) {
-        final Seat seat = findFirstAvailableSeat(gameData);
+        final SeatData seat = findFirstAvailableSeat(gameData);
         if (seat == null) return;
 
         seat(gameData, player, seat.getSeatIndex(), buyIn);
     }
 
-    public static void resetSeat(Seat seat) {
+    public static void resetSeat(SeatData seat) {
         seat.setCards(0L);
         seat.setCommitted(0);
         seat.setTotalCommitted(0);
@@ -62,15 +62,15 @@ public class GameDataUtil {
     }
 
     public static int countAllStacks(GameData gameData) {
-        return gameData.getSeats().stream().mapToInt(Seat::getStack).sum();
+        return gameData.getSeats().stream().mapToInt(SeatData::getStack).sum();
     }
 
     public static int countTotalPot(GameData gameData) {
-        return gameData.getPots().stream().mapToInt(Pot::getTotalAmount).sum();
+        return gameData.getPots().stream().mapToInt(PotData::getTotalAmount).sum();
     }
 
     public static int countTotalCommitted(GameData gameData) {
-        return gameData.getSeats().stream().mapToInt(Seat::getCommitted).sum();
+        return gameData.getSeats().stream().mapToInt(SeatData::getCommitted).sum();
     }
 
     public static int countTotalPotAndCommitted(GameData gameData) {
@@ -85,7 +85,7 @@ public class GameDataUtil {
                 .size();
     }
 
-    public static Seat getSeat(GameData gameData, Player player) {
+    public static SeatData getSeat(GameData gameData, Player player) {
         return gameData.getSeats().stream()
                 .filter(i -> i.getPlayer() == player)
                 .findFirst()
@@ -100,7 +100,7 @@ public class GameDataUtil {
             default -> "PREFLOP";
         };
     }
-    public static void unseat(Seat seat) {
+    public static void unseat(SeatData seat) {
         final Player player = seat.getPlayer();
         seat.setPlayer(null);
         seat.setStack(0);
@@ -109,7 +109,7 @@ public class GameDataUtil {
         }
     }
 
-    public static void unseat(List<Seat> seats) {
+    public static void unseat(List<SeatData> seats) {
         seats.forEach(GameDataUtil::unseat);
     }
 
@@ -119,14 +119,14 @@ public class GameDataUtil {
                 .forEach(GameDataUtil::unseat);
     }
 
-    public static Seat findFirstAvailableSeat(GameData gameData) {
+    public static SeatData findFirstAvailableSeat(GameData gameData) {
         return gameData.getSeats().stream()
                 .filter(seat -> seat.getPlayer() == null)
                 .findFirst()
                 .orElse(null);
     }
 
-    public static List<Seat> findAllBustedSeats(GameData gameData) {
+    public static List<SeatData> findAllBustedSeats(GameData gameData) {
         return gameData.getSeats().stream()
                 .filter(seat -> seat.getStack() == 0)
                 .toList();
@@ -134,20 +134,20 @@ public class GameDataUtil {
 
     public static int findHighestCommit(GameData gameData) {
         return gameData.getSeats().stream()
-                .mapToInt(Seat::getCommitted)
+                .mapToInt(SeatData::getCommitted)
                 .max()
                 .orElse(0);
     }
 
-    public static Seat findNextSeatToAct(GameData gameData, int fromSeat, int skips, boolean mustAct) {
-        Seat nextSeat = null;
+    public static SeatData findNextSeatToAct(GameData gameData, int fromSeat, int skips, boolean mustAct) {
+        SeatData nextSeat = null;
         int skipped = 0;
 
-        final List<Seat> seats = gameData.getSeats();
+        final List<SeatData> seats = gameData.getSeats();
 
         for (int i = 0; i < seats.size(); i += 1) {
             final int seatIndex = (fromSeat + i + 1) % seats.size();
-            final Seat seat = seats.get(seatIndex);
+            final SeatData seat = seats.get(seatIndex);
 
             if (seat.getPlayer() == null) continue;
 
@@ -198,7 +198,7 @@ public class GameDataUtil {
     }
 
     public static int getNumberOfPlayersLeftToAct(GameData gameData) {
-        final List<Seat> playerSeats = gameData.getSeats().stream()
+        final List<SeatData> playerSeats = gameData.getSeats().stream()
                 .filter(i -> i.getPlayer() != null)
                 .filter(i -> i.getStack() > 0)
                 .filter(i -> i.getCards() > 0L)
@@ -209,7 +209,7 @@ public class GameDataUtil {
 
     public static void prepareBettingRound(GameData gameData) {
         if (Long.bitCount(gameData.getCards()) != 0) {
-            for (Seat seat : gameData.getSeats()) {
+            for (SeatData seat : gameData.getSeats()) {
                 seat.setHasActed(false);
             }
             gameData.setActionAt(findNextSeatToAct(gameData, gameData.getButtonAt(), 0, true).getSeatIndex());
@@ -233,13 +233,13 @@ public class GameDataUtil {
                 .filter(seat -> seat.getPlayer() != null)
                 .forEach(seat -> seat.setCards(DeckUtil.draw(deckData)));
 
-        final List<Seat> sortedByCard = gameData.getSeats().stream()
+        final List<SeatData> sortedByCard = gameData.getSeats().stream()
                 .filter(i -> i.getPlayer() != null)
                 .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_SUIT_INDEX.get(e.getCards())))
                 .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_RANK_INDEX.get(e.getCards())))
                 .toList();
 
-        final Seat winner = sortedByCard.get(sortedByCard.size() - 1);
+        final SeatData winner = sortedByCard.get(sortedByCard.size() - 1);
 
         if (winner == null) {
             throw new RuntimeException("Failed to draw card for the button position!");
@@ -260,7 +260,7 @@ public class GameDataUtil {
 
     public static void forcePostBlind(GameData gameData, int blindIndex, int blindAmount) {
 
-        final Seat seat = GameDataUtil.findNextSeatToAct(gameData, gameData.getButtonAt(), blindIndex, true);
+        final SeatData seat = GameDataUtil.findNextSeatToAct(gameData, gameData.getButtonAt(), blindIndex, true);
         final Player player = seat.getPlayer();
 
         int commitAmount = Math.min(seat.getStack(), blindAmount);
@@ -290,7 +290,7 @@ public class GameDataUtil {
         }
     }
 
-    public static void commit(Seat seat, int amount) {
+    public static void commit(SeatData seat, int amount) {
         if (seat.getStack() < amount) throw new RuntimeException("Commit amount is greater than the available stack");
         if (amount <= 0) throw new RuntimeException("Commit must be greater than zero");
         seat.setStack(seat.getStack() - amount);
@@ -341,12 +341,12 @@ public class GameDataUtil {
     }
 
     public static void dealCards(GameData gameData) throws NotationException {
-        final List<Seat> seats = gameData.getSeats();
+        final List<SeatData> seats = gameData.getSeats();
         final DeckData deckData = gameData.getDeckData();
         logger.info("*** HOLE CARDS ***");
         for (int i = 0; i < seats.size() * 2; i += 1) {
             final int seatIndex = (gameData.getActionAt() + i + 1) % seats.size();
-            final Seat seat = seats.get(seatIndex);
+            final SeatData seat = seats.get(seatIndex);
             if (seat.getPlayer() == null) continue;
             Long card = DeckUtil.draw(deckData);
             if (card == null) throw new RuntimeException("The card drawn from the deck is null");
@@ -374,12 +374,12 @@ public class GameDataUtil {
                 break;
             }
 
-            final List<Seat> seats = gameData.getSeats();
+            final List<SeatData> seats = gameData.getSeats();
             final int actionAt = gameData.getActionAt();
 
-            final Seat seat = seats.get(actionAt);
+            final SeatData seat = seats.get(actionAt);
 
-            final Seat seatAfter = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
+            final SeatData seatAfter = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
             if (seat == null) break;
 
             if (seat.isHasFolded()) {
@@ -416,7 +416,7 @@ public class GameDataUtil {
                 break;
             }
 
-            final Seat theNextSeat = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
+            final SeatData theNextSeat = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
             if (theNextSeat == null) {
                 break;
             }
@@ -428,7 +428,7 @@ public class GameDataUtil {
     }
 
     public static void collect(GameData gameData) {
-        final List<Seat> seats = gameData.getSeats();
+        final List<SeatData> seats = gameData.getSeats();
         gameData.getPots().addAll(PotsUtil.collectBets(seats));
 
         gameData.setLastRaise(0);
@@ -442,17 +442,17 @@ public class GameDataUtil {
     }
 
     public static void showdown(GameData gameData) throws NotationException {
-        final List<Pot> pots = gameData.getPots();
+        final List<PotData> pots = gameData.getPots();
         final Long cards = gameData.getCards();
         final int buttonAt = gameData.getButtonAt();
-        final List<Seat> seats = gameData.getSeats();
+        final List<SeatData> seats = gameData.getSeats();
 
         logger.debug("Showdown");
-        final List<Pot> collapsed = PotsUtil.collapsePots(pots);
+        final List<PotData> collapsed = PotsUtil.collapsePots(pots);
         final List<CandidateData> winners = PotsUtil.determineWinners(collapsed, cards, buttonAt, seats.size());
 
         for (CandidateData winner : winners) {
-            final Seat seat = winner.getSeat();
+            final SeatData seat = winner.getSeat();
             final Player player = seat.getPlayer();
             int amount = winner.getAmount();
             gameData.setDelivered(gameData.getDelivered() + amount);
@@ -465,7 +465,7 @@ public class GameDataUtil {
         }
         pots.clear();
 
-        int totalStacks = seats.stream().filter(i -> i.getPlayer() != null).mapToInt(Seat::getStack).sum();
+        int totalStacks = seats.stream().filter(i -> i.getPlayer() != null).mapToInt(SeatData::getStack).sum();
         int totalPot = GameDataUtil.countTotalPot(gameData);
         if (totalStacks + totalPot != gameData.getChipsInPlay()) {
             throw new RuntimeException("Invalid amount of chips");
@@ -509,7 +509,7 @@ public class GameDataUtil {
     }
 
     public static int calcBetSize(GameData gameData, Player player, float betSizePercent) {
-        final Seat seat = GameDataUtil.getSeat(gameData, player);
+        final SeatData seat = GameDataUtil.getSeat(gameData, player);
         int lastRaise = gameData.getLastRaise();
         int totalPot = GameDataUtil.countTotalPotAndCommitted(gameData);
         int deadMoney = totalPot - lastRaise;

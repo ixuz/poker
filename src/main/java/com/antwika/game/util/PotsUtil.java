@@ -7,8 +7,8 @@ import com.antwika.eval.processor.TexasHoldemProcessor;
 import com.antwika.eval.util.HandEvaluatorUtil;
 import com.antwika.game.data.CandidateData;
 import com.antwika.game.player.Player;
-import com.antwika.game.data.Pot;
-import com.antwika.game.data.Seat;
+import com.antwika.game.data.PotData;
+import com.antwika.game.data.SeatData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.slf4j.Logger;
@@ -23,19 +23,19 @@ import java.util.stream.Collectors;
 public class PotsUtil {
     private static final Logger logger = LoggerFactory.getLogger(PotsUtil.class);
 
-    public static List<Pot> collectBets(List<Seat> seats) {
-        final List<Pot> pots = new ArrayList<>();
+    public static List<PotData> collectBets(List<SeatData> seats) {
+        final List<PotData> pots = new ArrayList<>();
 
-        final List<Seat> sorted = new ArrayList<>(seats.stream()
+        final List<SeatData> sorted = new ArrayList<>(seats.stream()
                 .filter(i -> i.getCommitted() > 0)
-                .sorted(Comparator.comparingInt(Seat::getCommitted))
+                .sorted(Comparator.comparingInt(SeatData::getCommitted))
                 .toList());
 
         while (!sorted.isEmpty()) {
             int potAmount = 0;
             final List<CandidateData> candidates = new ArrayList<>();
             for (int i = 0; i < sorted.size(); i += 1) {
-                final Seat seat = sorted.get(i);
+                final SeatData seat = sorted.get(i);
                 if (i == 0) {
                     potAmount = seat.getCommitted();
                 }
@@ -44,18 +44,18 @@ public class PotsUtil {
                 seat.setCommitted(seat.getCommitted() - potAmount);
             }
 
-            pots.add(new Pot(potAmount, candidates));
+            pots.add(new PotData(potAmount, candidates));
 
             sorted.removeAll(sorted.stream().filter(i -> i.getCommitted() == 0).toList());
         }
 
         if (!pots.isEmpty()) {
             final int lastSidePotIndex = pots.size() - 1;
-            final Pot lastSidePot = pots.get(lastSidePotIndex);
+            final PotData lastSidePot = pots.get(lastSidePotIndex);
 
             if (lastSidePot.getCandidates().size() == 1) {
                 final CandidateData candidate = lastSidePot.getCandidates().get(0);
-                final Seat seat = candidate.getSeat();
+                final SeatData seat = candidate.getSeat();
                 final Player player = seat.getPlayer();
                 final int amount = lastSidePot.getTotalAmount();
                 seat.setStack(seat.getStack() + amount);
@@ -67,22 +67,22 @@ public class PotsUtil {
         return pots;
     }
 
-    public static boolean hasSameCandidates(Pot pot1, Pot pot2) {
-        final List<Seat> potCandidates1 = pot1.getCandidates().stream().map(CandidateData::getSeat).filter(i -> !i.isHasFolded()).toList();
-        final List<Seat> potCandidates2 = pot2.getCandidates().stream().map(CandidateData::getSeat).filter(i -> !i.isHasFolded()).toList();
+    public static boolean hasSameCandidates(PotData pot1, PotData pot2) {
+        final List<SeatData> potCandidates1 = pot1.getCandidates().stream().map(CandidateData::getSeat).filter(i -> !i.isHasFolded()).toList();
+        final List<SeatData> potCandidates2 = pot2.getCandidates().stream().map(CandidateData::getSeat).filter(i -> !i.isHasFolded()).toList();
 
         if (potCandidates1.size() != potCandidates2.size()) return false;
 
-        final List<Seat> scratch = new ArrayList<>(potCandidates1);
+        final List<SeatData> scratch = new ArrayList<>(potCandidates1);
         scratch.removeAll(potCandidates2);
 
         return scratch.isEmpty();
     }
 
-    public static List<Pot> collapsePots(List<Pot> pots) {
-        final List<Pot> collapsed = new ArrayList<>();
+    public static List<PotData> collapsePots(List<PotData> pots) {
+        final List<PotData> collapsed = new ArrayList<>();
 
-        for (Pot pot : pots) {
+        for (PotData pot : pots) {
             final List<CandidateData> ineligible = new ArrayList<>();
             final List<CandidateData> eligible = new ArrayList<>(pot.getCandidates());
             for (CandidateData candidate : pot.getCandidates()) {
@@ -91,14 +91,14 @@ public class PotsUtil {
                 }
             }
             eligible.removeAll(ineligible);
-            final Pot p = new Pot(pot.getAmountPerCandidate(), eligible);
+            final PotData p = new PotData(pot.getAmountPerCandidate(), eligible);
             p.setTotalAmount(pot.getTotalAmount());
             collapsed.add(p);
         }
 
         for (int i = 0; i < collapsed.size() - 1; i++) {
-            final Pot currentPot = collapsed.get(i);
-            final Pot nextPot = collapsed.get(i + 1);
+            final PotData currentPot = collapsed.get(i);
+            final PotData nextPot = collapsed.get(i + 1);
 
             if (!hasSameCandidates(currentPot, nextPot)) {
                 continue;
@@ -119,7 +119,7 @@ public class PotsUtil {
         }
 
         for (int i = collapsed.size() - 1; i >= 0; i -= 1) {
-            final Pot pot = collapsed.get(0);
+            final PotData pot = collapsed.get(0);
             if (i == 0) {
                 pot.setName("Main pot");
             } else {
@@ -138,9 +138,9 @@ public class PotsUtil {
         private String groupId;
     }
 
-    public static List<CandidateData> determineWinners(List<Pot> pots, long communityCards, int buttonAt, int seatCount) {
-        final List<Pot> potsCopy = new ArrayList<>(pots);
-        final List<Pot> collapsedPots = collapsePots(potsCopy);
+    public static List<CandidateData> determineWinners(List<PotData> pots, long communityCards, int buttonAt, int seatCount) {
+        final List<PotData> potsCopy = new ArrayList<>(pots);
+        final List<PotData> collapsedPots = collapsePots(potsCopy);
 
         final IHandProcessor processor = new TexasHoldemProcessor();
 
@@ -149,7 +149,7 @@ public class PotsUtil {
         int potIndex = -1;
         while (!collapsedPots.isEmpty()) {
             potIndex += 1;
-            final Pot pot = collapsedPots.remove(0);
+            final PotData pot = collapsedPots.remove(0);
             final List<CandidateData> candidates = pot.getCandidates().stream().filter(i -> !i.getSeat().isHasFolded()).toList();
 
             final List<CandidateEvaluation> evaluations = candidates.stream()

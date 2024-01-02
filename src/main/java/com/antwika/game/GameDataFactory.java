@@ -3,7 +3,7 @@ package com.antwika.game;
 import com.antwika.game.common.Prng;
 import com.antwika.game.data.DeckData;
 import com.antwika.game.data.GameData;
-import com.antwika.game.data.Seat;
+import com.antwika.game.data.SeatData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +12,9 @@ public class GameDataFactory {
     public static GameData createGameData(long prngSeed, String tableName, int seatCount, int smallBlind, int bigBlind) {
         final Prng prng = new Prng(prngSeed);
 
-        final List<Seat> seats = new ArrayList<>();
+        final List<SeatData> seats = new ArrayList<>();
         for (int i = 0; i < seatCount; i += 1) {
-            final Seat seat = new Seat();
+            final SeatData seat = new SeatData();
             seat.setSeatIndex(i);
             seats.add(seat);
         }

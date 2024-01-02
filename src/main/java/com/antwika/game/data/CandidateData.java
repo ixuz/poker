@@ -1,15 +1,14 @@
 package com.antwika.game.data;
 
-import com.antwika.game.data.Seat;
 import lombok.Data;
 
 @Data
 public class CandidateData {
     private String potName = "Pot";
-    private Seat seat;
+    private SeatData seat;
     private int amount;
 
-    public CandidateData(Seat seat, int amount) {
+    public CandidateData(SeatData seat, int amount) {
         setSeat(seat);
         setAmount(amount);
     }

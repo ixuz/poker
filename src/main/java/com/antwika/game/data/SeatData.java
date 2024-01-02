@@ -6,7 +6,7 @@ import lombok.ToString;
 
 @Data
 @ToString(onlyExplicitlyIncluded = true)
-public class Seat {
+public class SeatData {
     @ToString.Include
     private Player player;
     private int seatIndex;

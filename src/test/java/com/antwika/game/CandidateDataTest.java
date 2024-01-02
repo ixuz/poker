@@ -1,7 +1,7 @@
 package com.antwika.game;
 
 import com.antwika.game.data.CandidateData;
-import com.antwika.game.data.Seat;
+import com.antwika.game.data.SeatData;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CandidateDataTest {
     @Test
     public void equality() {
-        final Seat seat = new Seat();
+        final SeatData seat = new SeatData();
         final CandidateData candidate1 = new CandidateData(seat, 100);
         final CandidateData candidate2 = new CandidateData(seat, 100);
 

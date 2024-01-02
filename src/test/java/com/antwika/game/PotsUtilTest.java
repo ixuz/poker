@@ -3,8 +3,8 @@ package com.antwika.game;
 import com.antwika.common.exception.NotationException;
 import com.antwika.common.util.HandUtil;
 import com.antwika.game.data.CandidateData;
-import com.antwika.game.data.Pot;
-import com.antwika.game.data.Seat;
+import com.antwika.game.data.PotData;
+import com.antwika.game.data.SeatData;
 import com.antwika.game.player.RandomPlayer;
 import com.antwika.game.util.PotsUtil;
 import org.junit.jupiter.api.Test;
@@ -22,10 +22,10 @@ public class PotsUtilTest {
     @Test
     public void collectBets_whenNoCandidates_noPots() {
         // Arrange
-        final List<Seat> seats = List.of();
+        final List<SeatData> seats = List.of();
 
         // Act
-        final List<Pot> pots = PotsUtil.collectBets(seats);
+        final List<PotData> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(0, pots.size());
@@ -34,16 +34,16 @@ public class PotsUtilTest {
     @Test
     public void collectBets_whenThereAreCandidatesButNoneCommitted_noPots() {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCommitted(0);
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCommitted(0);
-        final List<Seat> seats = List.of(seat1, seat2);
+        final List<SeatData> seats = List.of(seat1, seat2);
 
         // Act
-        final List<Pot> pots = PotsUtil.collectBets(seats);
+        final List<PotData> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(0, pots.size());
@@ -52,14 +52,14 @@ public class PotsUtilTest {
     @Test
     public void collectBets_whenOnlyOneCandidate_returnUncalledBet() {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setPlayer(new RandomPlayer(1L, "Alice"));
         seat1.setSeatIndex(0);
         seat1.setCommitted(1);
-        final List<Seat> seats = List.of(seat1);
+        final List<SeatData> seats = List.of(seat1);
 
         // Act
-        final List<Pot> pots = PotsUtil.collectBets(seats);
+        final List<PotData> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(0, pots.size());
@@ -71,21 +71,21 @@ public class PotsUtilTest {
     @Test
     public void collectBets_whenHeadsUp_onlyMainPot() {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCommitted(1);
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCommitted(1);
-        final List<Seat> seats = List.of(seat1, seat2);
+        final List<SeatData> seats = List.of(seat1, seat2);
 
         // Act
-        final List<Pot> pots = PotsUtil.collectBets(seats);
+        final List<PotData> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(1, pots.size());
 
-        final Pot mainPot = pots.get(0);
+        final PotData mainPot = pots.get(0);
         assertEquals(2, mainPot.getTotalAmount());
         assertEquals(1, mainPot.getAmountPerCandidate());
         assertEquals(2, mainPot.getCandidates().size());
@@ -96,24 +96,24 @@ public class PotsUtilTest {
     @Test
     public void collectBets_whenThreeWay_onlyMainPot() {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCommitted(1);
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCommitted(1);
-        final Seat seat3 = new Seat();
+        final SeatData seat3 = new SeatData();
         seat3.setSeatIndex(2);
         seat3.setCommitted(1);
-        final List<Seat> seats = List.of(seat1, seat2, seat3);
+        final List<SeatData> seats = List.of(seat1, seat2, seat3);
 
         // Act
-        final List<Pot> pots = PotsUtil.collectBets(seats);
+        final List<PotData> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(1, pots.size());
 
-        final Pot mainPot = pots.get(0);
+        final PotData mainPot = pots.get(0);
         assertEquals(3, mainPot.getTotalAmount());
         assertEquals(1, mainPot.getAmountPerCandidate());
         assertEquals(3, mainPot.getCandidates().size());
@@ -125,24 +125,24 @@ public class PotsUtilTest {
     @Test
     public void collectBets_whenThreeWayAndOneAllIn_mainPotAndOneSidePot() {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCommitted(2);
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCommitted(2);
-        final Seat seat3 = new Seat();
+        final SeatData seat3 = new SeatData();
         seat3.setSeatIndex(2);
         seat3.setCommitted(1);
-        final List<Seat> seats = List.of(seat1, seat2, seat3);
+        final List<SeatData> seats = List.of(seat1, seat2, seat3);
 
         // Act
-        final List<Pot> pots = PotsUtil.collectBets(seats);
+        final List<PotData> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(2, pots.size());
 
-        final Pot mainPot = pots.get(0);
+        final PotData mainPot = pots.get(0);
         assertEquals(3, mainPot.getTotalAmount());
         assertEquals(1, mainPot.getAmountPerCandidate());
         assertEquals(3, mainPot.getCandidates().size());
@@ -150,7 +150,7 @@ public class PotsUtilTest {
         assertEquals(seat1, mainPot.getCandidates().get(1).getSeat());
         assertEquals(seat2, mainPot.getCandidates().get(2).getSeat());
 
-        final Pot sidePot = pots.get(1);
+        final PotData sidePot = pots.get(1);
         assertEquals(2, sidePot.getTotalAmount());
         assertEquals(1, sidePot.getAmountPerCandidate());
         assertEquals(2, sidePot.getCandidates().size());
@@ -161,27 +161,27 @@ public class PotsUtilTest {
     @Test
     public void collectBets_whenFourWayAndThreeAllIn_mainPotAndOneSidePot() {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCommitted(2);
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCommitted(2);
-        final Seat seat3 = new Seat();
+        final SeatData seat3 = new SeatData();
         seat3.setSeatIndex(2);
         seat3.setCommitted(5);
-        final Seat seat4 = new Seat();
+        final SeatData seat4 = new SeatData();
         seat4.setSeatIndex(3);
         seat4.setCommitted(5);
-        final List<Seat> seats = List.of(seat1, seat2, seat3, seat4);
+        final List<SeatData> seats = List.of(seat1, seat2, seat3, seat4);
 
         // Act
-        final List<Pot> pots = PotsUtil.collectBets(seats);
+        final List<PotData> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(2, pots.size());
 
-        final Pot mainPot = pots.get(0);
+        final PotData mainPot = pots.get(0);
         assertEquals(8, mainPot.getTotalAmount());
         assertEquals(2, mainPot.getAmountPerCandidate());
         assertEquals(4, mainPot.getCandidates().size());
@@ -190,7 +190,7 @@ public class PotsUtilTest {
         assertEquals(seat3, mainPot.getCandidates().get(2).getSeat());
         assertEquals(seat4, mainPot.getCandidates().get(3).getSeat());
 
-        final Pot sidePot = pots.get(1);
+        final PotData sidePot = pots.get(1);
         assertEquals(6, sidePot.getTotalAmount());
         assertEquals(3, sidePot.getAmountPerCandidate());
         assertEquals(2, sidePot.getCandidates().size());
@@ -201,27 +201,27 @@ public class PotsUtilTest {
     @Test
     public void collectBets_whenFourWayAndThreeAllIn_mainPotAndTwoSidePots() {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCommitted(2);
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCommitted(3);
-        final Seat seat3 = new Seat();
+        final SeatData seat3 = new SeatData();
         seat3.setSeatIndex(2);
         seat3.setCommitted(5);
-        final Seat seat4 = new Seat();
+        final SeatData seat4 = new SeatData();
         seat4.setSeatIndex(3);
         seat4.setCommitted(5);
-        final List<Seat> seats = List.of(seat1, seat2, seat3, seat4);
+        final List<SeatData> seats = List.of(seat1, seat2, seat3, seat4);
 
         // Act
-        final List<Pot> pots = PotsUtil.collectBets(seats);
+        final List<PotData> pots = PotsUtil.collectBets(seats);
 
         // Assert
         assertEquals(3, pots.size());
 
-        final Pot mainPot = pots.get(0);
+        final PotData mainPot = pots.get(0);
         assertEquals(8, mainPot.getTotalAmount());
         assertEquals(2, mainPot.getAmountPerCandidate());
         assertEquals(4, mainPot.getCandidates().size());
@@ -230,7 +230,7 @@ public class PotsUtilTest {
         assertEquals(seat3, mainPot.getCandidates().get(2).getSeat());
         assertEquals(seat4, mainPot.getCandidates().get(3).getSeat());
 
-        final Pot sidePot1 = pots.get(1);
+        final PotData sidePot1 = pots.get(1);
         assertEquals(3, sidePot1.getTotalAmount());
         assertEquals(1, sidePot1.getAmountPerCandidate());
         assertEquals(3, sidePot1.getCandidates().size());
@@ -238,7 +238,7 @@ public class PotsUtilTest {
         assertEquals(seat3, sidePot1.getCandidates().get(1).getSeat());
         assertEquals(seat4, sidePot1.getCandidates().get(2).getSeat());
 
-        final Pot sidePot2 = pots.get(2);
+        final PotData sidePot2 = pots.get(2);
         assertEquals(4, sidePot2.getTotalAmount());
         assertEquals(2, sidePot2.getAmountPerCandidate());
         assertEquals(2, sidePot2.getCandidates().size());
@@ -249,7 +249,7 @@ public class PotsUtilTest {
     @Test
     public void determineWinners_noPots() throws NotationException {
         // Arrange
-        final List<Pot> pots = List.of();
+        final List<PotData> pots = List.of();
 
         // Act
         final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 10);
@@ -261,7 +261,7 @@ public class PotsUtilTest {
     @Test
     public void determineWinners_mainPotButNoCandidates() throws NotationException {
         // Arrange
-        final List<Pot> pots = List.of(new Pot(1, List.of()));
+        final List<PotData> pots = List.of(new PotData(1, List.of()));
 
         // Act
         final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 10);
@@ -273,11 +273,11 @@ public class PotsUtilTest {
     @Test
     public void determineWinners_mainPotAndOneCandidate() throws NotationException {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCards(HandUtil.fromNotation("AcQd").getBitmask());
         final List<CandidateData> candidates = List.of(new CandidateData(seat1, 1));
-        final List<Pot> pots = List.of(new Pot(1, candidates));
+        final List<PotData> pots = List.of(new PotData(1, candidates));
 
         // Act
         final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 1);
@@ -291,17 +291,17 @@ public class PotsUtilTest {
     @Test
     public void determineWinners_singleMainPotWinner_winnerTakesAll() throws NotationException {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCards(HandUtil.fromNotation("AcQd").getBitmask());
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCards(HandUtil.fromNotation("AhJs").getBitmask());
         final List<CandidateData> candidates = List.of(
                 new CandidateData(seat1, 1),
                 new CandidateData(seat2, 1)
         );
-        final List<Pot> pots = List.of(new Pot(1, candidates));
+        final List<PotData> pots = List.of(new PotData(1, candidates));
 
         // Act
         final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
@@ -315,17 +315,17 @@ public class PotsUtilTest {
     @Test
     public void determineWinners_twoMainPotWinners_winnerSplitEven() throws NotationException {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCards(HandUtil.fromNotation("AcAd").getBitmask());
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCards(HandUtil.fromNotation("AhAs").getBitmask());
         final List<CandidateData> candidates = List.of(
                 new CandidateData(seat1, 1),
                 new CandidateData(seat2, 1)
         );
-        final List<Pot> pots = List.of(new Pot(1, candidates));
+        final List<PotData> pots = List.of(new PotData(1, candidates));
 
         // Act
         final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
@@ -343,24 +343,24 @@ public class PotsUtilTest {
     @Test
     public void determineWinners_mainPotAndSidePot() throws NotationException {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCards(HandUtil.fromNotation("AcAd").getBitmask());
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCards(HandUtil.fromNotation("KhKs").getBitmask());
-        final Seat seat3 = new Seat();
+        final SeatData seat3 = new SeatData();
         seat3.setSeatIndex(2);
         seat3.setCards(HandUtil.fromNotation("QhQs").getBitmask());
-        final List<Pot> pots = List.of(
-                new Pot(1,
+        final List<PotData> pots = List.of(
+                new PotData(1,
                         List.of(
                                 new CandidateData(seat1, 1),
                                 new CandidateData(seat2, 1),
                                 new CandidateData(seat3, 1)
                         )
                 ),
-                new Pot(4,
+                new PotData(4,
                         List.of(
                                 new CandidateData(seat2, 4),
                                 new CandidateData(seat3, 4)
@@ -384,26 +384,26 @@ public class PotsUtilTest {
     @Test
     public void determineWinners_complexSituation() throws NotationException {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCards(HandUtil.fromNotation("AcAd").getBitmask());
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCards(HandUtil.fromNotation("Td9d").getBitmask());
-        final Seat seat3 = new Seat();
+        final SeatData seat3 = new SeatData();
         seat3.setSeatIndex(2);
         seat3.setCards(HandUtil.fromNotation("Th9h").getBitmask());
-        final Seat seat4 = new Seat();
+        final SeatData seat4 = new SeatData();
         seat4.setSeatIndex(3);
         seat4.setCards(HandUtil.fromNotation("Ts9s").getBitmask());
-        final Seat seat5 = new Seat();
+        final SeatData seat5 = new SeatData();
         seat5.setSeatIndex(4);
         seat5.setCards(HandUtil.fromNotation("9c9d").getBitmask());
-        final Seat seat6 = new Seat();
+        final SeatData seat6 = new SeatData();
         seat6.setSeatIndex(5);
         seat6.setCards(HandUtil.fromNotation("7c7d").getBitmask());
-        final List<Pot> pots = List.of(
-                new Pot(1,
+        final List<PotData> pots = List.of(
+                new PotData(1,
                         List.of(
                                 new CandidateData(seat1, 1),
                                 new CandidateData(seat2, 1),
@@ -413,7 +413,7 @@ public class PotsUtilTest {
                                 new CandidateData(seat6, 1)
                         )
                 ),
-                new Pot(4,
+                new PotData(4,
                         List.of(
                                 new CandidateData(seat2, 4),
                                 new CandidateData(seat3, 4),
@@ -422,7 +422,7 @@ public class PotsUtilTest {
                                 new CandidateData(seat6, 4)
                         )
                 ),
-                new Pot(6,
+                new PotData(6,
                         List.of(
                                 new CandidateData(seat5, 6),
                                 new CandidateData(seat6, 6)
@@ -455,30 +455,30 @@ public class PotsUtilTest {
     @Test
     public void determineWinners_afterSeriesOfCollects() throws NotationException {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setPlayer(new RandomPlayer(1L, "Alice"));
         seat1.setSeatIndex(0);
         seat1.setCommitted(0);
         seat1.setCards(HandUtil.fromNotation("AcAd").getBitmask());
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setPlayer(new RandomPlayer(2L, "Bob"));
         seat2.setSeatIndex(1);
         seat2.setCommitted(0);
         seat2.setCards(HandUtil.fromNotation("Td9d").getBitmask());
-        final Seat seat3 = new Seat();
+        final SeatData seat3 = new SeatData();
         seat3.setPlayer(new RandomPlayer(3L, "Charlie"));
         seat3.setSeatIndex(2);
         seat3.setCommitted(0);
         seat3.setCards(HandUtil.fromNotation("Th9h").getBitmask());
-        final Seat seat4 = new Seat();
+        final SeatData seat4 = new SeatData();
         seat4.setPlayer(new RandomPlayer(4L, "David"));
         seat4.setSeatIndex(3);
         seat4.setCommitted(0);
         seat4.setCards(HandUtil.fromNotation("4h5h").getBitmask());
 
-        final List<Seat> seats = List.of(seat1, seat2, seat3, seat4);
+        final List<SeatData> seats = List.of(seat1, seat2, seat3, seat4);
 
-        final List<Pot> pots = new ArrayList<>();
+        final List<PotData> pots = new ArrayList<>();
 
         // Betting round
         seat2.setCommitted(10); // SB: Post small blind
@@ -544,31 +544,31 @@ public class PotsUtilTest {
 
     @Test
     public void equality() {
-        final Seat seat = new Seat();
+        final SeatData seat = new SeatData();
         final CandidateData candidate1 = new CandidateData(seat, 100);
         final CandidateData candidate2 = new CandidateData(seat, 100);
         final CandidateData candidate3 = new CandidateData(seat, 200);
         final CandidateData candidate4 = new CandidateData(seat, 200);
         final List<CandidateData> candidates1 = List.of(candidate1, candidate2);
         final List<CandidateData> candidates2 = List.of(candidate3, candidate4);
-        final Pot pot1 = new Pot(200, candidates1);
-        final Pot pot2 = new Pot(200, candidates2);
+        final PotData pot1 = new PotData(200, candidates1);
+        final PotData pot2 = new PotData(200, candidates2);
         assertTrue(PotsUtil.hasSameCandidates(pot1, pot2));
     }
 
     @Test
     public void collapsePots_whenCandidateSeatsAreNotTheSameInBothPots_doNotCollapsePot() {
         // Arrange
-        final Seat seat1 = new Seat();
-        final Seat seat2 = new Seat();
-        final Seat seat3 = new Seat();
+        final SeatData seat1 = new SeatData();
+        final SeatData seat2 = new SeatData();
+        final SeatData seat3 = new SeatData();
 
-        final List<Pot> pots = List.of(
-                new Pot(100, List.of(
+        final List<PotData> pots = List.of(
+                new PotData(100, List.of(
                         new CandidateData(seat1, 100),
                         new CandidateData(seat2, 100)
                 )),
-                new Pot(250, List.of(
+                new PotData(250, List.of(
                         new CandidateData(seat1, 250),
                         new CandidateData(seat2, 250),
                         new CandidateData(seat3, 250)
@@ -576,7 +576,7 @@ public class PotsUtilTest {
         );
 
         // Act
-        final List<Pot> collapsed = PotsUtil.collapsePots(pots);
+        final List<PotData> collapsed = PotsUtil.collapsePots(pots);
 
         // Assert
         assertEquals(2, collapsed.size());
@@ -589,22 +589,22 @@ public class PotsUtilTest {
     @Test
     public void collapsePots_whenCandidateSeatsAreTheSameInBothPots_collapsePot() {
         // Arrange
-        final Seat seat1 = new Seat();
-        final Seat seat2 = new Seat();
+        final SeatData seat1 = new SeatData();
+        final SeatData seat2 = new SeatData();
 
-        final List<Pot> pots = List.of(
-                new Pot(100, List.of(
+        final List<PotData> pots = List.of(
+                new PotData(100, List.of(
                         new CandidateData(seat1, 100),
                         new CandidateData(seat2, 100)
                 )),
-                new Pot(250, List.of(
+                new PotData(250, List.of(
                         new CandidateData(seat1, 250),
                         new CandidateData(seat2, 250)
                 ))
         );
 
         // Act
-        final List<Pot> collapsed = PotsUtil.collapsePots(pots);
+        final List<PotData> collapsed = PotsUtil.collapsePots(pots);
 
         // Assert
         assertEquals(1, collapsed.size());
@@ -615,10 +615,10 @@ public class PotsUtilTest {
     @Test
     public void determineWinners_forCollapsedPot() throws NotationException {
         // Arrange
-        final Seat seat1 = new Seat();
+        final SeatData seat1 = new SeatData();
         seat1.setSeatIndex(0);
         seat1.setCards(HandUtil.fromNotation("AcAd").getBitmask());
-        final Seat seat2 = new Seat();
+        final SeatData seat2 = new SeatData();
         seat2.setSeatIndex(1);
         seat2.setCards(HandUtil.fromNotation("AhAs").getBitmask());
         final List<CandidateData> candidates1 = List.of(
@@ -629,9 +629,9 @@ public class PotsUtilTest {
                 new CandidateData(seat1, 2),
                 new CandidateData(seat2, 2)
         );
-        final List<Pot> pots = List.of(
-                new Pot(1, candidates1),
-                new Pot(2, candidates2)
+        final List<PotData> pots = List.of(
+                new PotData(1, candidates1),
+                new PotData(2, candidates2)
         );
 
         // Act

@@ -12,8 +12,8 @@ import java.util.List;
 public class GameData {
     private final String tableName;
     private String gameType;
-    private List<Seat> seats;
-    private final List<Pot> pots = new ArrayList<>();
+    private List<SeatData> seats;
+    private final List<PotData> pots = new ArrayList<>();
     private final DeckData deckData;
     private final int smallBlind;
     private final int bigBlind;

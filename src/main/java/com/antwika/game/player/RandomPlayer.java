@@ -1,7 +1,7 @@
 package com.antwika.game.player;
 
 import com.antwika.game.data.GameData;
-import com.antwika.game.data.Seat;
+import com.antwika.game.data.SeatData;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.PlayerActionRequest;
 import com.antwika.game.event.PlayerActionResponse;
@@ -24,7 +24,7 @@ public class RandomPlayer extends Player {
         int rand = getPlayerData().getPrng().nextInt(100);
 
         final GameData gameData = event.getGameData();
-        final Seat seat = GameDataUtil.getSeat(gameData, this);
+        final SeatData seat = GameDataUtil.getSeat(gameData, this);
         boolean canRaise = event.getToCall() < seat.getStack();
 
         if (event.getToCall() == 0) {

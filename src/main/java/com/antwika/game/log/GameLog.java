@@ -3,7 +3,7 @@ package com.antwika.game.log;
 import com.antwika.common.exception.NotationException;
 import com.antwika.game.data.GameData;
 import com.antwika.game.player.Player;
-import com.antwika.game.data.Seat;
+import com.antwika.game.data.SeatData;
 import com.antwika.game.util.GameDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class GameLog {
     }
 
     public static void printTableSeatsInfo(GameData gameData) {
-        for (Seat seat : gameData.getSeats()) {
+        for (SeatData seat : gameData.getSeats()) {
             if (seat.getPlayer() == null) continue;
 
             logger.info("Seat {}: {} ({} in chips) ",
@@ -41,7 +41,7 @@ public class GameLog {
     }
 
     public static void printTableSeatCardsInfo(GameData gameData) throws NotationException {
-        for (Seat seat : gameData.getSeats()) {
+        for (SeatData seat : gameData.getSeats()) {
             if (seat.getPlayer() == null) continue;
 
             final long cards = seat.getCards();
@@ -58,7 +58,7 @@ public class GameLog {
         logger.info("Board [{}]", GameDataUtil.toNotation(gameData.getCards()));
 
         int chipsInPlay = 0;
-        for (Seat seat : gameData.getSeats()) {
+        for (SeatData seat : gameData.getSeats()) {
             if (seat.getPlayer() == null) continue;
 
             chipsInPlay += seat.getStack();
