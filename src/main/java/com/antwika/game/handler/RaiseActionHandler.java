@@ -1,11 +1,10 @@
 package com.antwika.game.handler;
 
-import com.antwika.game.*;
 import com.antwika.game.data.GameData;
 import com.antwika.game.data.Seat;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.PlayerActionResponse;
-import com.antwika.game.util.GameUtil;
+import com.antwika.game.util.GameDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,7 @@ public class RaiseActionHandler implements IActionHandler {
         final PlayerActionResponse action = (PlayerActionResponse) event;
 
         final GameData gameData = action.getGameData();
-        final Seat seat = GameUtil.getSeat(gameData, action.player);
+        final Seat seat = GameDataUtil.getSeat(gameData, action.player);
         if (action.amount > seat.getStack()) {
             throw new RuntimeException("Player can not raise a greater amount than his remaining stack!");
         }
@@ -35,7 +34,7 @@ public class RaiseActionHandler implements IActionHandler {
             throw new RuntimeException("Player must at least raise by one full big blind, or raise all-in for less");
         }
 
-        GameUtil.commit(seat, action.amount);
+        GameDataUtil.commit(seat, action.amount);
         if (seat.getCommitted() > gameData.getTotalBet()) {
             gameData.setTotalBet(seat.getCommitted());
             gameData.setLastRaise(action.amount);

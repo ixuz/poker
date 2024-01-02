@@ -1,11 +1,10 @@
 package com.antwika.game.handler;
 
-import com.antwika.game.*;
 import com.antwika.game.data.GameData;
 import com.antwika.game.data.Seat;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.PlayerActionResponse;
-import com.antwika.game.util.GameUtil;
+import com.antwika.game.util.GameDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,7 @@ public class BetActionHandler implements IActionHandler {
         final PlayerActionResponse action = (PlayerActionResponse) event;
 
         final GameData gameData = action.getGameData();
-        final Seat seat = GameUtil.getSeat(gameData, action.player);
+        final Seat seat = GameDataUtil.getSeat(gameData, action.player);
         if (action.amount > seat.getStack()) {
             throw new RuntimeException("Player can not bet a greater amount than his remaining stack!");
         }
@@ -33,7 +32,7 @@ public class BetActionHandler implements IActionHandler {
             throw new RuntimeException("Player can not bet a zero amount!");
         }
 
-        GameUtil.commit(seat, action.amount);
+        GameDataUtil.commit(seat, action.amount);
         gameData.setTotalBet(seat.getCommitted());
         gameData.setLastRaise(action.amount);
         final StringBuilder sb = new StringBuilder();

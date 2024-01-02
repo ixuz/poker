@@ -3,7 +3,6 @@ package com.antwika.game.util;
 import com.antwika.common.exception.NotationException;
 import com.antwika.common.util.BitmaskUtil;
 import com.antwika.common.util.HandUtil;
-import com.antwika.game.*;
 import com.antwika.game.data.*;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.PlayerActionRequest;
@@ -17,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class GameUtil {
-    private static final Logger logger = LoggerFactory.getLogger(GameUtil.class);
+public class GameDataUtil {
+    private static final Logger logger = LoggerFactory.getLogger(GameDataUtil.class);
 
     public static String toNotation(long cards) throws NotationException {
         final String cardsNotation = HandUtil.toNotation(cards);
@@ -59,7 +58,7 @@ public class GameUtil {
     }
 
     public static void resetAllSeats(GameData gameData) {
-        gameData.getSeats().forEach(GameUtil::resetSeat);
+        gameData.getSeats().forEach(GameDataUtil::resetSeat);
     }
 
     public static int countAllStacks(GameData gameData) {
@@ -111,13 +110,13 @@ public class GameUtil {
     }
 
     public static void unseat(List<Seat> seats) {
-        seats.forEach(GameUtil::unseat);
+        seats.forEach(GameDataUtil::unseat);
     }
 
     public static void unseatAll(GameData gameData) {
         gameData.getSeats().stream()
                 .filter(seat -> seat.getPlayer() != null)
-                .forEach(GameUtil::unseat);
+                .forEach(GameDataUtil::unseat);
     }
 
     public static Seat findFirstAvailableSeat(GameData gameData) {
@@ -175,14 +174,27 @@ public class GameUtil {
     }
 
     public static boolean hasAllPlayersActed(GameData gameData) {
-        int highestCommit = GameUtil.findHighestCommit(gameData);
-        return gameData.getSeats().stream()
+        int highestCommit = GameDataUtil.findHighestCommit(gameData);
+
+        final int notActedYetCount = gameData.getSeats().stream()
                 .filter(seat -> seat.getStack() > 0)
                 .filter(seat -> !seat.isHasFolded())
                 .filter(seat -> !seat.isHasActed())
+                .toList()
+                .size();
+
+        if (notActedYetCount > 0) {
+            return false;
+        }
+
+        final int notMatchedBetCount = gameData.getSeats().stream()
+                .filter(seat -> seat.getStack() > 0)
+                .filter(seat -> !seat.isHasFolded())
                 .filter(seat -> seat.getCommitted() != highestCommit)
                 .toList()
-                .isEmpty();
+                .size();
+
+        return notMatchedBetCount <= 0;
     }
 
     public static int getNumberOfPlayersLeftToAct(GameData gameData) {
@@ -248,13 +260,13 @@ public class GameUtil {
 
     public static void forcePostBlind(GameData gameData, int blindIndex, int blindAmount) {
 
-        final Seat seat = GameUtil.findNextSeatToAct(gameData, gameData.getButtonAt(), blindIndex, true);
+        final Seat seat = GameDataUtil.findNextSeatToAct(gameData, gameData.getButtonAt(), blindIndex, true);
         final Player player = seat.getPlayer();
 
         int commitAmount = Math.min(seat.getStack(), blindAmount);
-        GameUtil.commit(seat, commitAmount);
+        GameDataUtil.commit(seat, commitAmount);
 
-        gameData.setActionAt(GameUtil.findNextSeatToAct(gameData, seat.getSeatIndex(), 0, true).getSeatIndex());
+        gameData.setActionAt(GameDataUtil.findNextSeatToAct(gameData, seat.getSeatIndex(), 0, true).getSeatIndex());
 
         final StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s: posts %s %d", player.getPlayerData().getPlayerName(), getBlindName(blindIndex), commitAmount));
@@ -301,15 +313,15 @@ public class GameUtil {
 
         try {
             final StringBuilder sb = new StringBuilder();
-            sb.append(String.format("*** %s ***", GameUtil.getStreetName(gameData)));
+            sb.append(String.format("*** %s ***", GameDataUtil.getStreetName(gameData)));
             if (prev != 0L) {
-                sb.append(String.format(" [%s]", GameUtil.toNotation(prev)));
+                sb.append(String.format(" [%s]", GameDataUtil.toNotation(prev)));
             }
             if (add != 0L) {
-                sb.append(String.format(" [%s]", GameUtil.toNotation(add)));
+                sb.append(String.format(" [%s]", GameDataUtil.toNotation(add)));
             }
             logger.info(sb.toString());
-            logger.info("Total pot: {}", GameUtil.countTotalPot(gameData));
+            logger.info("Total pot: {}", GameDataUtil.countTotalPot(gameData));
         } catch (NotationException e) {
             throw new RuntimeException(e);
         }
@@ -323,7 +335,7 @@ public class GameUtil {
         gameData.setDelivered(0);
         gameData.setTotalBet(gameData.getBigBlind());
         gameData.setLastRaise(gameData.getBigBlind());
-        gameData.setChipsInPlay(GameUtil.countAllStacks(gameData));
+        gameData.setChipsInPlay(GameDataUtil.countAllStacks(gameData));
     }
 
     public static void dealCards(GameData gameData) throws NotationException {
@@ -347,15 +359,15 @@ public class GameUtil {
     }
 
     public static void bettingRound(GameData gameData) {
-        GameUtil.prepareBettingRound(gameData);
+        GameDataUtil.prepareBettingRound(gameData);
 
         while (true) {
-            if (GameUtil.countPlayersRemainingInHand(gameData) == 1) {
+            if (GameDataUtil.countPlayersRemainingInHand(gameData) == 1) {
                 logger.debug("All but one player has folded, hand must end");
                 break;
             }
 
-            if (GameUtil.getNumberOfPlayersLeftToAct(gameData) < 2) {
+            if (GameDataUtil.getNumberOfPlayersLeftToAct(gameData) < 1) {
                 break;
             }
 
@@ -364,7 +376,7 @@ public class GameUtil {
 
             final Seat seat = seats.get(actionAt);
 
-            final Seat seatAfter = GameUtil.findNextSeatToAct(gameData, actionAt, 0, true);
+            final Seat seatAfter = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
             if (seat == null) break;
 
             if (seat.isHasFolded()) {
@@ -397,11 +409,11 @@ public class GameUtil {
 
             ActionHandler.handleEvent(response);
 
-            if (GameUtil.hasAllPlayersActed(gameData)) {
+            if (GameDataUtil.hasAllPlayersActed(gameData)) {
                 break;
             }
 
-            final Seat theNextSeat = GameUtil.findNextSeatToAct(gameData, actionAt, 0, true);
+            final Seat theNextSeat = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
             if (theNextSeat == null) {
                 break;
             }
@@ -419,8 +431,8 @@ public class GameUtil {
         gameData.setLastRaise(0);
         gameData.setTotalBet(0);
 
-        int totalStacks = GameUtil.countAllStacks(gameData);
-        int totalPot = GameUtil.countTotalPot(gameData);
+        int totalStacks = GameDataUtil.countAllStacks(gameData);
+        int totalPot = GameDataUtil.countTotalPot(gameData);
         if (totalStacks + totalPot != gameData.getChipsInPlay()) {
             throw new RuntimeException("Invalid amount of chips");
         }
@@ -451,7 +463,7 @@ public class GameUtil {
         pots.clear();
 
         int totalStacks = seats.stream().filter(i -> i.getPlayer() != null).mapToInt(Seat::getStack).sum();
-        int totalPot = GameUtil.countTotalPot(gameData);
+        int totalPot = GameDataUtil.countTotalPot(gameData);
         if (totalStacks + totalPot != gameData.getChipsInPlay()) {
             throw new RuntimeException("Invalid amount of chips");
         }
@@ -460,36 +472,47 @@ public class GameUtil {
     }
 
     public static void hand(GameData gameData) throws NotationException {
-        GameUtil.prepareHand(gameData);
-        GameUtil.unseat(GameUtil.findAllBustedSeats(gameData));
-        GameUtil.resetAllSeats(gameData);
+        GameDataUtil.prepareHand(gameData);
+        GameDataUtil.unseat(GameDataUtil.findAllBustedSeats(gameData));
+        GameDataUtil.resetAllSeats(gameData);
 
         GameLog.printGameInfo(gameData);
         DeckUtil.resetAndShuffle(gameData.getDeckData());
         GameLog.printTableInfo(gameData);
         GameLog.printTableSeatsInfo(gameData);
-        GameUtil.forcePostBlinds(gameData, List.of(gameData.getSmallBlind(), gameData.getBigBlind()));
-        GameUtil.dealCards(gameData);
+        GameDataUtil.forcePostBlinds(gameData, List.of(gameData.getSmallBlind(), gameData.getBigBlind()));
+        GameDataUtil.dealCards(gameData);
 
-        GameUtil.bettingRound(gameData);
-        GameUtil.collect(gameData);
-        if (GameUtil.countPlayersRemainingInHand(gameData) > 1) {
-            GameUtil.dealCommunityCards(gameData, 3);
-            GameUtil.bettingRound(gameData);
-            GameUtil.collect(gameData);
+        GameDataUtil.bettingRound(gameData);
+        GameDataUtil.collect(gameData);
+        if (GameDataUtil.countPlayersRemainingInHand(gameData) > 1) {
+            GameDataUtil.dealCommunityCards(gameData, 3);
+            GameDataUtil.bettingRound(gameData);
+            GameDataUtil.collect(gameData);
         }
-        if (GameUtil.countPlayersRemainingInHand(gameData) > 1) {
-            GameUtil.dealCommunityCards(gameData, 1);
-            GameUtil.bettingRound(gameData);
-            GameUtil.collect(gameData);
+        if (GameDataUtil.countPlayersRemainingInHand(gameData) > 1) {
+            GameDataUtil.dealCommunityCards(gameData, 1);
+            GameDataUtil.bettingRound(gameData);
+            GameDataUtil.collect(gameData);
         }
-        if (GameUtil.countPlayersRemainingInHand(gameData) > 1) {
-            GameUtil.dealCommunityCards(gameData, 1);
-            GameUtil.bettingRound(gameData);
-            GameUtil.collect(gameData);
+        if (GameDataUtil.countPlayersRemainingInHand(gameData) > 1) {
+            GameDataUtil.dealCommunityCards(gameData, 1);
+            GameDataUtil.bettingRound(gameData);
+            GameDataUtil.collect(gameData);
         }
-        GameUtil.showdown(gameData);
-        GameUtil.pushButton(gameData);
+        GameDataUtil.showdown(gameData);
+        GameDataUtil.pushButton(gameData);
         logger.info("--- HAND END ---");
+    }
+
+    public static int calcBetSize(GameData gameData, Player player, float betSizePercent) {
+        final Seat seat = GameDataUtil.getSeat(gameData, player);
+        int lastRaise = gameData.getLastRaise();
+        int totalPot = GameDataUtil.countTotalPotAndCommitted(gameData);
+        int deadMoney = totalPot - lastRaise;
+        int desiredBet = (int) ((lastRaise * 3 + deadMoney) * betSizePercent);
+        int minimumBet = Math.min(seat.getStack(), gameData.getBigBlind());
+        int bet = Math.max(desiredBet, minimumBet);
+        return Math.min(seat.getStack(), bet);
     }
 }

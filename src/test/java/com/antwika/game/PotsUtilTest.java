@@ -6,6 +6,7 @@ import com.antwika.game.data.CandidateData;
 import com.antwika.game.data.Pot;
 import com.antwika.game.data.Seat;
 import com.antwika.game.player.Player;
+import com.antwika.game.player.RandomPlayer;
 import com.antwika.game.util.PotsUtil;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -53,7 +54,7 @@ public class PotsUtilTest {
     public void collectBets_whenOnlyOneCandidate_returnUncalledBet() {
         // Arrange
         final Seat seat1 = new Seat();
-        seat1.setPlayer(new Player(1L, "Alice"));
+        seat1.setPlayer(new RandomPlayer(1L, "Alice"));
         seat1.setSeatIndex(0);
         seat1.setCommitted(1);
         final List<Seat> seats = List.of(seat1);
@@ -456,22 +457,22 @@ public class PotsUtilTest {
     public void determineWinners_afterSeriesOfCollects() throws NotationException {
         // Arrange
         final Seat seat1 = new Seat();
-        seat1.setPlayer(new Player(1L, "Alice"));
+        seat1.setPlayer(new RandomPlayer(1L, "Alice"));
         seat1.setSeatIndex(0);
         seat1.setCommitted(0);
         seat1.setCards(HandUtil.fromNotation("AcAd").getBitmask());
         final Seat seat2 = new Seat();
-        seat2.setPlayer(new Player(2L, "Bob"));
+        seat2.setPlayer(new RandomPlayer(2L, "Bob"));
         seat2.setSeatIndex(1);
         seat2.setCommitted(0);
         seat2.setCards(HandUtil.fromNotation("Td9d").getBitmask());
         final Seat seat3 = new Seat();
-        seat3.setPlayer(new Player(3L, "Charlie"));
+        seat3.setPlayer(new RandomPlayer(3L, "Charlie"));
         seat3.setSeatIndex(2);
         seat3.setCommitted(0);
         seat3.setCards(HandUtil.fromNotation("Th9h").getBitmask());
         final Seat seat4 = new Seat();
-        seat4.setPlayer(new Player(4L, "David"));
+        seat4.setPlayer(new RandomPlayer(4L, "David"));
         seat4.setSeatIndex(3);
         seat4.setCommitted(0);
         seat4.setCards(HandUtil.fromNotation("4h5h").getBitmask());

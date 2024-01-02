@@ -4,7 +4,7 @@ import com.antwika.common.exception.NotationException;
 import com.antwika.game.data.GameData;
 import com.antwika.game.player.Player;
 import com.antwika.game.data.Seat;
-import com.antwika.game.util.GameUtil;
+import com.antwika.game.util.GameDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,14 +48,14 @@ public class GameLog {
 
             if (Long.bitCount(cards) != 2) throw new RuntimeException("Unexpected number of cards after deal");
 
-            logger.info("Dealt to {} [{}]", seat.getPlayer().getPlayerData().getPlayerName(), GameUtil.toNotation(seat.getCards()));
+            logger.info("Dealt to {} [{}]", seat.getPlayer().getPlayerData().getPlayerName(), GameDataUtil.toNotation(seat.getCards()));
         }
     }
 
     public static void printSummary(GameData gameData) throws NotationException {
         logger.info("*** SUMMARY ***");
         logger.info("Total pot {} | Rake {}", gameData.getDelivered(), 0);
-        logger.info("Board [{}]", GameUtil.toNotation(gameData.getCards()));
+        logger.info("Board [{}]", GameDataUtil.toNotation(gameData.getCards()));
 
         int chipsInPlay = 0;
         for (Seat seat : gameData.getSeats()) {
