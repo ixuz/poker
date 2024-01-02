@@ -1,8 +1,7 @@
 package com.antwika.game.event;
 
 import com.antwika.game.Game;
-import com.antwika.game.Player;
-import com.antwika.game.event.IEvent;
+import com.antwika.game.player.Player;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

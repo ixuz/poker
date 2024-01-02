@@ -2,7 +2,7 @@ package com.antwika.game.log;
 
 import com.antwika.common.exception.NotationException;
 import com.antwika.game.Game;
-import com.antwika.game.Player;
+import com.antwika.game.player.Player;
 import com.antwika.game.data.Seat;
 import com.antwika.game.util.GameUtil;
 import org.slf4j.Logger;

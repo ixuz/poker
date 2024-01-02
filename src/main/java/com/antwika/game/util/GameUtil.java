@@ -5,12 +5,14 @@ import com.antwika.common.util.BitmaskUtil;
 import com.antwika.common.util.HandUtil;
 import com.antwika.game.*;
 import com.antwika.game.data.CandidateData;
+import com.antwika.game.data.DeckData;
 import com.antwika.game.data.Pot;
 import com.antwika.game.data.Seat;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.PlayerActionRequest;
 import com.antwika.game.handler.ActionHandler;
 import com.antwika.game.log.GameLog;
+import com.antwika.game.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,12 +217,12 @@ public class GameUtil {
 
     public static void drawButtonSeatIndex(Game game) {
         logger.debug("Drawing cards to determine button position...");
-        final Deck deck = game.getGameData().getDeck();
-        Deck.resetAndShuffle(deck);
+        final DeckData deckData = game.getGameData().getDeckData();
+        DeckUtil.resetAndShuffle(deckData);
 
         game.getGameData().getSeats().stream()
                 .filter(seat -> seat.getPlayer() != null)
-                .forEach(seat -> seat.setCards(Deck.draw(deck)));
+                .forEach(seat -> seat.setCards(DeckUtil.draw(deckData)));
 
         final List<Seat> sortedByCard = game.getGameData().getSeats().stream()
                 .filter(i -> i.getPlayer() != null)
@@ -293,8 +295,9 @@ public class GameUtil {
     public static void dealCommunityCards(Game game, int count) {
         long prev = game.getGameData().getCards();
         long add = 0L;
+        final DeckData deckData = game.getGameData().getDeckData();
         for (int i = 0; i < count; i += 1) {
-            add |= Deck.draw(game.getGameData().getDeck());
+            add |= DeckUtil.draw(deckData);
         }
 
         game.getGameData().setCards(game.getGameData().getCards() | add);
@@ -328,12 +331,13 @@ public class GameUtil {
 
     public static void dealCards(Game game) throws NotationException {
         final List<Seat> seats = game.getGameData().getSeats();
+        final DeckData deckData = game.getGameData().getDeckData();
         logger.info("*** HOLE CARDS ***");
         for (int i = 0; i < seats.size() * 2; i += 1) {
             final int seatIndex = (game.getGameData().getActionAt() + i + 1) % seats.size();
             final Seat seat = seats.get(seatIndex);
             if (seat.getPlayer() == null) continue;
-            final long card = Deck.draw(game.getGameData().getDeck());
+            final long card = DeckUtil.draw(deckData);
             seat.setCards(seat.getCards() | card);
             try {
                 logger.debug("Deal card {} to {}", HandUtil.toNotation(card), seat.getPlayer());
@@ -464,7 +468,7 @@ public class GameUtil {
         GameUtil.resetAllSeats(game);
 
         GameLog.printGameInfo(game);
-        Deck.resetAndShuffle(game.getGameData().getDeck());
+        DeckUtil.resetAndShuffle(game.getGameData().getDeckData());
         GameLog.printTableInfo(game);
         GameLog.printTableSeatsInfo(game);
         GameUtil.forcePostBlinds(game, List.of(game.getGameData().getSmallBlind(), game.getGameData().getBigBlind()));

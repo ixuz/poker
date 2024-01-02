@@ -6,7 +6,7 @@ import com.antwika.eval.exception.HandEvaluatorException;
 import com.antwika.eval.processor.TexasHoldemProcessor;
 import com.antwika.eval.util.HandEvaluatorUtil;
 import com.antwika.game.data.CandidateData;
-import com.antwika.game.Player;
+import com.antwika.game.player.Player;
 import com.antwika.game.data.Pot;
 import com.antwika.game.data.Seat;
 import lombok.AllArgsConstructor;

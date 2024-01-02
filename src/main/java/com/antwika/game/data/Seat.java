@@ -1,6 +1,6 @@
 package com.antwika.game.data;
 
-import com.antwika.game.Player;
+import com.antwika.game.player.Player;
 import lombok.Data;
 import lombok.ToString;
 

@@ -1,6 +1,7 @@
 package com.antwika.game;
 
 import com.antwika.game.common.Prng;
+import com.antwika.game.data.DeckData;
 import com.antwika.game.data.GameData;
 import com.antwika.game.data.Seat;
 
@@ -22,7 +23,7 @@ public class GameDataFactory {
                 .tableName(tableName)
                 .gameType("Hold'em No Limit")
                 .seats(seats)
-                .deck(new Deck(prng.nextInt()))
+                .deckData(new DeckData(prng.nextInt()))
                 .smallBlind(smallBlind)
                 .bigBlind(bigBlind)
                 .handId(0L)

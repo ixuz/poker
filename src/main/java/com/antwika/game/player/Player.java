@@ -1,5 +1,6 @@
-package com.antwika.game;
+package com.antwika.game.player;
 
+import com.antwika.game.Game;
 import com.antwika.game.common.Prng;
 import com.antwika.game.data.PlayerData;
 import com.antwika.game.data.Seat;
