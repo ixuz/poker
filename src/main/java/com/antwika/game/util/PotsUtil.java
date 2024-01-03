@@ -173,17 +173,9 @@ public class PotsUtil {
                 int portion = remainingPot / winnerCount;
                 int rest = remainingPot - portion * winnerCount;
 
-                List<CandidateData> groupWinners = new ArrayList<>();
-                for (CandidateEvaluationData e : group) {
-                    delivered += portion;
+                final List<CandidateData> groupWinners = getCandidateEvaluationDataList(group, portion, potIndex);
 
-                    final CandidateData candidate = new CandidateData(e.getCandidate().getSeat(), portion);
-
-                    if (potIndex == 0) candidate.setPotName("Main pot");
-                    else candidate.setPotName("Side pot #" + potIndex);
-
-                    groupWinners.add(candidate);
-                }
+                delivered += groupWinners.stream().mapToInt(CandidateData::getAmount).sum();
 
                 if (rest > 0) {
                     final List<CandidateData> sortedWinnersBySeatIndex = groupWinners.stream()
@@ -216,6 +208,17 @@ public class PotsUtil {
         }
 
         return winners;
+    }
+
+    private static List<CandidateData> getCandidateEvaluationDataList(List<CandidateEvaluationData> group, int portion, int potIndex) {
+        List<CandidateData> groupWinners = new ArrayList<>();
+        for (CandidateEvaluationData e : group) {
+            final CandidateData candidate = new CandidateData(e.getCandidate().getSeat(), portion);
+            if (potIndex == 0) candidate.setPotName("Main pot");
+            else candidate.setPotName("Side pot #" + potIndex);
+            groupWinners.add(candidate);
+        }
+        return groupWinners;
     }
 
     private static Integer getFirstWinnerIndexAfterButton(int buttonAt, int seatCount, List<CandidateData> sortedWinnersBySeatIndex) {
