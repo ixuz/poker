@@ -6,11 +6,10 @@ import com.antwika.eval.exception.HandEvaluatorException;
 import com.antwika.eval.processor.TexasHoldemProcessor;
 import com.antwika.eval.util.HandEvaluatorUtil;
 import com.antwika.game.data.CandidateData;
+import com.antwika.game.data.CandidateEvaluationData;
 import com.antwika.game.player.Player;
 import com.antwika.game.data.PotData;
 import com.antwika.game.data.SeatData;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,14 +129,6 @@ public class PotsUtil {
         return collapsed;
     }
 
-    @Data
-    @AllArgsConstructor
-    public static class CandidateEvaluation {
-        private CandidateData candidate;
-        private IEvaluation evaluation;
-        private String groupId;
-    }
-
     public static List<CandidateData> determineWinners(List<PotData> pots, long communityCards, int buttonAt, int seatCount) {
         final List<PotData> potsCopy = new ArrayList<>(pots);
         final List<PotData> collapsedPots = collapsePots(potsCopy);
@@ -152,15 +143,15 @@ public class PotsUtil {
             final PotData pot = collapsedPots.remove(0);
             final List<CandidateData> candidates = pot.getCandidates().stream().filter(i -> !i.getSeat().isHasFolded()).toList();
 
-            final List<CandidateEvaluation> evaluations = candidates.stream()
+            final List<CandidateEvaluationData> evaluations = candidates.stream()
                     .map(i -> {
                         final IEvaluation evaluation = HandEvaluatorUtil.evaluate(processor, i.getSeat().getCards() | communityCards);
                         final String groupId = HandEvaluatorUtil.toId(evaluation);
-                        return new CandidateEvaluation(i, evaluation, groupId);
+                        return new CandidateEvaluationData(i, evaluation, groupId);
                     })
                     .toList();
 
-            final List<CandidateEvaluation> sortedEvaluations = evaluations.stream().sorted((e1, e2) -> {
+            final List<CandidateEvaluationData> sortedEvaluations = evaluations.stream().sorted((e1, e2) -> {
                 try {
                     return -1 * HandEvaluatorUtil.compare(processor, e1.getEvaluation().getHand(), e2.getEvaluation().getHand());
                 } catch (HandEvaluatorException e) {
@@ -168,25 +159,25 @@ public class PotsUtil {
                 }
             }).toList();
 
-            final List<String> sortedGroupIds = sortedEvaluations.stream().map(i -> i.groupId).distinct().toList();
+            final List<String> sortedGroupIds = sortedEvaluations.stream().map(i -> i.getGroupId()).distinct().toList();
 
-            final Map<String, List<CandidateEvaluation>> groups = evaluations.stream().collect(Collectors.groupingBy(i -> i.groupId));
+            final Map<String, List<CandidateEvaluationData>> groups = evaluations.stream().collect(Collectors.groupingBy(i -> i.getGroupId()));
 
             int remainingPot = pot.getTotalAmount();
             for (String groupId : sortedGroupIds) {
                 if (remainingPot == 0) break;
                 if (remainingPot < 0) throw new RuntimeException("The remaining pot must never be negative");
-                final List<CandidateEvaluation> group = groups.get(groupId);
+                final List<CandidateEvaluationData> group = groups.get(groupId);
                 int winnerCount = group.size();
                 int delivered = 0;
                 int portion = remainingPot / winnerCount;
                 int rest = remainingPot - portion * winnerCount;
 
                 List<CandidateData> groupWinners = new ArrayList<>();
-                for (CandidateEvaluation e : group) {
+                for (CandidateEvaluationData e : group) {
                     delivered += portion;
 
-                    final CandidateData candidate = new CandidateData(e.candidate.getSeat(), portion);
+                    final CandidateData candidate = new CandidateData(e.getCandidate().getSeat(), portion);
 
                     if (potIndex == 0) candidate.setPotName("Main pot");
                     else candidate.setPotName("Side pot #" + potIndex);
