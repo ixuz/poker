@@ -190,7 +190,11 @@ public class PotsUtil {
                             .sorted(Comparator.comparingInt(e -> e.getSeat().getSeatIndex()))
                             .toList();
 
-                    int firstWinnerIndexAfterButton = getFirstWinnerIndexAfterButton(buttonAt, seatCount, sortedWinnersBySeatIndex);
+                    Integer firstWinnerIndexAfterButton = getFirstWinnerIndexAfterButton(buttonAt, seatCount, sortedWinnersBySeatIndex);
+
+                    if (firstWinnerIndexAfterButton == null) {
+                        throw new RuntimeException("Could not find the first candidate after the button");
+                    }
 
                     for (int i = 0; i < sortedWinnersBySeatIndex.size(); i += 1) {
                         if (rest == 0) break;
@@ -226,9 +230,6 @@ public class PotsUtil {
             }
         }
 
-        if (firstWinnerIndexAfterButton == null) {
-            throw new RuntimeException("Could not find the first candidate after the button");
-        }
         return firstWinnerIndexAfterButton;
     }
 }
