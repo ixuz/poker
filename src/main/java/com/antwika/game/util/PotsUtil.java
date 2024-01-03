@@ -117,6 +117,12 @@ public class PotsUtil {
             collapsed.remove(i);
         }
 
+        namePots(collapsed);
+
+        return collapsed;
+    }
+
+    private static void namePots(List<PotData> collapsed) {
         for (int i = collapsed.size() - 1; i >= 0; i -= 1) {
             final PotData pot = collapsed.get(0);
             if (i == 0) {
@@ -125,8 +131,6 @@ public class PotsUtil {
                 pot.setName("Side pot #" + i);
             }
         }
-
-        return collapsed;
     }
 
     public static List<CandidateData> determineWinners(List<PotData> pots, long communityCards, int buttonAt, int seatCount) {
@@ -173,7 +177,7 @@ public class PotsUtil {
                 int portion = remainingPot / winnerCount;
                 int rest = remainingPot - portion * winnerCount;
 
-                final List<CandidateData> groupWinners = getCandidateEvaluationDataList(group, portion, potIndex);
+                final List<CandidateData> groupWinners = getCandidateDataList(group, portion, potIndex);
 
                 delivered += groupWinners.stream().mapToInt(CandidateData::getAmount).sum();
 
@@ -210,8 +214,8 @@ public class PotsUtil {
         return winners;
     }
 
-    private static List<CandidateData> getCandidateEvaluationDataList(List<CandidateEvaluationData> group, int portion, int potIndex) {
-        List<CandidateData> groupWinners = new ArrayList<>();
+    private static List<CandidateData> getCandidateDataList(List<CandidateEvaluationData> group, int portion, int potIndex) {
+        final List<CandidateData> groupWinners = new ArrayList<>();
         for (CandidateEvaluationData e : group) {
             final CandidateData candidate = new CandidateData(e.getCandidate().getSeat(), portion);
             if (potIndex == 0) candidate.setPotName("Main pot");
