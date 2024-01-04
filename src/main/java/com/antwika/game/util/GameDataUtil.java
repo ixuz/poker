@@ -6,7 +6,6 @@ import com.antwika.common.util.HandUtil;
 import com.antwika.game.data.*;
 import com.antwika.game.event.*;
 import com.antwika.game.handler.ActionHandler;
-import com.antwika.game.handler.ShowdownHandler;
 import com.antwika.game.log.GameLog;
 import com.antwika.game.player.Player;
 import org.slf4j.Logger;
@@ -477,10 +476,10 @@ public class GameDataUtil {
     public static void hand(GameData gameData) throws NotationException {
         ActionHandler.handleEvent(new HandBeginEvent(gameData));
         ActionHandler.handleEvent(new DealCardsEvent(gameData));
-        ActionHandler.handleEvent(new BettingRoundEvent(gameData));
-        ActionHandler.handleEvent(new BettingRoundEvent(gameData));
-        ActionHandler.handleEvent(new BettingRoundEvent(gameData));
-        ActionHandler.handleEvent(new BettingRoundEvent(gameData));
+        ActionHandler.handleEvent(new BettingRoundEvent(gameData, 0));
+        ActionHandler.handleEvent(new BettingRoundEvent(gameData, 3));
+        ActionHandler.handleEvent(new BettingRoundEvent(gameData, 1));
+        ActionHandler.handleEvent(new BettingRoundEvent(gameData, 1));
         ActionHandler.handleEvent(new ShowdownEvent(gameData));
     }
 

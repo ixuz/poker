@@ -22,10 +22,11 @@ public class BettingRoundHandler implements IActionHandler {
             final GameData gameData = bettingRoundEvent.getGameData();
 
             if (GameDataUtil.countPlayersRemainingInHand(gameData) > 1) {
-                switch (Long.bitCount(gameData.getCards())) {
-                    case 0 -> GameDataUtil.dealCommunityCards(gameData, 3);
-                    case 3, 4 -> GameDataUtil.dealCommunityCards(gameData, 1);
+                final int dealCommunityCardCount = bettingRoundEvent.getDealCommunityCardCount();
+                if (dealCommunityCardCount > 0) {
+                    GameDataUtil.dealCommunityCards(gameData, dealCommunityCardCount);
                 }
+
 
                 GameDataUtil.bettingRound(gameData);
                 GameDataUtil.collect(gameData);

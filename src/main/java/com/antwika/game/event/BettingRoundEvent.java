@@ -8,4 +8,5 @@ import lombok.Getter;
 @Getter
 public class BettingRoundEvent implements IEvent {
     private GameData gameData;
+    private int dealCommunityCardCount;
 }

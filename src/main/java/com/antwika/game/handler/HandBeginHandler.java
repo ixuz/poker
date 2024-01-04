@@ -2,6 +2,7 @@ package com.antwika.game.handler;
 
 import com.antwika.game.data.GameData;
 import com.antwika.game.event.DealCardsEvent;
+import com.antwika.game.event.HandBeginEvent;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.log.GameLog;
 import com.antwika.game.util.DeckUtil;
@@ -15,12 +16,12 @@ public class HandBeginHandler implements IActionHandler {
     private static final Logger logger = LoggerFactory.getLogger(HandBeginHandler.class);
 
     public boolean canHandle(IEvent event) {
-        return event instanceof DealCardsEvent;
+        return event instanceof HandBeginEvent;
     }
     public void handle(IEvent event) {
         try {
-            final DealCardsEvent dealCardsEvent = (DealCardsEvent) event;
-            final GameData gameData = dealCardsEvent.getGameData();
+            final HandBeginEvent handBeginEvent = (HandBeginEvent) event;
+            final GameData gameData = handBeginEvent.getGameData();
 
             GameDataUtil.prepareHand(gameData);
             GameDataUtil.unseat(GameDataUtil.findAllBustedSeats(gameData));
