@@ -4,9 +4,7 @@ import com.antwika.common.exception.NotationException;
 import com.antwika.common.util.BitmaskUtil;
 import com.antwika.common.util.HandUtil;
 import com.antwika.game.data.*;
-import com.antwika.game.event.IEvent;
-import com.antwika.game.event.PlayerActionRequest;
-import com.antwika.game.event.ShowdownEvent;
+import com.antwika.game.event.*;
 import com.antwika.game.handler.ActionHandler;
 import com.antwika.game.handler.ShowdownHandler;
 import com.antwika.game.log.GameLog;
@@ -477,35 +475,12 @@ public class GameDataUtil {
     }
 
     public static void hand(GameData gameData) throws NotationException {
-        GameDataUtil.prepareHand(gameData);
-        GameDataUtil.unseat(GameDataUtil.findAllBustedSeats(gameData));
-        GameDataUtil.resetAllSeats(gameData);
-
-        GameLog.printGameInfo(gameData);
-        DeckUtil.resetAndShuffle(gameData.getDeckData());
-        GameLog.printTableInfo(gameData);
-        GameLog.printTableSeatsInfo(gameData);
-        GameDataUtil.forcePostBlinds(gameData, List.of(gameData.getSmallBlind(), gameData.getBigBlind()));
-        GameDataUtil.dealCards(gameData);
-
-        GameDataUtil.bettingRound(gameData);
-        GameDataUtil.collect(gameData);
-        if (GameDataUtil.countPlayersRemainingInHand(gameData) > 1) {
-            GameDataUtil.dealCommunityCards(gameData, 3);
-            GameDataUtil.bettingRound(gameData);
-            GameDataUtil.collect(gameData);
-        }
-        if (GameDataUtil.countPlayersRemainingInHand(gameData) > 1) {
-            GameDataUtil.dealCommunityCards(gameData, 1);
-            GameDataUtil.bettingRound(gameData);
-            GameDataUtil.collect(gameData);
-        }
-        if (GameDataUtil.countPlayersRemainingInHand(gameData) > 1) {
-            GameDataUtil.dealCommunityCards(gameData, 1);
-            GameDataUtil.bettingRound(gameData);
-            GameDataUtil.collect(gameData);
-        }
-
+        ActionHandler.handleEvent(new HandBeginEvent(gameData));
+        ActionHandler.handleEvent(new DealCardsEvent(gameData));
+        ActionHandler.handleEvent(new BettingRoundEvent(gameData));
+        ActionHandler.handleEvent(new BettingRoundEvent(gameData));
+        ActionHandler.handleEvent(new BettingRoundEvent(gameData));
+        ActionHandler.handleEvent(new BettingRoundEvent(gameData));
         ActionHandler.handleEvent(new ShowdownEvent(gameData));
     }
 

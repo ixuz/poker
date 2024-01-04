@@ -17,22 +17,23 @@ public class ActionHandler extends EventHandler {
             new CallActionHandler(),
             new BetActionHandler(),
             new RaiseActionHandler(),
-            new ShowdownHandler()
+            new ShowdownHandler(),
+            new BettingRoundHandler(),
+            new DealCardsHandler(),
+            new HandBeginHandler()
     );
 
     public static void handleEvent(IEvent event) {
-        //if (event instanceof PlayerActionResponse action) {
-            boolean handled = false;
-            for (IActionHandler actionHandler : actionHandlers) {
-                if (actionHandler.canHandle(event)) {
-                    actionHandler.handle(event);
-                    handled = true;
-                }
+        boolean handled = false;
+        for (IActionHandler actionHandler : actionHandlers) {
+            if (actionHandler.canHandle(event)) {
+                actionHandler.handle(event);
+                handled = true;
             }
+        }
 
-            if (!handled) {
-                logger.warn("No action handler could handle the player's action response");
-            }
-        //}
+        if (!handled) {
+            logger.warn("No action handler could handle the player's action response");
+        }
     }
 }
