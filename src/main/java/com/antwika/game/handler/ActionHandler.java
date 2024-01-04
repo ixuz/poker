@@ -16,15 +16,16 @@ public class ActionHandler extends EventHandler {
             new CheckActionHandler(),
             new CallActionHandler(),
             new BetActionHandler(),
-            new RaiseActionHandler()
+            new RaiseActionHandler(),
+            new ShowdownHandler()
     );
 
     public static void handleEvent(IEvent event) {
-        if (event instanceof PlayerActionResponse action) {
+        //if (event instanceof PlayerActionResponse action) {
             boolean handled = false;
             for (IActionHandler actionHandler : actionHandlers) {
-                if (actionHandler.canHandle(action)) {
-                    actionHandler.handle(action);
+                if (actionHandler.canHandle(event)) {
+                    actionHandler.handle(event);
                     handled = true;
                 }
             }
@@ -32,6 +33,6 @@ public class ActionHandler extends EventHandler {
             if (!handled) {
                 logger.warn("No action handler could handle the player's action response");
             }
-        }
+        //}
     }
 }

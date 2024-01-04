@@ -6,7 +6,9 @@ import com.antwika.common.util.HandUtil;
 import com.antwika.game.data.*;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.PlayerActionRequest;
+import com.antwika.game.event.ShowdownEvent;
 import com.antwika.game.handler.ActionHandler;
+import com.antwika.game.handler.ShowdownHandler;
 import com.antwika.game.log.GameLog;
 import com.antwika.game.player.Player;
 import org.slf4j.Logger;
@@ -503,9 +505,8 @@ public class GameDataUtil {
             GameDataUtil.bettingRound(gameData);
             GameDataUtil.collect(gameData);
         }
-        GameDataUtil.showdown(gameData);
-        GameDataUtil.pushButton(gameData);
-        logger.info("--- HAND END ---");
+
+        ActionHandler.handleEvent(new ShowdownEvent(gameData));
     }
 
     public static int calcBetSize(GameData gameData, Player player, float betSizePercent) {
