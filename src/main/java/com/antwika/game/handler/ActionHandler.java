@@ -20,7 +20,9 @@ public class ActionHandler extends EventHandler {
             new ShowdownHandler(),
             new BettingRoundHandler(),
             new DealCardsHandler(),
-            new HandBeginHandler()
+            new HandBeginHandler(),
+            new PlayerJoinHandler(),
+            new PlayerLeaveHandler()
     );
 
     public static void handleEvent(IEvent event) {

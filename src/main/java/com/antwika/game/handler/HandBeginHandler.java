@@ -24,7 +24,7 @@ public class HandBeginHandler implements IActionHandler {
             final GameData gameData = handBeginEvent.getGameData();
 
             GameDataUtil.prepareHand(gameData);
-            GameDataUtil.unseat(GameDataUtil.findAllBustedSeats(gameData));
+            GameDataUtil.unseat(gameData, GameDataUtil.findAllBustedSeats(gameData));
             GameDataUtil.resetAllSeats(gameData);
             GameLog.printGameInfo(gameData);
             DeckUtil.resetAndShuffle(gameData.getDeckData());

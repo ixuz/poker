@@ -36,7 +36,7 @@ public class GameDataUtil {
         seat.setPlayer(player);
         seat.setStack(buyIn);
 
-        logger.info("{}: joined the game at seat #{}", player.getPlayerData().getPlayerName(), seat.getSeatIndex() + 1);
+        ActionHandler.handleEvent(new PlayerJoinEvent(gameData, seat, player));
     }
 
     public static void seat(GameData gameData, Player player, int buyIn) {
@@ -99,23 +99,24 @@ public class GameDataUtil {
             default -> "PREFLOP";
         };
     }
-    public static void unseat(SeatData seat) {
+
+    public static void unseat(GameData gameData, SeatData seat) {
         final Player player = seat.getPlayer();
         seat.setPlayer(null);
         seat.setStack(0);
         if (player != null) {
-            logger.info("{}: left the game", player.getPlayerData().getPlayerName());
+            ActionHandler.handleEvent(new PlayerLeaveEvent(gameData, seat, player));
         }
     }
 
-    public static void unseat(List<SeatData> seats) {
-        seats.forEach(GameDataUtil::unseat);
+    public static void unseat(GameData gameData, List<SeatData> seats) {
+        seats.forEach(seat -> unseat(gameData, seat));
     }
 
     public static void unseatAll(GameData gameData) {
         gameData.getSeats().stream()
                 .filter(seat -> seat.getPlayer() != null)
-                .forEach(GameDataUtil::unseat);
+                .forEach(seat -> unseat(gameData, seat));
     }
 
     public static SeatData findFirstAvailableSeat(GameData gameData) {
