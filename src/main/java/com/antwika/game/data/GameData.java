@@ -10,8 +10,10 @@ import java.util.List;
 @Data
 @Builder
 public class GameData {
+    public enum GameStage { NONE, PREFLOP, FLOP, TURN, RIVER, SHOWDOWN };
     private final String tableName;
     private String gameType;
+    private GameStage gameStage;
     private List<SeatData> seats;
     private final List<PotData> pots = new ArrayList<>();
     private final DeckData deckData;

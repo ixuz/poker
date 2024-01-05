@@ -20,7 +20,9 @@ public class ShowdownHandler implements IActionHandler {
             final ShowdownEvent showdownEvent = (ShowdownEvent) event;
             final GameData gameData = showdownEvent.getGameData();
                 GameDataUtil.showdown(gameData);
-            GameDataUtil.pushButton(gameData);
+
+            gameData.setButtonAt(GameDataUtil.findNextSeatToAct(gameData, gameData.getButtonAt(), 0, false).getSeatIndex());
+
             logger.info("--- HAND END ---");
         } catch (NotationException e) {
             throw new RuntimeException(e);
