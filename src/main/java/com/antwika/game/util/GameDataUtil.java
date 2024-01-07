@@ -272,6 +272,8 @@ public class GameDataUtil {
 
         gameData.setButtonAt(winner.getSeatIndex());
 
+        logger.debug("Starting button position at seat #{}", winner.getSeatIndex() + 1);
+
         resetAllSeats(gameData);
     }
 
@@ -406,36 +408,6 @@ public class GameDataUtil {
         }
 
         GameLog.printSummary(gameData);
-    }
-
-    public static void hand(GameData gameData) throws NotationException {
-        gameData.setGameStage(GameData.GameStage.NONE);
-
-        if (gameData.getGameStage().equals(GameData.GameStage.NONE)) {
-            ActionHandler.handleEvent(new HandBeginEvent(gameData));
-            ActionHandler.handleEvent(new DealCardsEvent(gameData));
-            gameData.setGameStage(GameData.GameStage.PREFLOP);
-        }
-        if (gameData.getGameStage().equals(GameData.GameStage.PREFLOP)) {
-            ActionHandler.handleEvent(new BettingRoundEvent(gameData, 0));
-            gameData.setGameStage(GameData.GameStage.FLOP);
-        }
-        if (gameData.getGameStage().equals(GameData.GameStage.FLOP)) {
-            ActionHandler.handleEvent(new BettingRoundEvent(gameData, 3));
-            gameData.setGameStage(GameData.GameStage.TURN);
-        }
-        if (gameData.getGameStage().equals(GameData.GameStage.TURN)) {
-            ActionHandler.handleEvent(new BettingRoundEvent(gameData, 1));
-            gameData.setGameStage(GameData.GameStage.RIVER);
-        }
-        if (gameData.getGameStage().equals(GameData.GameStage.RIVER)) {
-            ActionHandler.handleEvent(new BettingRoundEvent(gameData, 1));
-            gameData.setGameStage(GameData.GameStage.SHOWDOWN);
-        }
-        if (gameData.getGameStage().equals(GameData.GameStage.SHOWDOWN)) {
-            ActionHandler.handleEvent(new ShowdownEvent(gameData));
-            gameData.setGameStage(GameData.GameStage.NONE);
-        }
     }
 
     public static int calcBetSize(GameData gameData, Player player, float betSizePercent) {

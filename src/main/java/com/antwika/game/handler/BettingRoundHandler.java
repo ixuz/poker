@@ -78,7 +78,7 @@ public class BettingRoundHandler implements IActionHandler {
                         break;
                     }
 
-                    final IEvent response = player.handle(new PlayerActionRequest(player, gameData, totalBet, toCall, minBet, smallestValidRaise));
+                    final IEvent response = Player.handleEvent(new PlayerActionRequest(player, gameData, totalBet, toCall, minBet, smallestValidRaise));
 
                     ActionHandler.handleEvent(response);
 

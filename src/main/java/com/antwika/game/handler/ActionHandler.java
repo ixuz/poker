@@ -27,7 +27,7 @@ public class ActionHandler extends EventHandler {
             new PlayerLeaveHandler()
     );
 
-    public static void handleEvent(IEvent event) {
+    public static synchronized void handleEvent(IEvent event) {
         boolean handled = false;
         for (IActionHandler actionHandler : actionHandlers) {
             if (actionHandler.canHandle(event)) {
@@ -39,5 +39,10 @@ public class ActionHandler extends EventHandler {
         if (!handled) {
             logger.warn("No action handler could handle the player's action response");
         }
+    }
+
+    @Override
+    public synchronized void handle(IEvent event) {
+        handleEvent(event);
     }
 }

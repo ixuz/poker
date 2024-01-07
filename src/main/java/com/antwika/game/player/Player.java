@@ -22,9 +22,16 @@ public abstract class Player extends EventHandler {
     }
 
     @Override
-    public synchronized IEvent handle(IEvent event) {
+    public synchronized void handle(IEvent event) {
         if (event instanceof PlayerActionRequest e) {
-            return onPlayerActionRequest(e);
+            onPlayerActionRequest(e);
+        }
+    }
+
+    public static IEvent handleEvent(IEvent event) {
+        if (event instanceof PlayerActionRequest e) {
+            final Player player = e.getPlayer();
+            return player.onPlayerActionRequest(e);
         }
 
         return null;

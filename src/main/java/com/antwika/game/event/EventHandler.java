@@ -16,8 +16,8 @@ public class EventHandler extends Thread {
         return events.offer(event, 1L, TimeUnit.SECONDS);
     }
 
-    public synchronized IEvent handle(IEvent event) {
-        return null;
+    public synchronized void handle(IEvent event) {
+
     }
 
     public synchronized void stopThread() {
@@ -28,7 +28,14 @@ public class EventHandler extends Thread {
     public void run() {
         running = true;
         while (running) {
-            stopThread();
+            try {
+                final IEvent event = events.poll(1L, TimeUnit.SECONDS);
+                handle(event);
+            } catch (InterruptedException e) {
+                logger.error("Thread interrupted", e);
+                stopThread();
+
+            }
         }
     }
 }
