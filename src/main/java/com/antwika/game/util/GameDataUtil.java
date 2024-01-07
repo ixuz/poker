@@ -239,6 +239,7 @@ public class GameDataUtil {
 
         if (enoughPlayersToStartHand) {
             drawButtonSeatIndex(gameData);
+            gameData.setGameStage(GameData.GameStage.NONE);
             return true;
         }
 

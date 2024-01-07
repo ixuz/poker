@@ -41,8 +41,6 @@ public class GameDataUtilTest {
         Thread.sleep(1000L);
 
         while (GameDataUtil.canStartHand(gameData)) {
-            gameData.setGameStage(GameData.GameStage.NONE);
-
             if (gameData.getGameStage().equals(GameData.GameStage.NONE)) {
                 ActionHandler.handleEvent(new HandBeginEvent(gameData));
                 ActionHandler.handleEvent(new DealCardsEvent(gameData));
@@ -66,7 +64,6 @@ public class GameDataUtilTest {
             }
             if (gameData.getGameStage().equals(GameData.GameStage.SHOWDOWN)) {
                 ActionHandler.handleEvent(new ShowdownEvent(gameData));
-                gameData.setGameStage(GameData.GameStage.NONE);
             }
 
             Thread.sleep(200L);

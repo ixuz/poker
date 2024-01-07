@@ -23,6 +23,7 @@ public class ShowdownHandler implements IActionHandler {
 
             gameData.setButtonAt(GameDataUtil.findNextSeatToAct(gameData, gameData.getButtonAt(), 0, false).getSeatIndex());
 
+            gameData.setGameStage(GameData.GameStage.NONE);
             logger.info("--- HAND END ---");
         } catch (NotationException e) {
             throw new RuntimeException(e);

@@ -23,6 +23,5 @@ public class StartHandRequestHandler implements IActionHandler {
         final GameData gameData = startHandRequestEvent.getGameData();
 
         GameDataUtil.startGame(gameData);
-
     }
 }
