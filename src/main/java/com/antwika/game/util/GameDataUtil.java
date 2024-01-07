@@ -279,6 +279,22 @@ public class GameDataUtil {
     }
 
     public static boolean canStartHand(GameData gameData) {
+        if (!gameData.getGameStage().equals(GameData.GameStage.NONE)) return false;
+
+        boolean anyPlayerHasCards = !gameData.getSeats().stream()
+                .filter(seat -> seat.getCards() != 0L)
+                .toList()
+                .isEmpty();
+
+        if (anyPlayerHasCards) return false;
+
+        boolean anyPlayerHasCommittedChips = !gameData.getSeats().stream()
+                .filter(seat -> seat.getCommitted() > 0)
+                .toList()
+                .isEmpty();
+
+        if (anyPlayerHasCommittedChips) return false;
+
         return gameData.getSeats().stream()
                 .filter(seat -> seat.getPlayer() != null)
                 .filter(seat -> seat.getStack() != 0)

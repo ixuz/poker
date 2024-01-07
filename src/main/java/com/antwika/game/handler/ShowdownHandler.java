@@ -2,6 +2,7 @@ package com.antwika.game.handler;
 
 import com.antwika.common.exception.NotationException;
 import com.antwika.game.data.GameData;
+import com.antwika.game.event.DealCardsEvent;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.ShowdownEvent;
 import com.antwika.game.util.GameDataUtil;
@@ -12,7 +13,14 @@ public class ShowdownHandler implements IActionHandler {
     private static final Logger logger = LoggerFactory.getLogger(ShowdownHandler.class);
 
     public boolean canHandle(IEvent event) {
-        return event instanceof ShowdownEvent;
+        if (!(event instanceof ShowdownEvent showdownEvent)) return false;
+
+        final GameData.GameStage gameStage = showdownEvent.getGameData().getGameStage();
+
+        return switch (gameStage) {
+            case SHOWDOWN -> true;
+            default -> false;
+        };
     }
 
     public void handle(IEvent event) {
@@ -24,6 +32,8 @@ public class ShowdownHandler implements IActionHandler {
             gameData.setButtonAt(GameDataUtil.findNextSeatToAct(gameData, gameData.getButtonAt(), 0, false).getSeatIndex());
 
             gameData.setGameStage(GameData.GameStage.NONE);
+
+            GameDataUtil.resetAllSeats(gameData);
             logger.info("--- HAND END ---");
         } catch (NotationException e) {
             throw new RuntimeException(e);

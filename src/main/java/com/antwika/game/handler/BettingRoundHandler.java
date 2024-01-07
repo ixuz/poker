@@ -18,7 +18,14 @@ public class BettingRoundHandler implements IActionHandler {
     private static final Logger logger = LoggerFactory.getLogger(BettingRoundHandler.class);
 
     public boolean canHandle(IEvent event) {
-        return event instanceof BettingRoundEvent;
+        if (!(event instanceof BettingRoundEvent bettingRoundEvent)) return false;
+
+        final GameData.GameStage gameStage = bettingRoundEvent.getGameData().getGameStage();
+
+        return switch (gameStage) {
+            case PREFLOP, FLOP, TURN, RIVER -> true;
+            default -> false;
+        };
     }
 
     public void handle(IEvent event) {
@@ -100,6 +107,18 @@ public class BettingRoundHandler implements IActionHandler {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            final BettingRoundEvent bettingRoundEvent = (BettingRoundEvent) event;
+            final GameData gameData = bettingRoundEvent.getGameData();
+            if (gameData.getGameStage() == GameData.GameStage.PREFLOP) {
+                gameData.setGameStage(GameData.GameStage.FLOP);
+            } else if (gameData.getGameStage() == GameData.GameStage.FLOP) {
+                gameData.setGameStage(GameData.GameStage.TURN);
+            } else if (gameData.getGameStage() == GameData.GameStage.TURN) {
+                gameData.setGameStage(GameData.GameStage.RIVER);
+            } else if (gameData.getGameStage() == GameData.GameStage.RIVER) {
+                gameData.setGameStage(GameData.GameStage.SHOWDOWN);
+            }
         }
     }
 }

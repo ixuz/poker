@@ -20,7 +20,14 @@ public class DealCardsHandler implements IActionHandler {
     private static final Logger logger = LoggerFactory.getLogger(DealCardsHandler.class);
 
     public boolean canHandle(IEvent event) {
-        return event instanceof DealCardsEvent;
+        if (!(event instanceof DealCardsEvent dealCardsEvent)) return false;
+
+        final GameData.GameStage gameStage = dealCardsEvent.getGameData().getGameStage();
+
+        return switch (gameStage) {
+            case NONE -> true;
+            default -> false;
+        };
     }
 
     public void handle(IEvent event) {
@@ -46,6 +53,7 @@ public class DealCardsHandler implements IActionHandler {
             }
 
             GameLog.printTableSeatCardsInfo(gameData);
+            gameData.setGameStage(GameData.GameStage.PREFLOP);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
