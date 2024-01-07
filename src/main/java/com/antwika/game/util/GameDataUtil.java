@@ -30,13 +30,25 @@ public class GameDataUtil {
         return String.join(" ", cn);
     }
 
-    public static void seat(GameData gameData, Player player, int seatIndex, int buyIn) {
+    public static boolean seat(GameData gameData, Player player, int seatIndex, int buyIn) {
         final SeatData seat = gameData.getSeats().get(seatIndex);
+
+        if (seat.getPlayer() == player) {
+            logger.debug("{} is already seated at #{}", player, seatIndex);
+            return false;
+        }
+
+        if (seat.getPlayer() != null) {
+            logger.warn("{} can't join game at seat #{}, there's already another player there", player, seatIndex);
+            return false;
+        }
+
         resetSeat(seat);
         seat.setPlayer(player);
         seat.setStack(buyIn);
 
         ActionHandler.handleEvent(new PlayerJoinEvent(gameData, seat, player));
+        return true;
     }
 
     public static void seat(GameData gameData, Player player, int buyIn) {
@@ -216,8 +228,21 @@ public class GameDataUtil {
         }
     }
 
-    public static void startGame(GameData gameData) {
-        drawButtonSeatIndex(gameData);
+    public static boolean startGame(GameData gameData) {
+        final List<SeatData> seats = gameData.getSeats();
+        final int playerWithStackCount = seats.stream()
+                .filter(seat -> seat.getPlayer() != null)
+                .filter(seat -> seat.getStack() > 0)
+                .toList()
+                .size();
+        final boolean enoughPlayersToStartHand = playerWithStackCount > 1;
+
+        if (enoughPlayersToStartHand) {
+            drawButtonSeatIndex(gameData);
+            return true;
+        }
+
+        return false;
     }
 
     public static void stopGame(GameData gameData) {
@@ -422,5 +447,9 @@ public class GameDataUtil {
         int minimumBet = Math.min(seat.getStack(), gameData.getBigBlind());
         int bet = Math.max(desiredBet, minimumBet);
         return Math.min(seat.getStack(), bet);
+    }
+
+    public static boolean isHandOngoing(GameData gameData) {
+        return !gameData.getGameStage().equals(GameData.GameStage.NONE);
     }
 }

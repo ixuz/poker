@@ -2,6 +2,9 @@ package com.antwika.game;
 
 import com.antwika.common.exception.NotationException;
 import com.antwika.game.data.GameData;
+import com.antwika.game.event.PlayerJoinRequestEvent;
+import com.antwika.game.event.StartHandRequestEvent;
+import com.antwika.game.handler.ActionHandler;
 import com.antwika.game.player.Player;
 import com.antwika.game.player.PremiumPlayer;
 import com.antwika.game.player.RandomPlayer;
@@ -13,6 +16,8 @@ public class GameDataUtilTest {
     @Test
     @Disabled
     public void test() throws NotationException, InterruptedException {
+        final GameData gameData = GameDataFactory.createGameData(1L, "Lacuna I", 6, 5, 10);
+
         final Player player1 = new PremiumPlayer(1L, "Alice");
         final Player player2 = new PremiumPlayer(2L, "Bob");
         final Player player3 = new PremiumPlayer(3L, "Charlie");
@@ -20,16 +25,14 @@ public class GameDataUtilTest {
         final Player player5 = new RandomPlayer(5L, "Eric");
         final Player player6 = new RandomPlayer(6L, "Filipe");
 
-        final GameData gameData = GameDataFactory.createGameData(1L, "Lacuna I", 6, 5, 10);
+        ActionHandler.handleEvent(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(0), player1, 1000));
+        ActionHandler.handleEvent(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(1), player2, 1000));
+        ActionHandler.handleEvent(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(2), player3, 1000));
+        ActionHandler.handleEvent(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(3), player4, 1000));
+        ActionHandler.handleEvent(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(4), player5, 1000));
+        ActionHandler.handleEvent(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(5), player6, 1000));
 
-        GameDataUtil.seat(gameData, player1, 0, 1000);
-        GameDataUtil.seat(gameData, player2, 1, 1000);
-        GameDataUtil.seat(gameData, player3, 2, 1000);
-        GameDataUtil.seat(gameData, player4, 3, 1000);
-        GameDataUtil.seat(gameData, player5, 4, 1000);
-        GameDataUtil.seat(gameData, player6, 5, 1000);
-
-        GameDataUtil.startGame(gameData);
+        ActionHandler.handleEvent(new StartHandRequestEvent(gameData));
 
         while (GameDataUtil.canStartHand(gameData)) {
             GameDataUtil.hand(gameData);

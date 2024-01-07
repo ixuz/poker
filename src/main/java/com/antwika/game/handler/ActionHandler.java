@@ -12,6 +12,7 @@ public class ActionHandler extends EventHandler {
     private static final Logger logger = LoggerFactory.getLogger(ActionHandler.class);
 
     private static final List<IActionHandler> actionHandlers = List.of(
+            new StartHandRequestHandler(),
             new FoldActionHandler(),
             new CheckActionHandler(),
             new CallActionHandler(),
@@ -21,6 +22,7 @@ public class ActionHandler extends EventHandler {
             new BettingRoundHandler(),
             new DealCardsHandler(),
             new HandBeginHandler(),
+            new PlayerJoinRequestHandler(),
             new PlayerJoinHandler(),
             new PlayerLeaveHandler()
     );
