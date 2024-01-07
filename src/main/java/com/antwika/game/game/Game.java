@@ -21,6 +21,12 @@ public class Game extends EventHandler {
     }
 
     @Override
+    public synchronized void start() {
+        actionHandler.start();
+        super.start();
+    }
+
+    @Override
     public void run() {
         while (true) {
             try {

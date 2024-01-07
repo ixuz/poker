@@ -17,6 +17,7 @@ public class GameDataUtilTest {
     @Disabled
     public void test() throws NotationException, InterruptedException {
         final Game game = new Game();
+        game.start();
 
         final Player player1 = new PremiumPlayer(1L, "Alice");
         final Player player2 = new PremiumPlayer(2L, "Bob");
@@ -25,23 +26,13 @@ public class GameDataUtilTest {
         final Player player5 = new RandomPlayer(5L, "Eric");
         final Player player6 = new RandomPlayer(6L, "Filipe");
 
-        game.getActionHandler().start();
-
         game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(0), player1, 1000));
         game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(1), player2, 1000));
         game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(2), player3, 1000));
         game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(3), player4, 1000));
         game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(4), player5, 1000));
         game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(5), player6, 1000));
-
-        Thread.sleep(1000L);
-
         game.getActionHandler().offer(new StartHandRequestEvent(game.getGameData()));
-
-        Thread.sleep(1000L);
-
-
-        game.start();
 
         Thread.sleep(5000L);
 
