@@ -3,6 +3,7 @@ package com.antwika.game;
 import com.antwika.common.exception.NotationException;
 import com.antwika.game.data.GameData;
 import com.antwika.game.event.*;
+import com.antwika.game.game.Game;
 import com.antwika.game.handler.ActionHandler;
 import com.antwika.game.player.Player;
 import com.antwika.game.player.PremiumPlayer;
@@ -15,7 +16,7 @@ public class GameDataUtilTest {
     @Test
     @Disabled
     public void test() throws NotationException, InterruptedException {
-        final GameData gameData = GameDataFactory.createGameData(1L, "Lacuna I", 6, 5, 10);
+        final Game game = new Game();
 
         final Player player1 = new PremiumPlayer(1L, "Alice");
         final Player player2 = new PremiumPlayer(2L, "Bob");
@@ -24,42 +25,26 @@ public class GameDataUtilTest {
         final Player player5 = new RandomPlayer(5L, "Eric");
         final Player player6 = new RandomPlayer(6L, "Filipe");
 
-        final ActionHandler actionHandler = new ActionHandler();
-        actionHandler.start();
+        game.getActionHandler().start();
 
-        actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(0), player1, 1000));
-        actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(1), player2, 1000));
-        actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(2), player3, 1000));
-        actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(3), player4, 1000));
-        actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(4), player5, 1000));
-        actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(5), player6, 1000));
-
-        Thread.sleep(1000L);
-
-        actionHandler.offer(new StartHandRequestEvent(gameData));
+        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(0), player1, 1000));
+        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(1), player2, 1000));
+        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(2), player3, 1000));
+        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(3), player4, 1000));
+        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(4), player5, 1000));
+        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(5), player6, 1000));
 
         Thread.sleep(1000L);
 
-        while (GameDataUtil.canStartHand(gameData)) {
-            boolean canStartHand = GameDataUtil.canStartHand(gameData);
-            ActionHandler.handleEvent(new HandBeginEvent(gameData));
-            canStartHand = GameDataUtil.canStartHand(gameData);
-            ActionHandler.handleEvent(new DealCardsEvent(gameData));
-            canStartHand = GameDataUtil.canStartHand(gameData);
-            ActionHandler.handleEvent(new BettingRoundEvent(gameData, 0));
-            canStartHand = GameDataUtil.canStartHand(gameData);
-            ActionHandler.handleEvent(new BettingRoundEvent(gameData, 3));
-            canStartHand = GameDataUtil.canStartHand(gameData);
-            ActionHandler.handleEvent(new BettingRoundEvent(gameData, 1));
-            canStartHand = GameDataUtil.canStartHand(gameData);
-            ActionHandler.handleEvent(new BettingRoundEvent(gameData, 1));
-            canStartHand = GameDataUtil.canStartHand(gameData);
-            ActionHandler.handleEvent(new ShowdownEvent(gameData));
-            canStartHand = GameDataUtil.canStartHand(gameData);
+        game.getActionHandler().offer(new StartHandRequestEvent(game.getGameData()));
 
-            Thread.sleep(200L);
-        }
+        Thread.sleep(1000L);
 
-        GameDataUtil.stopGame(gameData);
+
+        game.start();
+
+        Thread.sleep(5000L);
+
+        game.stopThread();
     }
 }

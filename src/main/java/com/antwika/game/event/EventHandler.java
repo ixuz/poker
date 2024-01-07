@@ -21,6 +21,7 @@ public class EventHandler extends Thread {
     }
 
     public synchronized void stopThread() {
+        logger.debug("Stopping {}", this);
         running = false;
     }
 
@@ -30,7 +31,9 @@ public class EventHandler extends Thread {
         while (running) {
             try {
                 final IEvent event = events.poll(1L, TimeUnit.SECONDS);
-                handle(event);
+                if (event != null) {
+                    handle(event);
+                }
             } catch (InterruptedException e) {
                 logger.error("Thread interrupted", e);
                 stopThread();
