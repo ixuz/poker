@@ -25,14 +25,14 @@ public class GameDataUtilTest {
         final Player player6 = new RandomPlayer(6L, "Filipe");
 
         final ActionHandler actionHandler = new ActionHandler();
+        actionHandler.start();
+
         actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(0), player1, 1000));
         actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(1), player2, 1000));
         actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(2), player3, 1000));
         actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(3), player4, 1000));
         actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(4), player5, 1000));
         actionHandler.offer(new PlayerJoinRequestEvent(gameData, gameData.getSeats().get(5), player6, 1000));
-
-        actionHandler.start();
 
         Thread.sleep(1000L);
 
