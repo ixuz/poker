@@ -30,14 +30,9 @@ public class Game extends EventHandler {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(500L);
+                Thread.sleep(100L);
                 if (GameDataUtil.canStartHand(gameData)) {
                     actionHandler.offer(new HandBeginEvent(gameData));
-                    /* actionHandler.offer(new BettingRoundEvent(gameData, 0));
-                    actionHandler.offer(new BettingRoundEvent(gameData, 3));
-                    actionHandler.offer(new BettingRoundEvent(gameData, 1));
-                    actionHandler.offer(new BettingRoundEvent(gameData, 1));
-                    actionHandler.offer(new ShowdownEvent(gameData)); */
                 }
             } catch (InterruptedException e) {
                 logger.info("Interrupted", e);

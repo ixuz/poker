@@ -22,6 +22,7 @@ public class GameDataFactory {
         return GameData.builder()
                 .tableName(tableName)
                 .gameType("Hold'em No Limit")
+                .gameStage(GameData.GameStage.NONE)
                 .seats(seats)
                 .deckData(new DeckData(prng.nextInt()))
                 .smallBlind(smallBlind)
@@ -35,6 +36,7 @@ public class GameDataFactory {
                 .delivered(0)
                 .chipsInPlay(0)
                 .prng(prng)
+                .cards(0L)
                 .build();
     }
 }
