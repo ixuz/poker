@@ -10,14 +10,16 @@ import com.antwika.game.util.GameDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlayerJoinRequestHandler implements IActionHandler {
+import java.util.List;
+
+public class PlayerJoinRequestHandler implements IHandler {
     private static final Logger logger = LoggerFactory.getLogger(PlayerJoinRequestHandler.class);
 
     public boolean canHandle(IEvent event) {
         return event instanceof PlayerJoinRequestEvent;
     }
 
-    public void handle(IEvent event) {
+    public List<IEvent> handle(IEvent event) {
         if (!canHandle(event)) throw new RuntimeException("Can't handle this type of event");
         final PlayerJoinRequestEvent playerJoinRequestEvent = (PlayerJoinRequestEvent) event;
 
@@ -26,6 +28,12 @@ public class PlayerJoinRequestHandler implements IActionHandler {
         final Player player = playerJoinRequestEvent.getPlayer();
         final int amount = playerJoinRequestEvent.getAmount();
 
-        GameDataUtil.seat(gameData, player, seatData.getSeatIndex(), amount);
+        final boolean seated = GameDataUtil.seat(gameData, player, seatData.getSeatIndex(), amount);
+
+        if (seated) {
+            return List.of(new PlayerJoinEvent(gameData, seatData, player));
+        }
+
+        return null;
     }
 }

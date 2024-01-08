@@ -2,7 +2,9 @@ package com.antwika.game.handler;
 
 import com.antwika.game.event.IEvent;
 
-public interface IActionHandler {
+import java.util.List;
+
+public interface IHandler {
     boolean canHandle(IEvent event);
-    void handle(IEvent event);
+    List<IEvent> handle(IEvent event);
 }

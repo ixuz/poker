@@ -2,9 +2,7 @@ package com.antwika.game.handler;
 
 import com.antwika.game.data.GameData;
 import com.antwika.game.data.SeatData;
-import com.antwika.game.event.BettingRoundEvent;
-import com.antwika.game.event.IEvent;
-import com.antwika.game.event.PlayerActionRequest;
+import com.antwika.game.event.*;
 import com.antwika.game.player.Player;
 import com.antwika.game.util.GameDataUtil;
 import org.slf4j.Logger;
@@ -13,13 +11,13 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BettingRoundHandler implements IHandler {
-    private static final Logger logger = LoggerFactory.getLogger(BettingRoundHandler.class);
+public class BeginBettingRoundRequestHandler implements IHandler {
+    private static final Logger logger = LoggerFactory.getLogger(BeginBettingRoundRequestHandler.class);
 
     public boolean canHandle(IEvent event) {
-        if (!(event instanceof BettingRoundEvent bettingRoundEvent)) return false;
+        if (!(event instanceof BeginBettingRoundRequest beginBettingRoundRequest)) return false;
 
-        final GameData.GameStage gameStage = bettingRoundEvent.getGameData().getGameStage();
+        final GameData.GameStage gameStage = beginBettingRoundRequest.getGameData().getGameStage();
 
         return switch (gameStage) {
             case PREFLOP, FLOP, TURN, RIVER -> true;
@@ -30,26 +28,28 @@ public class BettingRoundHandler implements IHandler {
     public List<IEvent> handle(IEvent event) {
         final List<IEvent> additionalEvents = new ArrayList<>();
 
-        try {
-            final BettingRoundEvent bettingRoundEvent = (BettingRoundEvent) event;
-            final GameData gameData = bettingRoundEvent.getGameData();
+        final BeginBettingRoundRequest beginBettingRoundRequest = (BeginBettingRoundRequest) event;
+        final GameData gameData = beginBettingRoundRequest.getGameData();
 
+        try {
             if (GameDataUtil.countPlayersRemainingInHand(gameData) > 1) {
-                final int dealCommunityCardCount = bettingRoundEvent.getDealCommunityCardCount();
+                final int dealCommunityCardCount = beginBettingRoundRequest.getDealCommunityCardCount();
                 if (dealCommunityCardCount > 0) {
                     GameDataUtil.dealCommunityCards(gameData, dealCommunityCardCount);
                 }
 
                 GameDataUtil.prepareBettingRound(gameData);
+                additionalEvents.add(new BettingRoundPlayerActionRequest(gameData));
+                // additionalEvents.add(new EndBettingRoundRequest(gameData)); // TODO: Remove this, because we should not collect immediately, we should let players act
 
-                while (true) {
+                /* while (true) {
                     if (GameDataUtil.countPlayersRemainingInHand(gameData) == 1) {
                         logger.debug("All but one player has folded, hand must end");
-                        break;
+                        break; // additionalEvents.add(new EndBettingRoundRequest(gameData));
                     }
 
                     if (GameDataUtil.getNumberOfPlayersLeftToAct(gameData) < 1) {
-                        break;
+                        break; // additionalEvents.add(new EndBettingRoundRequest(gameData));
                     }
 
                     final List<SeatData> seats = gameData.getSeats();
@@ -83,7 +83,7 @@ public class BettingRoundHandler implements IHandler {
                     }
 
                     if (seat.getStack() == 0) {
-                        break;
+                        break; // additionalEvents.add(new EndBettingRoundRequest(gameData));
                     }
 
                     final IEvent response = Player.handleEvent(new PlayerActionRequest(player, gameData, totalBet, toCall, minBet, smallestValidRaise));
@@ -93,37 +93,25 @@ public class BettingRoundHandler implements IHandler {
                     }
 
                     if (GameDataUtil.hasAllPlayersActed(gameData)) {
-                        break;
+                        break; // additionalEvents.add(new EndBettingRoundRequest(gameData));
                     }
 
                     final SeatData theNextSeat = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
                     if (theNextSeat == null) {
-                        break;
+                        break; // additionalEvents.add(new EndBettingRoundRequest(gameData));
                     }
 
                     gameData.setActionAt(theNextSeat.getSeatIndex());
-                }
-
-                GameDataUtil.collect(gameData);
-
-                logger.debug("Betting round ended");
+                } */
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            final BettingRoundEvent bettingRoundEvent = (BettingRoundEvent) event;
-            final GameData gameData = bettingRoundEvent.getGameData();
-            if (gameData.getGameStage() == GameData.GameStage.PREFLOP) {
-                gameData.setGameStage(GameData.GameStage.FLOP);
-            } else if (gameData.getGameStage() == GameData.GameStage.FLOP) {
-                gameData.setGameStage(GameData.GameStage.TURN);
-            } else if (gameData.getGameStage() == GameData.GameStage.TURN) {
-                gameData.setGameStage(GameData.GameStage.RIVER);
-            } else if (gameData.getGameStage() == GameData.GameStage.RIVER) {
-                gameData.setGameStage(GameData.GameStage.SHOWDOWN);
-            }
         }
 
+        if (GameDataUtil.countPlayersRemainingInHand(gameData) == 1) {
+            logger.debug("All but one player has folded, hand must end");
+            additionalEvents.add(new EndBettingRoundRequest(gameData));
+        }
         return additionalEvents;
     }
 }

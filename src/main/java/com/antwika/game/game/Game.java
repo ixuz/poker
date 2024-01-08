@@ -33,12 +33,11 @@ public class Game extends EventHandler {
                 Thread.sleep(500L);
                 if (GameDataUtil.canStartHand(gameData)) {
                     actionHandler.offer(new HandBeginEvent(gameData));
-                    actionHandler.offer(new DealCardsEvent(gameData));
-                    actionHandler.offer(new BettingRoundEvent(gameData, 0));
+                    /* actionHandler.offer(new BettingRoundEvent(gameData, 0));
                     actionHandler.offer(new BettingRoundEvent(gameData, 3));
                     actionHandler.offer(new BettingRoundEvent(gameData, 1));
                     actionHandler.offer(new BettingRoundEvent(gameData, 1));
-                    actionHandler.offer(new ShowdownEvent(gameData));
+                    actionHandler.offer(new ShowdownEvent(gameData)); */
                 }
             } catch (InterruptedException e) {
                 logger.info("Interrupted", e);

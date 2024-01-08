@@ -47,15 +47,16 @@ public class GameDataUtil {
         seat.setPlayer(player);
         seat.setStack(buyIn);
 
-        ActionHandler.handleEvent(new PlayerJoinEvent(gameData, seat, player));
         return true;
     }
 
-    public static void seat(GameData gameData, Player player, int buyIn) {
+    public static boolean seat(GameData gameData, Player player, int buyIn) {
         final SeatData seat = findFirstAvailableSeat(gameData);
-        if (seat == null) return;
+        if (seat == null) return false;
 
-        seat(gameData, player, seat.getSeatIndex(), buyIn);
+        boolean seated = seat(gameData, player, seat.getSeatIndex(), buyIn);
+
+        return seated;
     }
 
     public static void resetSeat(SeatData seat) {
@@ -112,17 +113,27 @@ public class GameDataUtil {
         };
     }
 
-    public static void unseat(GameData gameData, SeatData seat) {
+    public static IEvent unseat(GameData gameData, SeatData seat) {
         final Player player = seat.getPlayer();
-        seat.setPlayer(null);
-        seat.setStack(0);
         if (player != null) {
-            ActionHandler.handleEvent(new PlayerLeaveEvent(gameData, seat, player));
+            seat.setPlayer(null);
+            seat.setStack(0);
+            return new PlayerLeaveEvent(gameData, seat, player);
         }
+        return null;
     }
 
-    public static void unseat(GameData gameData, List<SeatData> seats) {
-        seats.forEach(seat -> unseat(gameData, seat));
+    public static List<IEvent> unseat(GameData gameData, List<SeatData> seats) {
+        final List<IEvent> additionalEvents = new ArrayList<>();
+
+        for (SeatData seat : seats) {
+            final IEvent additionalEvent = unseat(gameData, seat);
+            if (additionalEvent != null) {
+                additionalEvents.add(additionalEvent);
+            }
+        }
+
+        return additionalEvents;
     }
 
     public static void unseatAll(GameData gameData) {
