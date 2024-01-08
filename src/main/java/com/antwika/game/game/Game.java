@@ -10,18 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Getter
-public class Game extends EventHandler {
+public class Game extends ActionHandler {
     private static final Logger logger = LoggerFactory.getLogger(Game.class);
 
     private final GameData gameData;
-    final ActionHandler actionHandler = new ActionHandler("Game.actionHandler");
 
     long maxHandCount;
 
     boolean shouldStopAfterHand = false;
 
-    public Game(long maxHandCount) {
-        super("Game");
+    public Game(long maxHandCount, long eventPollTimeoutMillis) {
+        super("Game", eventPollTimeoutMillis);
         this.maxHandCount = maxHandCount;
         gameData = GameDataFactory.createGameData(1L, "Lacuna I", 6, 5, 10);
     }
@@ -32,48 +31,22 @@ public class Game extends EventHandler {
     }
 
     @Override
-    public synchronized void start() {
-        super.start();
-        actionHandler.start();
-    }
-
-    @Override
-    public void run() {
-        setEventHandlerState(EventHandlerState.STARTING);
-        setRunning(true);
-
-        setEventHandlerState(EventHandlerState.STARTED);
-        while (getEventHandlerState().equals(EventHandlerState.STARTED)) {
-            try {
-                Thread.sleep(100L);
-
+    protected synchronized void noEventHandle() {
+        try {
+            if (gameData.getGameStage().equals(GameData.GameStage.NONE)) {
                 if (GameDataUtil.canStartHand(gameData)) {
                     if (gameData.getHandId() >= maxHandCount) {
                         shouldStopAfterHand = true;
                     }
                     if (shouldStopAfterHand) {
                         super.stopThread();
-                        break;
+                        return;
                     }
-                    actionHandler.offer(new HandBeginEvent(gameData));
+                    offer(new HandBeginEvent(gameData));
                 }
-            } catch (InterruptedException e) {
-                logger.info("Interrupted", e);
-                break;
             }
-        }
-
-        setEventHandlerState(EventHandlerState.STOPPING);
-        setRunning(false);
-
-        actionHandler.stopThread();
-        try {
-            actionHandler.join();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            logger.info("Interrupted", e);
         }
-
-        setEventHandlerState(EventHandlerState.STOPPED);
-        logger.info("Game thread ended");
     }
 }

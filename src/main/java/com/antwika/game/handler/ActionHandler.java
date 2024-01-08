@@ -29,8 +29,8 @@ public class ActionHandler extends EventHandler {
             new BettingRoundPlayerActionRequestHandler()
     );
 
-    public ActionHandler(String eventHandlerName) {
-        super(eventHandlerName);
+    public ActionHandler(String eventHandlerName, long eventPollTimeoutMillis) {
+        super(eventHandlerName, eventPollTimeoutMillis);
     }
 
     public synchronized void handleEvent(IEvent event) {

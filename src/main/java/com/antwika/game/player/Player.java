@@ -18,7 +18,7 @@ public abstract class Player extends EventHandler {
     private final PlayerData playerData;
 
     public Player(long prngSeed, String playerName) {
-        super("Player");
+        super("Player", 1000L);
         this.playerData = new PlayerData(playerName, new Prng(prngSeed));
     }
 

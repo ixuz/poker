@@ -13,7 +13,7 @@ public class GameDataUtilTest {
     @Test
     @Disabled
     public void test() throws NotationException, InterruptedException {
-        final Game game = new Game(10L);
+        final Game game = new Game(10L, 100L);
         game.start();
 
         final Player player1 = new PremiumPlayer(1L, "Alice");
@@ -23,12 +23,12 @@ public class GameDataUtilTest {
         final Player player5 = new RandomPlayer(5L, "Eric");
         final Player player6 = new RandomPlayer(6L, "Filipe");
 
-        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(0), player1, 1000));
-        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(1), player2, 1000));
-        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(2), player3, 1000));
-        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(3), player4, 1000));
-        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(4), player5, 1000));
-        game.getActionHandler().offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(5), player6, 1000));
+        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(0), player1, 1000));
+        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(1), player2, 1000));
+        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(2), player3, 1000));
+        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(3), player4, 1000));
+        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(4), player5, 1000));
+        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(5), player6, 1000));
 
         game.join();
     }

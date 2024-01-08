@@ -19,9 +19,13 @@ public class EventHandler extends Thread {
     @Getter
     private String eventHandlerName;
 
-    public EventHandler(String eventHandlerName) {
+    @Getter
+    private long eventPollTimeoutMillis;
+
+    public EventHandler(String eventHandlerName, long eventPollTimeoutMillis) {
         super();
         this.eventHandlerName = eventHandlerName;
+        this.eventPollTimeoutMillis = eventPollTimeoutMillis;
     }
 
     protected void setEventHandlerState(EventHandlerState eventHandlerState) {
@@ -55,6 +59,14 @@ public class EventHandler extends Thread {
         return running;
     }
 
+    protected synchronized void preEventHandle() {
+
+    }
+
+    protected synchronized void noEventHandle() {
+
+    }
+
     @Override
     public void run() {
         setEventHandlerState(EventHandlerState.STARTING);
@@ -63,9 +75,12 @@ public class EventHandler extends Thread {
         setEventHandlerState(EventHandlerState.STARTED);
         while (getEventHandlerState().equals(EventHandlerState.STARTED)) {
             try {
-                final IEvent event = events.poll(1L, TimeUnit.SECONDS);
+                preEventHandle();
+                final IEvent event = events.poll(getEventPollTimeoutMillis(), TimeUnit.MILLISECONDS);
                 if (event != null) {
                     handle(event);
+                } else {
+                    noEventHandle();
                 }
             } catch (InterruptedException e) {
                 logger.error("Thread interrupted", e);

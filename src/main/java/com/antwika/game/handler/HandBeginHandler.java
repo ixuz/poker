@@ -19,7 +19,14 @@ public class HandBeginHandler implements IHandler {
     private static final Logger logger = LoggerFactory.getLogger(HandBeginHandler.class);
 
     public boolean canHandle(IEvent event) {
-        return event instanceof HandBeginEvent;
+        if (!(event instanceof HandBeginEvent handBeginEvent)) return false;
+
+        final GameData.GameStage gameStage = handBeginEvent.getGameData().getGameStage();
+
+        return switch (gameStage) {
+            case NONE -> true;
+            default -> false;
+        };
     }
 
     public List<IEvent> handle(IEvent event) {
@@ -39,6 +46,8 @@ public class HandBeginHandler implements IHandler {
             GameLog.printTableInfo(gameData);
             GameLog.printTableSeatsInfo(gameData);
             GameDataUtil.forcePostBlinds(gameData, List.of(gameData.getSmallBlind(), gameData.getBigBlind()));
+
+            gameData.setGameStage(GameData.GameStage.HAND_BEGUN);
 
             return List.of(new DealCardsEvent(gameData));
         } catch (Exception e) {

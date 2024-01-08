@@ -25,7 +25,7 @@ public class DealCardsHandler implements IHandler {
         final GameData.GameStage gameStage = dealCardsEvent.getGameData().getGameStage();
 
         return switch (gameStage) {
-            case NONE -> true;
+            case HAND_BEGUN -> true;
             default -> false;
         };
     }
