@@ -16,10 +16,13 @@ public class Game extends EventHandler {
     private final GameData gameData;
     final ActionHandler actionHandler = new ActionHandler("Game.actionHandler");
 
+    long maxHandCount;
+
     boolean shouldStopAfterHand = false;
 
-    public Game() {
+    public Game(long maxHandCount) {
         super("Game");
+        this.maxHandCount = maxHandCount;
         gameData = GameDataFactory.createGameData(1L, "Lacuna I", 6, 5, 10);
     }
 
@@ -43,7 +46,11 @@ public class Game extends EventHandler {
         while (getEventHandlerState().equals(EventHandlerState.STARTED)) {
             try {
                 Thread.sleep(100L);
+
                 if (GameDataUtil.canStartHand(gameData)) {
+                    if (gameData.getHandId() >= maxHandCount) {
+                        shouldStopAfterHand = true;
+                    }
                     if (shouldStopAfterHand) {
                         super.stopThread();
                         break;
