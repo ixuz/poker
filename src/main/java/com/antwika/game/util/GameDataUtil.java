@@ -382,7 +382,6 @@ public class GameDataUtil {
     }
 
     public static void prepareHand(GameData gameData) {
-        logger.info("--- HAND BEGIN ---");
         gameData.getPots().clear();
         gameData.setHandId(gameData.getHandId() + 1L);
         gameData.setCards(0L);

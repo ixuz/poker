@@ -17,16 +17,18 @@ public class ActionHandler extends EventHandler {
             new CallHandler(),
             new BetHandler(),
             new RaiseHandler(),
-            new ShowdownHandler(),
+            new ShowdownRequestHandler(),
             new BettingRoundHandler(),
             new DealCardsHandler(),
-            new HandBeginHandler(),
+            new HandBeginRequestHandler(),
             new PlayerJoinRequestHandler(),
             new PlayerJoinHandler(),
             new PlayerLeaveHandler(),
             new BeginBettingRoundRequestHandler(),
             new EndBettingRoundRequestHandler(),
-            new BettingRoundPlayerActionRequestHandler()
+            new BettingRoundPlayerActionRequestHandler(),
+            new ShowdownEventHandler(),
+            new HandBeginEventHandler()
     );
 
     public ActionHandler(String eventHandlerName, long eventPollTimeoutMillis) {
@@ -50,7 +52,7 @@ public class ActionHandler extends EventHandler {
             }
 
             if (!handled) {
-                logger.warn("No action handler could handle the player's action response");
+                logger.warn("No action handler could handle: {}", event);
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

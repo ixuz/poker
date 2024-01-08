@@ -11,6 +11,7 @@ import com.antwika.game.event.DealCardsEvent;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.log.GameLog;
 import com.antwika.game.util.DeckUtil;
+import com.antwika.game.util.GameDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,12 @@ public class DealCardsHandler implements IHandler {
         try {
             final DealCardsEvent dealCardsEvent = (DealCardsEvent) event;
             final GameData gameData = dealCardsEvent.getGameData();
+
+            GameLog.printGameInfo(gameData);
+            DeckUtil.resetAndShuffle(gameData.getDeckData());
+            GameLog.printTableInfo(gameData);
+            GameLog.printTableSeatsInfo(gameData);
+            GameDataUtil.forcePostBlinds(gameData, List.of(gameData.getSmallBlind(), gameData.getBigBlind()));
 
             final List<SeatData> seats = gameData.getSeats();
             final DeckData deckData = gameData.getDeckData();

@@ -42,7 +42,7 @@ public class Game extends ActionHandler {
                         super.stopThread();
                         return;
                     }
-                    offer(new HandBeginEvent(gameData));
+                    offer(new HandBeginRequest(gameData));
                 }
             }
         } catch (InterruptedException e) {

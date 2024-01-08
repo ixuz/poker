@@ -1,9 +1,7 @@
 package com.antwika.game.handler;
 
 import com.antwika.game.data.GameData;
-import com.antwika.game.data.SeatData;
 import com.antwika.game.event.*;
-import com.antwika.game.player.Player;
 import com.antwika.game.util.GameDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +50,7 @@ public class EndBettingRoundRequestHandler implements IHandler {
                 additionalEvents.add(new BeginBettingRoundRequest(gameData, 1));
             } else if (gameData.getGameStage() == GameData.GameStage.RIVER) {
                 gameData.setGameStage(GameData.GameStage.SHOWDOWN);
-                additionalEvents.add(new ShowdownEvent(gameData));
+                additionalEvents.add(new ShowdownRequest(gameData));
             }
         }
 

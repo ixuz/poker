@@ -1,11 +1,10 @@
 package com.antwika.game.handler;
 
 import com.antwika.game.data.GameData;
-import com.antwika.game.data.SeatData;
 import com.antwika.game.event.DealCardsEvent;
 import com.antwika.game.event.HandBeginEvent;
+import com.antwika.game.event.HandBeginRequest;
 import com.antwika.game.event.IEvent;
-import com.antwika.game.event.PlayerLeaveEvent;
 import com.antwika.game.log.GameLog;
 import com.antwika.game.util.DeckUtil;
 import com.antwika.game.util.GameDataUtil;
@@ -15,13 +14,13 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HandBeginHandler implements IHandler {
-    private static final Logger logger = LoggerFactory.getLogger(HandBeginHandler.class);
+public class HandBeginRequestHandler implements IHandler {
+    private static final Logger logger = LoggerFactory.getLogger(HandBeginRequestHandler.class);
 
     public boolean canHandle(IEvent event) {
-        if (!(event instanceof HandBeginEvent handBeginEvent)) return false;
+        if (!(event instanceof HandBeginRequest handBeginRequest)) return false;
 
-        final GameData.GameStage gameStage = handBeginEvent.getGameData().getGameStage();
+        final GameData.GameStage gameStage = handBeginRequest.getGameData().getGameStage();
 
         return switch (gameStage) {
             case NONE -> true;
@@ -33,23 +32,21 @@ public class HandBeginHandler implements IHandler {
         try {
             final List<IEvent> additionalEvents = new ArrayList<>();
 
-            final HandBeginEvent handBeginEvent = (HandBeginEvent) event;
-            final GameData gameData = handBeginEvent.getGameData();
+            final HandBeginRequest handBeginRequest = (HandBeginRequest) event;
+            final GameData gameData = handBeginRequest.getGameData();
 
             GameDataUtil.prepareHand(gameData);
 
             additionalEvents.addAll(GameDataUtil.unseat(gameData, GameDataUtil.findAllBustedSeats(gameData)));
 
             GameDataUtil.resetAllSeats(gameData);
-            GameLog.printGameInfo(gameData);
-            DeckUtil.resetAndShuffle(gameData.getDeckData());
-            GameLog.printTableInfo(gameData);
-            GameLog.printTableSeatsInfo(gameData);
-            GameDataUtil.forcePostBlinds(gameData, List.of(gameData.getSmallBlind(), gameData.getBigBlind()));
 
             gameData.setGameStage(GameData.GameStage.HAND_BEGUN);
 
-            return List.of(new DealCardsEvent(gameData));
+            return List.of(
+                    new HandBeginEvent(gameData),
+                    new DealCardsEvent(gameData)
+            );
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

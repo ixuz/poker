@@ -6,6 +6,6 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class ShowdownEvent implements IEvent {
+public class ShowdownRequest implements IEvent {
     private GameData gameData;
 }
