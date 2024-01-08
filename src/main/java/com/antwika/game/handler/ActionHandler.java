@@ -29,6 +29,10 @@ public class ActionHandler extends EventHandler {
             new BettingRoundPlayerActionRequestHandler()
     );
 
+    public ActionHandler(String eventHandlerName) {
+        super(eventHandlerName);
+    }
+
     public synchronized void handleEvent(IEvent event) {
         try {
             boolean handled = false;

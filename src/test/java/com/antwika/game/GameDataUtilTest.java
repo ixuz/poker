@@ -38,5 +38,6 @@ public class GameDataUtilTest {
         Thread.sleep(4000L);
 
         game.stopThread();
+        game.join();
     }
 }
