@@ -293,6 +293,7 @@ public class GameDataUtil {
         if (!gameData.getGameStage().equals(GameData.GameStage.NONE)) return false;
 
         boolean anyPlayerHasCards = !gameData.getSeats().stream()
+                .filter(seat -> seat.getCards() != null)
                 .filter(seat -> seat.getCards() != 0L)
                 .toList()
                 .isEmpty();
