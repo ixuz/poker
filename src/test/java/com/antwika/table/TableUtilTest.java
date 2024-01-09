@@ -1,7 +1,7 @@
 package com.antwika.table;
 
 import com.antwika.table.event.*;
-import com.antwika.table.game.Table;
+import com.antwika.table.handler.TexasHoldemHandler;
 import com.antwika.table.player.Player;
 import com.antwika.table.player.PremiumPlayer;
 import com.antwika.table.player.RandomPlayer;
@@ -12,7 +12,7 @@ public class TableUtilTest {
     @Test
     @Disabled
     public void test() throws InterruptedException {
-        final Table table = new Table(10L, 100L);
+        final Table table = new Table(new TexasHoldemHandler(), 10L, 100L);
         table.start();
 
         final Player player1 = new PremiumPlayer(1L, "Alice");

@@ -1,6 +1,5 @@
-package com.antwika.table.game;
+package com.antwika.table;
 
-import com.antwika.table.TableDataFactory;
 import com.antwika.table.data.TableData;
 import com.antwika.table.event.*;
 import com.antwika.table.handler.*;
@@ -23,19 +22,9 @@ public class Table extends EventHandler {
 
     private final IHandler handler;
 
-    public Table(long maxHandCount, long eventPollTimeoutMillis) {
+    public Table(IHandler handler, long maxHandCount, long eventPollTimeoutMillis) {
         super("Game", eventPollTimeoutMillis);
-        this.handler = new AggregateHandler(List.of(
-                new ShowdownRequestHandler(),
-                new HandBeginRequestHandler(),
-                new PlayerJoinRequestHandler(),
-                new PlayerLeaveRequestHandler(),
-                new OrbitBeginRequestHandler(),
-                new OrbitEndRequestHandler(),
-                new OrbitActionRequestHandler(),
-                new OrbitActionResponseHandler(),
-                new DealCommunityCardsRequestHandler()
-        ));
+        this.handler = handler;
         this.maxHandCount = maxHandCount;
         tableData = TableDataFactory.createTableData(1L, "Lacuna I", 6, 5, 10);
     }
