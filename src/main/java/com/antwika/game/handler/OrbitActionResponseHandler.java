@@ -2,7 +2,7 @@ package com.antwika.game.handler;
 
 import com.antwika.game.data.GameData;
 import com.antwika.game.data.SeatData;
-import com.antwika.game.event.EndOrbitRequest;
+import com.antwika.game.event.OrbitEndRequest;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.event.OrbitActionRequest;
 import com.antwika.game.event.PlayerActionResponse;
@@ -62,12 +62,12 @@ public class OrbitActionResponseHandler implements IHandler {
         seat.setHasActed(true);
 
         if (GameDataUtil.hasAllPlayersActed(gameData)) {
-            return List.of(new EndOrbitRequest(gameData));
+            return List.of(new OrbitEndRequest(gameData));
         }
 
         final SeatData theNextSeat = GameDataUtil.findNextSeatToAct(gameData, gameData.getActionAt(), 0, true);
         if (theNextSeat == null) {
-            return List.of(new EndOrbitRequest(gameData));
+            return List.of(new OrbitEndRequest(gameData));
         }
 
         gameData.setActionAt(theNextSeat.getSeatIndex());
@@ -96,12 +96,12 @@ public class OrbitActionResponseHandler implements IHandler {
         seat.setHasActed(true);
 
         if (GameDataUtil.hasAllPlayersActed(gameData)) {
-            return List.of(new EndOrbitRequest(gameData));
+            return List.of(new OrbitEndRequest(gameData));
         }
 
         final SeatData theNextSeat = GameDataUtil.findNextSeatToAct(gameData, gameData.getActionAt(), 0, true);
         if (theNextSeat == null) {
-            return List.of(new EndOrbitRequest(gameData));
+            return List.of(new OrbitEndRequest(gameData));
         }
 
         gameData.setActionAt(theNextSeat.getSeatIndex());
@@ -121,12 +121,12 @@ public class OrbitActionResponseHandler implements IHandler {
         seat.setHasActed(true);
 
         if (GameDataUtil.hasAllPlayersActed(gameData)) {
-            return List.of(new EndOrbitRequest(gameData));
+            return List.of(new OrbitEndRequest(gameData));
         }
 
         final SeatData theNextSeat = GameDataUtil.findNextSeatToAct(gameData, gameData.getActionAt(), 0, true);
         if (theNextSeat == null) {
-            return List.of(new EndOrbitRequest(gameData));
+            return List.of(new OrbitEndRequest(gameData));
         }
 
         gameData.setActionAt(theNextSeat.getSeatIndex());
@@ -146,12 +146,12 @@ public class OrbitActionResponseHandler implements IHandler {
         seat.setHasActed(true);
 
         if (GameDataUtil.hasAllPlayersActed(gameData)) {
-            return List.of(new EndOrbitRequest(gameData));
+            return List.of(new OrbitEndRequest(gameData));
         }
 
         final SeatData theNextSeat = GameDataUtil.findNextSeatToAct(gameData, gameData.getActionAt(), 0, true);
         if (theNextSeat == null) {
-            return List.of(new EndOrbitRequest(gameData));
+            return List.of(new OrbitEndRequest(gameData));
         }
 
         gameData.setActionAt(theNextSeat.getSeatIndex());
@@ -189,12 +189,12 @@ public class OrbitActionResponseHandler implements IHandler {
         seat.setHasActed(true);
 
         if (GameDataUtil.hasAllPlayersActed(gameData)) {
-            return List.of(new EndOrbitRequest(gameData));
+            return List.of(new OrbitEndRequest(gameData));
         }
 
         final SeatData theNextSeat = GameDataUtil.findNextSeatToAct(gameData, gameData.getActionAt(), 0, true);
         if (theNextSeat == null) {
-            return List.of(new EndOrbitRequest(gameData));
+            return List.of(new OrbitEndRequest(gameData));
         }
 
         gameData.setActionAt(theNextSeat.getSeatIndex());

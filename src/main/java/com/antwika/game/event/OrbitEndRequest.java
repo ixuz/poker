@@ -6,7 +6,6 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class BeginOrbitRequest implements IEvent {
+public class OrbitEndRequest implements IEvent {
     private GameData gameData;
-    private int dealCommunityCardCount;
 }

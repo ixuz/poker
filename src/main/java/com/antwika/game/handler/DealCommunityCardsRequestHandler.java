@@ -1,7 +1,7 @@
 package com.antwika.game.handler;
 
 import com.antwika.game.data.GameData;
-import com.antwika.game.event.BeginOrbitRequest;
+import com.antwika.game.event.OrbitBeginRequest;
 import com.antwika.game.event.DealCommunityCardsRequest;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.util.GameDataUtil;
@@ -24,7 +24,7 @@ public class DealCommunityCardsRequestHandler implements IHandler {
 
             GameDataUtil.dealCommunityCards(gameData, dealCommunityCardsRequest.getCount());
 
-            return List.of(new BeginOrbitRequest(gameData, 0));
+            return List.of(new OrbitBeginRequest(gameData, 0));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

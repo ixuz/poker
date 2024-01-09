@@ -3,14 +3,14 @@ package com.antwika.game.game;
 import com.antwika.game.GameDataFactory;
 import com.antwika.game.data.GameData;
 import com.antwika.game.event.*;
-import com.antwika.game.handler.ActionHandler;
+import com.antwika.game.handler.AggregateHandler;
 import com.antwika.game.util.GameDataUtil;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Getter
-public class Game extends ActionHandler {
+public class Game extends AggregateHandler {
     private static final Logger logger = LoggerFactory.getLogger(Game.class);
 
     private final GameData gameData;

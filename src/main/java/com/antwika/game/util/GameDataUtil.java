@@ -114,7 +114,7 @@ public class GameDataUtil {
         if (player != null) {
             seat.setPlayer(null);
             seat.setStack(0);
-            return new PlayerLeaveEvent(gameData, seat, player);
+            return new PlayerLeaveRequest(gameData, seat, player);
         }
         return null;
     }

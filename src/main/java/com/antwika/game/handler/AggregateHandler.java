@@ -7,30 +7,30 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class ActionHandler extends EventHandler {
-    private static final Logger logger = LoggerFactory.getLogger(ActionHandler.class);
+public class AggregateHandler extends EventHandler {
+    private static final Logger logger = LoggerFactory.getLogger(AggregateHandler.class);
 
-    private static final List<IHandler> actionHandlers = List.of(
-            new StartHandRequestHandler(),
+    private static final List<IHandler> handlers = List.of(
             new ShowdownRequestHandler(),
             new HandBeginRequestHandler(),
             new PlayerJoinRequestHandler(),
-            new PlayerLeaveHandler(),
-            new BeginOrbitRequestHandler(),
-            new EndOrbitRequestHandler(),
+            new PlayerLeaveRequestHandler(),
+            new OrbitBeginRequestHandler(),
+            new OrbitEndRequestHandler(),
             new OrbitActionRequestHandler(),
             new OrbitActionResponseHandler(),
             new DealCommunityCardsRequestHandler()
     );
 
-    public ActionHandler(String eventHandlerName, long eventPollTimeoutMillis) {
+    public AggregateHandler(String eventHandlerName, long eventPollTimeoutMillis) {
         super(eventHandlerName, eventPollTimeoutMillis);
     }
 
-    public synchronized void handleEvent(IEvent event) {
+    @Override
+    public synchronized void handle(IEvent event) {
         try {
             boolean handled = false;
-            for (IHandler actionHandler : actionHandlers) {
+            for (IHandler actionHandler : handlers) {
                 if (actionHandler.canHandle(event)) {
                     logger.debug("Handle: {}", event);
                     final List<IEvent> additionalEvents = actionHandler.handle(event);
@@ -50,11 +50,6 @@ public class ActionHandler extends EventHandler {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public synchronized void handle(IEvent event) {
-        handleEvent(event);
     }
 
     @Override

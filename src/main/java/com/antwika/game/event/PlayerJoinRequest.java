@@ -8,8 +8,9 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class PlayerLeaveEvent implements IEvent {
+public class PlayerJoinRequest implements IEvent {
     private GameData gameData;
     private SeatData seatData;
     private Player player;
+    private int amount;
 }

@@ -1,6 +1,5 @@
 package com.antwika.game;
 
-import com.antwika.common.exception.NotationException;
 import com.antwika.game.event.*;
 import com.antwika.game.game.Game;
 import com.antwika.game.player.Player;
@@ -23,12 +22,12 @@ public class GameDataUtilTest {
         final Player player5 = new RandomPlayer(5L, "Eric");
         final Player player6 = new RandomPlayer(6L, "Filipe");
 
-        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(0), player1, 1000));
-        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(1), player2, 1000));
-        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(2), player3, 1000));
-        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(3), player4, 1000));
-        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(4), player5, 1000));
-        game.offer(new PlayerJoinRequestEvent(game.getGameData(), game.getGameData().getSeats().get(5), player6, 1000));
+        game.offer(new PlayerJoinRequest(game.getGameData(), game.getGameData().getSeats().get(0), player1, 1000));
+        game.offer(new PlayerJoinRequest(game.getGameData(), game.getGameData().getSeats().get(1), player2, 1000));
+        game.offer(new PlayerJoinRequest(game.getGameData(), game.getGameData().getSeats().get(2), player3, 1000));
+        game.offer(new PlayerJoinRequest(game.getGameData(), game.getGameData().getSeats().get(3), player4, 1000));
+        game.offer(new PlayerJoinRequest(game.getGameData(), game.getGameData().getSeats().get(4), player5, 1000));
+        game.offer(new PlayerJoinRequest(game.getGameData(), game.getGameData().getSeats().get(5), player6, 1000));
 
         game.join();
     }

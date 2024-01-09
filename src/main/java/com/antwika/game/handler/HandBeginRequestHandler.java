@@ -97,7 +97,7 @@ public class HandBeginRequestHandler implements IHandler {
 
             gameData.setGameStage(GameData.GameStage.PREFLOP);
 
-            additionalEvents.add(new BeginOrbitRequest(gameData, 0));
+            additionalEvents.add(new OrbitBeginRequest(gameData, 0));
 
             return additionalEvents;
         } catch (Exception e) {

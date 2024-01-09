@@ -34,11 +34,11 @@ public class OrbitActionRequestHandler implements IHandler {
 
             if (GameDataUtil.countPlayersRemainingInHand(gameData) == 1) {
                 logger.debug("All but one player has folded, hand must end");
-                return List.of(new EndOrbitRequest(gameData));
+                return List.of(new OrbitEndRequest(gameData));
             }
 
             if (GameDataUtil.getNumberOfPlayersLeftToAct(gameData) < 1) {
-                return List.of(new EndOrbitRequest(gameData));
+                return List.of(new OrbitEndRequest(gameData));
             }
 
             final List<SeatData> seats = gameData.getSeats();
@@ -48,7 +48,7 @@ public class OrbitActionRequestHandler implements IHandler {
 
             final SeatData seatAfter = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
             if (seat == null) {
-                return List.of(new EndOrbitRequest(gameData));
+                return List.of(new OrbitEndRequest(gameData));
             }
 
             if (seat.isHasFolded()) {
@@ -68,7 +68,7 @@ public class OrbitActionRequestHandler implements IHandler {
             final int smallestValidRaise = Math.min(totalBet + bigBlind, seat.getStack());
 
             if (seat.getStack() == 0) {
-                return List.of(new EndOrbitRequest(gameData));
+                return List.of(new OrbitEndRequest(gameData));
             }
 
             final IEvent response = Player.handleEvent(new PlayerActionRequest(player, gameData, totalBet, toCall, minBet, smallestValidRaise));
