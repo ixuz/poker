@@ -6,7 +6,6 @@ import com.antwika.game.data.DeckData;
 import com.antwika.game.data.GameData;
 import com.antwika.game.data.SeatData;
 import com.antwika.game.event.BeginBettingRoundRequest;
-import com.antwika.game.event.BettingRoundEvent;
 import com.antwika.game.event.DealCardsEvent;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.log.GameLog;
