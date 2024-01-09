@@ -52,9 +52,7 @@ public class GameDataUtil {
         final SeatData seat = findFirstAvailableSeat(gameData);
         if (seat == null) return false;
 
-        boolean seated = seat(gameData, player, seat.getSeatIndex(), buyIn);
-
-        return seated;
+        return seat(gameData, player, seat.getSeatIndex(), buyIn);
     }
 
     public static void resetSeat(SeatData seat) {

@@ -18,10 +18,7 @@ public class ShowdownRequestHandler implements IHandler {
 
         final GameData.GameStage gameStage = showdownRequest.getGameData().getGameStage();
 
-        return switch (gameStage) {
-            case SHOWDOWN -> true;
-            default -> false;
-        };
+        return gameStage.equals(GameData.GameStage.SHOWDOWN);
     }
 
     public List<IEvent> handle(IEvent event) {

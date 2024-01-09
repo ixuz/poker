@@ -163,9 +163,9 @@ public class PotsUtil {
                 }
             }).toList();
 
-            final List<String> sortedGroupIds = sortedEvaluations.stream().map(i -> i.getGroupId()).distinct().toList();
+            final List<String> sortedGroupIds = sortedEvaluations.stream().map(CandidateEvaluationData::getGroupId).distinct().toList();
 
-            final Map<String, List<CandidateEvaluationData>> groups = evaluations.stream().collect(Collectors.groupingBy(i -> i.getGroupId()));
+            final Map<String, List<CandidateEvaluationData>> groups = evaluations.stream().collect(Collectors.groupingBy(CandidateEvaluationData::getGroupId));
 
             int remainingPot = pot.getTotalAmount();
             for (String groupId : sortedGroupIds) {

@@ -15,7 +15,7 @@ public class Game extends ActionHandler {
 
     private final GameData gameData;
 
-    long maxHandCount;
+    private final long maxHandCount;
 
     boolean shouldStopAfterHand = false;
 

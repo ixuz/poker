@@ -8,11 +8,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class EventHandler extends Thread {
+public abstract class EventHandler extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(EventHandler.class);
     private final BlockingQueue<IEvent> events = new LinkedBlockingQueue<>();
 
-    public enum EventHandlerState { NONE, STARTING, STARTED, STOPPING, STOPPED };
+    public enum EventHandlerState { NONE, STARTING, STARTED, STOPPING, STOPPED }
     private EventHandlerState eventHandlerState = EventHandlerState.NONE;
     private boolean running = false;
 
@@ -59,13 +59,9 @@ public class EventHandler extends Thread {
         return running;
     }
 
-    protected synchronized void preEventHandle() {
+    abstract protected void preEventHandle();
 
-    }
-
-    protected synchronized void noEventHandle() {
-
-    }
+    abstract protected void noEventHandle();
 
     @Override
     public void run() {

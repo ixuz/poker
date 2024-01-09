@@ -23,10 +23,7 @@ public class HandBeginRequestHandler implements IHandler {
 
         final GameData.GameStage gameStage = handBeginRequest.getGameData().getGameStage();
 
-        return switch (gameStage) {
-            case NONE -> true;
-            default -> false;
-        };
+        return gameStage.equals(GameData.GameStage.NONE);
     }
 
     public List<IEvent> handle(IEvent event) {
@@ -100,7 +97,9 @@ public class HandBeginRequestHandler implements IHandler {
 
             gameData.setGameStage(GameData.GameStage.PREFLOP);
 
-            return List.of(new BeginOrbitRequest(gameData, 0));
+            additionalEvents.add(new BeginOrbitRequest(gameData, 0));
+
+            return additionalEvents;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -43,4 +43,14 @@ public class RandomPlayer extends Player {
             }
         }
     }
+
+    @Override
+    protected void preEventHandle() {
+
+    }
+
+    @Override
+    protected void noEventHandle() {
+
+    }
 }

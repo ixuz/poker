@@ -34,15 +34,17 @@ public class PremiumPlayer extends Player {
 
         if (hasPremium(cards)) {
             if (event.getToCall() == 0) {
-                if (!hasGoodHand(gameData, cards)) {
+                if (hasGoodHand(gameData, cards)) {
+                    return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.BET, GameDataUtil.calcBetSize(gameData, this, 1.0f));
+                } else {
                     return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.CHECK, 0);
                 }
-                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.BET, GameDataUtil.calcBetSize(gameData, this, 1.0f));
             } else {
-                if (!hasGoodHand(gameData, cards)) {
+                if (hasGoodHand(gameData, cards)) {
+                    return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.RAISE, GameDataUtil.calcBetSize(gameData, this, 1.0f));
+                } else {
                     return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.FOLD, 0);
                 }
-                return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.RAISE, GameDataUtil.calcBetSize(gameData, this, 1.0f));
             }
         } else {
             return new PlayerActionResponse(this, gameData, PlayerActionResponse.Type.FOLD, 0);
@@ -81,11 +83,21 @@ public class PremiumPlayer extends Player {
         }
 
         if (Long.bitCount(gameData.getCards()) == 3) {
-            if (Long.bitCount(allCards & CLUBS) >= 3) return true;
+            return Long.bitCount(allCards & CLUBS) >= 3;
         } else if (Long.bitCount(gameData.getCards()) >= 4) {
-            if (Long.bitCount(allCards & CLUBS) >= 4) return true;
+            return Long.bitCount(allCards & CLUBS) >= 4;
         }
 
         return false;
+    }
+
+    @Override
+    protected void preEventHandle() {
+
+    }
+
+    @Override
+    protected void noEventHandle() {
+
     }
 }

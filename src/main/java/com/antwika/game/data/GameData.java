@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Builder
 public class GameData {
-    public enum GameStage { NONE, HAND_BEGUN, PREFLOP, FLOP, TURN, RIVER, SHOWDOWN };
+    public enum GameStage { NONE, HAND_BEGUN, PREFLOP, FLOP, TURN, RIVER, SHOWDOWN }
     private final String tableName;
     private String gameType;
     private GameStage gameStage;

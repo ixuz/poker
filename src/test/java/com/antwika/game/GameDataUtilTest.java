@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 public class GameDataUtilTest {
     @Test
     @Disabled
-    public void test() throws NotationException, InterruptedException {
+    public void test() throws InterruptedException {
         final Game game = new Game(10L, 100L);
         game.start();
 

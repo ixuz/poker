@@ -57,4 +57,14 @@ public class ActionHandler extends EventHandler {
     public synchronized void handle(IEvent event) {
         handleEvent(event);
     }
+
+    @Override
+    protected void preEventHandle() {
+
+    }
+
+    @Override
+    protected void noEventHandle() {
+
+    }
 }

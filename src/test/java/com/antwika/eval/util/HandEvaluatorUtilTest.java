@@ -22,11 +22,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.antwika.common.util.BitmaskUtil.*;
-import static com.antwika.common.util.BitmaskUtil.TWO_INDEX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.mock;
 
 public class HandEvaluatorUtilTest {
     @Test
