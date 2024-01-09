@@ -20,8 +20,7 @@ public class ActionHandler extends EventHandler {
             new EndOrbitRequestHandler(),
             new OrbitActionRequestHandler(),
             new OrbitActionResponseHandler(),
-            new DealCommunityCardsRequestHandler(),
-            new DealCardsEventHandler()
+            new DealCommunityCardsRequestHandler()
     );
 
     public ActionHandler(String eventHandlerName, long eventPollTimeoutMillis) {
