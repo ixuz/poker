@@ -67,12 +67,6 @@ public class BettingRoundPlayerActionRequestHandler implements IHandler {
             final int minBet = totalBet + minRaise - seat.getCommitted();
             final int smallestValidRaise = Math.min(totalBet + bigBlind, seat.getStack());
 
-            if (toCall > 0) {
-                logger.debug("{}, {} to call", seat.getPlayer(), toCall);
-            } else {
-                logger.debug("{}, Check or bet?", seat.getPlayer());
-            }
-
             if (seat.getStack() == 0) {
                 return List.of(new EndBettingRoundRequest(gameData));
             }

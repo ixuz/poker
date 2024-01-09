@@ -44,8 +44,7 @@ public class HandBeginRequestHandler implements IHandler {
             gameData.setGameStage(GameData.GameStage.HAND_BEGUN);
 
             return List.of(
-                    new HandBeginEvent(gameData),
-                    new DealCardsEvent(gameData)
+                    new HandBeginEvent(gameData)
             );
         } catch (Exception e) {
             throw new RuntimeException(e);

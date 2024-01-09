@@ -18,7 +18,7 @@ public class ActionHandler extends EventHandler {
             new BetHandler(),
             new RaiseHandler(),
             new ShowdownRequestHandler(),
-            new DealCardsHandler(),
+            new DealCardsEventHandler(),
             new HandBeginRequestHandler(),
             new PlayerJoinRequestHandler(),
             new PlayerJoinHandler(),
@@ -28,7 +28,9 @@ public class ActionHandler extends EventHandler {
             new BettingRoundPlayerActionRequestHandler(),
             new ShowdownEventHandler(),
             new HandBeginEventHandler(),
-            new DealCommunityCardsRequestHandler()
+            new DealCommunityCardsRequestHandler(),
+            new DealCardsRequestHandler(),
+            new DealCardsEventHandler()
     );
 
     public ActionHandler(String eventHandlerName, long eventPollTimeoutMillis) {

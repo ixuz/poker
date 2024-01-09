@@ -7,6 +7,7 @@ import com.antwika.game.data.GameData;
 import com.antwika.game.data.SeatData;
 import com.antwika.game.event.BeginBettingRoundRequest;
 import com.antwika.game.event.DealCardsEvent;
+import com.antwika.game.event.DealCardsRequest;
 import com.antwika.game.event.IEvent;
 import com.antwika.game.log.GameLog;
 import com.antwika.game.util.DeckUtil;
@@ -16,24 +17,21 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class DealCardsHandler implements IHandler {
-    private static final Logger logger = LoggerFactory.getLogger(DealCardsHandler.class);
+public class DealCardsRequestHandler implements IHandler {
+    private static final Logger logger = LoggerFactory.getLogger(DealCardsRequestHandler.class);
 
     public boolean canHandle(IEvent event) {
-        if (!(event instanceof DealCardsEvent dealCardsEvent)) return false;
+        if (!(event instanceof DealCardsRequest dealCardsRequest)) return false;
 
-        final GameData.GameStage gameStage = dealCardsEvent.getGameData().getGameStage();
+        final GameData.GameStage gameStage = dealCardsRequest.getGameData().getGameStage();
 
-        return switch (gameStage) {
-            case HAND_BEGUN -> true;
-            default -> false;
-        };
+        return gameStage == GameData.GameStage.HAND_BEGUN;
     }
 
     public List<IEvent> handle(IEvent event) {
         try {
-            final DealCardsEvent dealCardsEvent = (DealCardsEvent) event;
-            final GameData gameData = dealCardsEvent.getGameData();
+            final DealCardsRequest dealCardsRequest = (DealCardsRequest) event;
+            final GameData gameData = dealCardsRequest.getGameData();
 
             GameLog.printGameInfo(gameData);
             DeckUtil.resetAndShuffle(gameData.getDeckData());
@@ -59,9 +57,8 @@ public class DealCardsHandler implements IHandler {
             }
 
             GameLog.printTableSeatCardsInfo(gameData);
-            gameData.setGameStage(GameData.GameStage.PREFLOP);
 
-            return List.of(new BeginBettingRoundRequest(gameData, 0));
+            return List.of(new DealCardsEvent(gameData));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

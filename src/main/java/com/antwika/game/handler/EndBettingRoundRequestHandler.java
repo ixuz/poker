@@ -26,33 +26,26 @@ public class EndBettingRoundRequestHandler implements IHandler {
     public List<IEvent> handle(IEvent event) {
         final List<IEvent> additionalEvents = new ArrayList<>();
 
-        try {
-            final EndBettingRoundRequest endBettingRoundRequest = (EndBettingRoundRequest) event;
-            final GameData gameData = endBettingRoundRequest.getGameData();
+        final EndBettingRoundRequest endBettingRoundRequest = (EndBettingRoundRequest) event;
+        final GameData gameData = endBettingRoundRequest.getGameData();
 
-            // if (GameDataUtil.countPlayersRemainingInHand(gameData) > 1) {
-                GameDataUtil.collect(gameData);
-                logger.debug("Betting round ended");
-            // }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            final EndBettingRoundRequest endBettingRoundRequest = (EndBettingRoundRequest) event;
-            final GameData gameData = endBettingRoundRequest.getGameData();
-            if (gameData.getGameStage() == GameData.GameStage.PREFLOP) {
-                gameData.setGameStage(GameData.GameStage.FLOP);
-                additionalEvents.add(new BeginBettingRoundRequest(gameData, 3));
-            } else if (gameData.getGameStage() == GameData.GameStage.FLOP) {
-                gameData.setGameStage(GameData.GameStage.TURN);
-                additionalEvents.add(new BeginBettingRoundRequest(gameData, 1));
-            } else if (gameData.getGameStage() == GameData.GameStage.TURN) {
-                gameData.setGameStage(GameData.GameStage.RIVER);
-                additionalEvents.add(new BeginBettingRoundRequest(gameData, 1));
-            } else if (gameData.getGameStage() == GameData.GameStage.RIVER) {
-                gameData.setGameStage(GameData.GameStage.SHOWDOWN);
-                additionalEvents.add(new ShowdownRequest(gameData));
-            }
+        GameDataUtil.collect(gameData);
+
+        if (gameData.getGameStage() == GameData.GameStage.PREFLOP) {
+            gameData.setGameStage(GameData.GameStage.FLOP);
+            additionalEvents.add(new BeginBettingRoundRequest(gameData, 3));
+        } else if (gameData.getGameStage() == GameData.GameStage.FLOP) {
+            gameData.setGameStage(GameData.GameStage.TURN);
+            additionalEvents.add(new BeginBettingRoundRequest(gameData, 1));
+        } else if (gameData.getGameStage() == GameData.GameStage.TURN) {
+            gameData.setGameStage(GameData.GameStage.RIVER);
+            additionalEvents.add(new BeginBettingRoundRequest(gameData, 1));
+        } else if (gameData.getGameStage() == GameData.GameStage.RIVER) {
+            gameData.setGameStage(GameData.GameStage.SHOWDOWN);
+            additionalEvents.add(new ShowdownRequest(gameData));
         }
+
+        logger.debug("Betting round ended");
 
         return additionalEvents;
     }
