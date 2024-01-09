@@ -10,38 +10,28 @@ import java.util.List;
 public class ActionHandler extends EventHandler {
     private static final Logger logger = LoggerFactory.getLogger(ActionHandler.class);
 
-    private static final List<IHandler> handlers = List.of(
-            new ShowdownRequestHandler(),
-            new HandBeginRequestHandler(),
-            new PlayerJoinRequestHandler(),
-            new PlayerLeaveRequestHandler(),
-            new OrbitBeginRequestHandler(),
-            new OrbitEndRequestHandler(),
-            new OrbitActionRequestHandler(),
-            new OrbitActionResponseHandler(),
-            new DealCommunityCardsRequestHandler()
-    );
+    private final IHandler handler;
 
-    public ActionHandler(String eventHandlerName, long eventPollTimeoutMillis) {
+    public ActionHandler(IHandler handler, String eventHandlerName, long eventPollTimeoutMillis) {
         super(eventHandlerName, eventPollTimeoutMillis);
+        this.handler = handler;
     }
 
     @Override
     public synchronized void handle(IEvent event) {
         try {
             boolean handled = false;
-            for (IHandler actionHandler : handlers) {
-                if (actionHandler.canHandle(event)) {
-                    logger.debug("Handle: {}", event);
-                    final List<IEvent> additionalEvents = actionHandler.handle(event);
-                    if (additionalEvents != null) {
-                        for (IEvent additionalEvent : additionalEvents) {
-                            offer(additionalEvent);
-                        }
-                    }
+            if (handler.canHandle(event)) {
+                logger.debug("Handle: {}", event);
 
-                    handled = true;
+                final List<IEvent> additionalEvents = handler.handle(event);
+                if (additionalEvents != null) {
+                    for (IEvent additionalEvent : additionalEvents) {
+                        offer(additionalEvent);
+                    }
                 }
+
+                handled = true;
             }
 
             if (!handled) {
