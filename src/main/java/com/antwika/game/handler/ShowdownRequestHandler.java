@@ -3,7 +3,6 @@ package com.antwika.game.handler;
 import com.antwika.common.exception.NotationException;
 import com.antwika.game.data.GameData;
 import com.antwika.game.event.IEvent;
-import com.antwika.game.event.ShowdownEvent;
 import com.antwika.game.event.ShowdownRequest;
 import com.antwika.game.util.GameDataUtil;
 import org.slf4j.Logger;
@@ -37,7 +36,10 @@ public class ShowdownRequestHandler implements IHandler {
             gameData.setGameStage(GameData.GameStage.NONE);
 
             GameDataUtil.resetAllSeats(gameData);
-            return List.of(new ShowdownEvent(gameData));
+
+            logger.info("--- HAND END ---");
+
+            return null;
         } catch (NotationException e) {
             throw new RuntimeException(e);
         }

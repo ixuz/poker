@@ -3,7 +3,6 @@ package com.antwika.game.handler;
 import com.antwika.game.data.GameData;
 import com.antwika.game.data.SeatData;
 import com.antwika.game.event.IEvent;
-import com.antwika.game.event.PlayerJoinEvent;
 import com.antwika.game.event.PlayerJoinRequestEvent;
 import com.antwika.game.player.Player;
 import com.antwika.game.util.GameDataUtil;
@@ -31,7 +30,7 @@ public class PlayerJoinRequestHandler implements IHandler {
         final boolean seated = GameDataUtil.seat(gameData, player, seatData.getSeatIndex(), amount);
 
         if (seated) {
-            return List.of(new PlayerJoinEvent(gameData, seatData, player));
+            logger.info("{}: joined the game at seat #{}", player.getPlayerData().getPlayerName(), seatData.getSeatIndex() + 1);
         }
 
         return null;

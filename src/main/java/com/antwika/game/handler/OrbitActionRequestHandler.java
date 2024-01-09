@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BettingRoundPlayerActionRequestHandler implements IHandler {
-    private static final Logger logger = LoggerFactory.getLogger(BettingRoundPlayerActionRequestHandler.class);
+public class OrbitActionRequestHandler implements IHandler {
+    private static final Logger logger = LoggerFactory.getLogger(OrbitActionRequestHandler.class);
 
     public boolean canHandle(IEvent event) {
-        if (!(event instanceof BettingRoundPlayerActionRequest bettingRoundPlayerActionRequest)) return false;
+        if (!(event instanceof OrbitActionRequest orbitActionRequest)) return false;
 
-        final GameData.GameStage gameStage = bettingRoundPlayerActionRequest.getGameData().getGameStage();
+        final GameData.GameStage gameStage = orbitActionRequest.getGameData().getGameStage();
 
         return switch (gameStage) {
             case PREFLOP, FLOP, TURN, RIVER -> true;
@@ -29,16 +29,16 @@ public class BettingRoundPlayerActionRequestHandler implements IHandler {
         final List<IEvent> additionalEvents = new ArrayList<>();
 
         try {
-            final BettingRoundPlayerActionRequest bettingRoundPlayerActionRequest = (BettingRoundPlayerActionRequest) event;
-            final GameData gameData = bettingRoundPlayerActionRequest.getGameData();
+            final OrbitActionRequest orbitActionRequest = (OrbitActionRequest) event;
+            final GameData gameData = orbitActionRequest.getGameData();
 
             if (GameDataUtil.countPlayersRemainingInHand(gameData) == 1) {
                 logger.debug("All but one player has folded, hand must end");
-                return List.of(new EndBettingRoundRequest(gameData));
+                return List.of(new EndOrbitRequest(gameData));
             }
 
             if (GameDataUtil.getNumberOfPlayersLeftToAct(gameData) < 1) {
-                return List.of(new EndBettingRoundRequest(gameData));
+                return List.of(new EndOrbitRequest(gameData));
             }
 
             final List<SeatData> seats = gameData.getSeats();
@@ -48,13 +48,13 @@ public class BettingRoundPlayerActionRequestHandler implements IHandler {
 
             final SeatData seatAfter = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
             if (seat == null) {
-                return List.of(new EndBettingRoundRequest(gameData));
+                return List.of(new EndOrbitRequest(gameData));
             }
 
             if (seat.isHasFolded()) {
                 seat.setHasActed(true);
                 gameData.setActionAt(seatAfter.getSeatIndex());
-                return List.of(new BettingRoundPlayerActionRequest(gameData));
+                return List.of(new OrbitActionRequest(gameData));
             }
 
             final Player player = seat.getPlayer();
@@ -68,7 +68,7 @@ public class BettingRoundPlayerActionRequestHandler implements IHandler {
             final int smallestValidRaise = Math.min(totalBet + bigBlind, seat.getStack());
 
             if (seat.getStack() == 0) {
-                return List.of(new EndBettingRoundRequest(gameData));
+                return List.of(new EndOrbitRequest(gameData));
             }
 
             final IEvent response = Player.handleEvent(new PlayerActionRequest(player, gameData, totalBet, toCall, minBet, smallestValidRaise));

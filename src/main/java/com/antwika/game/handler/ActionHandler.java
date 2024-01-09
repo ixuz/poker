@@ -12,24 +12,15 @@ public class ActionHandler extends EventHandler {
 
     private static final List<IHandler> actionHandlers = List.of(
             new StartHandRequestHandler(),
-            new FoldHandler(),
-            new CheckHandler(),
-            new CallHandler(),
-            new BetHandler(),
-            new RaiseHandler(),
             new ShowdownRequestHandler(),
-            new DealCardsEventHandler(),
             new HandBeginRequestHandler(),
             new PlayerJoinRequestHandler(),
-            new PlayerJoinHandler(),
             new PlayerLeaveHandler(),
-            new BeginBettingRoundRequestHandler(),
-            new EndBettingRoundRequestHandler(),
-            new BettingRoundPlayerActionRequestHandler(),
-            new ShowdownEventHandler(),
-            new HandBeginEventHandler(),
+            new BeginOrbitRequestHandler(),
+            new EndOrbitRequestHandler(),
+            new OrbitActionRequestHandler(),
+            new OrbitActionResponseHandler(),
             new DealCommunityCardsRequestHandler(),
-            new DealCardsRequestHandler(),
             new DealCardsEventHandler()
     );
 
@@ -42,6 +33,7 @@ public class ActionHandler extends EventHandler {
             boolean handled = false;
             for (IHandler actionHandler : actionHandlers) {
                 if (actionHandler.canHandle(event)) {
+                    logger.debug("Handle: {}", event);
                     final List<IEvent> additionalEvents = actionHandler.handle(event);
                     if (additionalEvents != null) {
                         for (IEvent additionalEvent : additionalEvents) {

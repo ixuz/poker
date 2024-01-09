@@ -5,8 +5,6 @@ import com.antwika.common.util.BitmaskUtil;
 import com.antwika.common.util.HandUtil;
 import com.antwika.game.data.*;
 import com.antwika.game.event.*;
-import com.antwika.game.handler.ActionHandler;
-import com.antwika.game.log.GameLog;
 import com.antwika.game.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -435,7 +433,24 @@ public class GameDataUtil {
             throw new RuntimeException("Invalid amount of chips");
         }
 
-        GameLog.printSummary(gameData);
+        logger.info("*** SUMMARY ***");
+        logger.info("Total pot {} | Rake {}", gameData.getDelivered(), 0);
+        logger.info("Board [{}]", GameDataUtil.toNotation(gameData.getCards()));
+
+        int chipsInPlay = 0;
+        for (SeatData seat : gameData.getSeats()) {
+            if (seat.getPlayer() == null) continue;
+
+            chipsInPlay += seat.getStack();
+
+            final Player player = seat.getPlayer();
+
+            logger.info("Seat {}: {} stack {}",
+                    seat.getSeatIndex(),
+                    player.getPlayerData().getPlayerName(),
+                    seat.getStack());
+        }
+        logger.info("Total chips in play {}", chipsInPlay);
     }
 
     public static int calcBetSize(GameData gameData, Player player, float betSizePercent) {
