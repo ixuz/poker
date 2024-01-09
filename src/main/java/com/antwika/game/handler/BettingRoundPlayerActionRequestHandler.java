@@ -35,12 +35,10 @@ public class BettingRoundPlayerActionRequestHandler implements IHandler {
             if (GameDataUtil.countPlayersRemainingInHand(gameData) == 1) {
                 logger.debug("All but one player has folded, hand must end");
                 return List.of(new EndBettingRoundRequest(gameData));
-                // break; // additionalEvents.add(new EndBettingRoundRequest(gameData));
             }
 
             if (GameDataUtil.getNumberOfPlayersLeftToAct(gameData) < 1) {
                 return List.of(new EndBettingRoundRequest(gameData));
-                // break; // additionalEvents.add(new EndBettingRoundRequest(gameData));
             }
 
             final List<SeatData> seats = gameData.getSeats();
@@ -51,14 +49,12 @@ public class BettingRoundPlayerActionRequestHandler implements IHandler {
             final SeatData seatAfter = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
             if (seat == null) {
                 return List.of(new EndBettingRoundRequest(gameData));
-                // break;
             }
 
             if (seat.isHasFolded()) {
                 seat.setHasActed(true);
                 gameData.setActionAt(seatAfter.getSeatIndex());
                 return List.of(new BettingRoundPlayerActionRequest(gameData));
-                // continue;
             }
 
             final Player player = seat.getPlayer();
@@ -79,35 +75,17 @@ public class BettingRoundPlayerActionRequestHandler implements IHandler {
 
             if (seat.getStack() == 0) {
                 return List.of(new EndBettingRoundRequest(gameData));
-                // break; // additionalEvents.add(new EndBettingRoundRequest(gameData));
             }
 
             final IEvent response = Player.handleEvent(new PlayerActionRequest(player, gameData, totalBet, toCall, minBet, smallestValidRaise));
 
             if (response != null) {
                 return List.of(response);
-                // additionalEvents.add(response);
             }
-
-            /* if (GameDataUtil.hasAllPlayersActed(gameData)) {
-                return List.of(new EndBettingRoundRequest(gameData));
-                // break; // additionalEvents.add(new EndBettingRoundRequest(gameData));
-            }
-
-            final SeatData theNextSeat = GameDataUtil.findNextSeatToAct(gameData, actionAt, 0, true);
-            if (theNextSeat == null) {
-                return List.of(new EndBettingRoundRequest(gameData));
-                // break; // additionalEvents.add(new EndBettingRoundRequest(gameData));
-            }
-
-            gameData.setActionAt(theNextSeat.getSeatIndex());
-
-            return List.of(new BettingRoundPlayerActionRequest(gameData)); */
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        // return additionalEvents;
         return null;
     }
 }
