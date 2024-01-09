@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class AggregateHandler extends EventHandler {
-    private static final Logger logger = LoggerFactory.getLogger(AggregateHandler.class);
+public class ActionHandler extends EventHandler {
+    private static final Logger logger = LoggerFactory.getLogger(ActionHandler.class);
 
     private static final List<IHandler> handlers = List.of(
             new ShowdownRequestHandler(),
@@ -22,7 +22,7 @@ public class AggregateHandler extends EventHandler {
             new DealCommunityCardsRequestHandler()
     );
 
-    public AggregateHandler(String eventHandlerName, long eventPollTimeoutMillis) {
+    public ActionHandler(String eventHandlerName, long eventPollTimeoutMillis) {
         super(eventHandlerName, eventPollTimeoutMillis);
     }
 
