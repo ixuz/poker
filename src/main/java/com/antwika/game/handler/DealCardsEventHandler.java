@@ -32,6 +32,21 @@ public class DealCardsEventHandler implements IHandler {
         try {
             final DealCardsEvent dealCardsEvent = (DealCardsEvent) event;
             final GameData gameData = dealCardsEvent.getGameData();
+
+            try {
+                for (SeatData seat : gameData.getSeats()) {
+                    if (seat.getPlayer() == null) continue;
+
+                    final long cards = seat.getCards();
+
+                    if (Long.bitCount(cards) != 2) throw new RuntimeException("Unexpected number of cards after deal");
+
+                    logger.info("Dealt to {} [{}]", seat.getPlayer().getPlayerData().getPlayerName(), GameDataUtil.toNotation(seat.getCards()));
+                }
+            } catch (NotationException e) {
+                throw new RuntimeException(e);
+            }
+
             gameData.setGameStage(GameData.GameStage.PREFLOP);
             return List.of(new BeginBettingRoundRequest(gameData, 0));
         } catch (Exception e) {

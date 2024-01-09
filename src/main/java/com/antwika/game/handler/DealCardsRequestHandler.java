@@ -5,10 +5,7 @@ import com.antwika.common.util.HandUtil;
 import com.antwika.game.data.DeckData;
 import com.antwika.game.data.GameData;
 import com.antwika.game.data.SeatData;
-import com.antwika.game.event.BeginBettingRoundRequest;
-import com.antwika.game.event.DealCardsEvent;
-import com.antwika.game.event.DealCardsRequest;
-import com.antwika.game.event.IEvent;
+import com.antwika.game.event.*;
 import com.antwika.game.log.GameLog;
 import com.antwika.game.util.DeckUtil;
 import com.antwika.game.util.GameDataUtil;
@@ -46,7 +43,7 @@ public class DealCardsRequestHandler implements IHandler {
                 final int seatIndex = (gameData.getActionAt() + i + 1) % seats.size();
                 final SeatData seat = seats.get(seatIndex);
                 if (seat.getPlayer() == null) continue;
-                Long card = DeckUtil.draw(deckData);
+                final Long card = DeckUtil.draw(deckData);
                 if (card == null) throw new RuntimeException("The card drawn from the deck is null");
                 seat.setCards(seat.getCards() | card);
                 try {
@@ -55,8 +52,6 @@ public class DealCardsRequestHandler implements IHandler {
                     throw new RuntimeException(e);
                 }
             }
-
-            GameLog.printTableSeatCardsInfo(gameData);
 
             return List.of(new DealCardsEvent(gameData));
         } catch (Exception e) {
