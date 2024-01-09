@@ -4,7 +4,7 @@ import com.antwika.table.data.TableData;
 import com.antwika.table.event.OrbitBeginRequest;
 import com.antwika.table.event.DealCommunityCardsRequest;
 import com.antwika.table.event.IEvent;
-import com.antwika.table.util.TableDataUtil;
+import com.antwika.table.util.TableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class DealCommunityCardsRequestHandler implements IHandler {
             final DealCommunityCardsRequest dealCommunityCardsRequest = (DealCommunityCardsRequest) event;
             final TableData tableData = dealCommunityCardsRequest.getTableData();
 
-            TableDataUtil.dealCommunityCards(tableData, dealCommunityCardsRequest.getCount());
+            TableUtil.dealCommunityCards(tableData, dealCommunityCardsRequest.getCount());
 
             return List.of(new OrbitBeginRequest(tableData, 0));
         } catch (Exception e) {

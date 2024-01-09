@@ -7,7 +7,7 @@ import com.antwika.table.data.TableData;
 import com.antwika.table.data.SeatData;
 import com.antwika.table.event.*;
 import com.antwika.table.util.DeckUtil;
-import com.antwika.table.util.TableDataUtil;
+import com.antwika.table.util.TableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +33,11 @@ public class HandBeginRequestHandler implements IHandler {
             final HandBeginRequest handBeginRequest = (HandBeginRequest) event;
             final TableData tableData = handBeginRequest.getTableData();
 
-            TableDataUtil.prepareHand(tableData);
+            TableUtil.prepareHand(tableData);
 
-            additionalEvents.addAll(TableDataUtil.unseat(tableData, TableDataUtil.findAllBustedSeats(tableData)));
+            additionalEvents.addAll(TableUtil.unseat(tableData, TableUtil.findAllBustedSeats(tableData)));
 
-            TableDataUtil.resetAllSeats(tableData);
+            TableUtil.resetAllSeats(tableData);
 
             tableData.setGameStage(TableData.GameStage.HAND_BEGUN);
 
@@ -66,7 +66,7 @@ public class HandBeginRequestHandler implements IHandler {
                         seat.getStack());
             }
 
-            TableDataUtil.forcePostBlinds(tableData, List.of(tableData.getSmallBlind(), tableData.getBigBlind()));
+            TableUtil.forcePostBlinds(tableData, List.of(tableData.getSmallBlind(), tableData.getBigBlind()));
 
             final List<SeatData> seats = tableData.getSeats();
             final DeckData deckData = tableData.getDeckData();
@@ -92,7 +92,7 @@ public class HandBeginRequestHandler implements IHandler {
 
                 if (Long.bitCount(cards) != 2) throw new RuntimeException("Unexpected number of cards after deal");
 
-                logger.info("Dealt to {} [{}]", seat.getPlayer().getPlayerData().getPlayerName(), TableDataUtil.toNotation(seat.getCards()));
+                logger.info("Dealt to {} [{}]", seat.getPlayer().getPlayerData().getPlayerName(), TableUtil.toNotation(seat.getCards()));
             }
 
             tableData.setGameStage(TableData.GameStage.PREFLOP);

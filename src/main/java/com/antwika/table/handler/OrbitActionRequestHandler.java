@@ -4,7 +4,7 @@ import com.antwika.table.data.TableData;
 import com.antwika.table.data.SeatData;
 import com.antwika.table.event.*;
 import com.antwika.table.player.Player;
-import com.antwika.table.util.TableDataUtil;
+import com.antwika.table.util.TableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +32,12 @@ public class OrbitActionRequestHandler implements IHandler {
             final OrbitActionRequest orbitActionRequest = (OrbitActionRequest) event;
             final TableData tableData = orbitActionRequest.getTableData();
 
-            if (TableDataUtil.countPlayersRemainingInHand(tableData) == 1) {
+            if (TableUtil.countPlayersRemainingInHand(tableData) == 1) {
                 logger.debug("All but one player has folded, hand must end");
                 return List.of(new OrbitEndRequest(tableData));
             }
 
-            if (TableDataUtil.getNumberOfPlayersLeftToAct(tableData) < 1) {
+            if (TableUtil.getNumberOfPlayersLeftToAct(tableData) < 1) {
                 return List.of(new OrbitEndRequest(tableData));
             }
 
@@ -46,7 +46,7 @@ public class OrbitActionRequestHandler implements IHandler {
 
             final SeatData seat = seats.get(actionAt);
 
-            final SeatData seatAfter = TableDataUtil.findNextSeatToAct(tableData, actionAt, 0, true);
+            final SeatData seatAfter = TableUtil.findNextSeatToAct(tableData, actionAt, 0, true);
             if (seat == null) {
                 return List.of(new OrbitEndRequest(tableData));
             }

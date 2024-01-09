@@ -4,7 +4,7 @@ import com.antwika.table.TableDataFactory;
 import com.antwika.table.data.TableData;
 import com.antwika.table.event.*;
 import com.antwika.table.handler.*;
-import com.antwika.table.util.TableDataUtil;
+import com.antwika.table.util.TableUtil;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public class Table extends EventHandler {
     protected synchronized void noEventHandle() {
         try {
             if (tableData.getGameStage().equals(TableData.GameStage.NONE)) {
-                if (TableDataUtil.canStartHand(tableData)) {
+                if (TableUtil.canStartHand(tableData)) {
                     if (tableData.getHandId() >= maxHandCount) {
                         shouldStopAfterHand = true;
                     }

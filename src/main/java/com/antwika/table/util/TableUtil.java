@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class TableDataUtil {
-    private static final Logger logger = LoggerFactory.getLogger(TableDataUtil.class);
+public class TableUtil {
+    private static final Logger logger = LoggerFactory.getLogger(TableUtil.class);
 
     public static String toNotation(long cards) throws NotationException {
         final String cardsNotation = HandUtil.toNotation(cards);
@@ -66,7 +66,7 @@ public class TableDataUtil {
     }
 
     public static void resetAllSeats(TableData tableData) {
-        tableData.getSeats().forEach(TableDataUtil::resetSeat);
+        tableData.getSeats().forEach(TableUtil::resetSeat);
     }
 
     public static int countAllStacks(TableData tableData) {
@@ -193,7 +193,7 @@ public class TableDataUtil {
     }
 
     public static boolean hasAllPlayersActed(TableData tableData) {
-        int highestCommit = TableDataUtil.findHighestCommit(tableData);
+        int highestCommit = TableUtil.findHighestCommit(tableData);
 
         final int notActedYetCount = tableData.getSeats().stream()
                 .filter(seat -> seat.getStack() > 0)
@@ -312,13 +312,13 @@ public class TableDataUtil {
 
     public static void forcePostBlind(TableData tableData, int blindIndex, int blindAmount) {
 
-        final SeatData seat = TableDataUtil.findNextSeatToAct(tableData, tableData.getButtonAt(), blindIndex, true);
+        final SeatData seat = TableUtil.findNextSeatToAct(tableData, tableData.getButtonAt(), blindIndex, true);
         final Player player = seat.getPlayer();
 
         int commitAmount = Math.min(seat.getStack(), blindAmount);
-        TableDataUtil.commit(seat, commitAmount);
+        TableUtil.commit(seat, commitAmount);
 
-        tableData.setActionAt(TableDataUtil.findNextSeatToAct(tableData, seat.getSeatIndex(), 0, true).getSeatIndex());
+        tableData.setActionAt(TableUtil.findNextSeatToAct(tableData, seat.getSeatIndex(), 0, true).getSeatIndex());
 
         final StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s: posts %s %d", player.getPlayerData().getPlayerName(), getBlindName(blindIndex), commitAmount));
@@ -363,15 +363,15 @@ public class TableDataUtil {
 
         try {
             final StringBuilder sb = new StringBuilder();
-            sb.append(String.format("*** %s ***", TableDataUtil.getStreetName(tableData)));
+            sb.append(String.format("*** %s ***", TableUtil.getStreetName(tableData)));
             if (prev != 0L) {
-                sb.append(String.format(" [%s]", TableDataUtil.toNotation(prev)));
+                sb.append(String.format(" [%s]", TableUtil.toNotation(prev)));
             }
             if (add != 0L) {
-                sb.append(String.format(" [%s]", TableDataUtil.toNotation(add)));
+                sb.append(String.format(" [%s]", TableUtil.toNotation(add)));
             }
             logger.info(sb.toString());
-            logger.info("Total pot: {}", TableDataUtil.countTotalPot(tableData));
+            logger.info("Total pot: {}", TableUtil.countTotalPot(tableData));
         } catch (NotationException e) {
             throw new RuntimeException(e);
         }
@@ -384,7 +384,7 @@ public class TableDataUtil {
         tableData.setDelivered(0);
         tableData.setTotalBet(tableData.getBigBlind());
         tableData.setLastRaise(tableData.getBigBlind());
-        tableData.setChipsInPlay(TableDataUtil.countAllStacks(tableData));
+        tableData.setChipsInPlay(TableUtil.countAllStacks(tableData));
     }
 
     public static void collect(TableData tableData) {
@@ -394,8 +394,8 @@ public class TableDataUtil {
         tableData.setLastRaise(0);
         tableData.setTotalBet(0);
 
-        int totalStacks = TableDataUtil.countAllStacks(tableData);
-        int totalPot = TableDataUtil.countTotalPot(tableData);
+        int totalStacks = TableUtil.countAllStacks(tableData);
+        int totalPot = TableUtil.countTotalPot(tableData);
         if (totalStacks + totalPot != tableData.getChipsInPlay()) {
             throw new RuntimeException("Invalid amount of chips");
         }
@@ -426,14 +426,14 @@ public class TableDataUtil {
         pots.clear();
 
         int totalStacks = seats.stream().filter(i -> i.getPlayer() != null).mapToInt(SeatData::getStack).sum();
-        int totalPot = TableDataUtil.countTotalPot(tableData);
+        int totalPot = TableUtil.countTotalPot(tableData);
         if (totalStacks + totalPot != tableData.getChipsInPlay()) {
             throw new RuntimeException("Invalid amount of chips");
         }
 
         logger.info("*** SUMMARY ***");
         logger.info("Total pot {} | Rake {}", tableData.getDelivered(), 0);
-        logger.info("Board [{}]", TableDataUtil.toNotation(tableData.getCards()));
+        logger.info("Board [{}]", TableUtil.toNotation(tableData.getCards()));
 
         int chipsInPlay = 0;
         for (SeatData seat : tableData.getSeats()) {
@@ -452,9 +452,9 @@ public class TableDataUtil {
     }
 
     public static int calcBetSize(TableData tableData, Player player, float betSizePercent) {
-        final SeatData seat = TableDataUtil.getSeat(tableData, player);
+        final SeatData seat = TableUtil.getSeat(tableData, player);
         int lastRaise = tableData.getLastRaise();
-        int totalPot = TableDataUtil.countTotalPotAndCommitted(tableData);
+        int totalPot = TableUtil.countTotalPotAndCommitted(tableData);
         int deadMoney = totalPot - lastRaise;
         int desiredBet = (int) ((lastRaise * 3 + deadMoney) * betSizePercent);
         int minimumBet = Math.min(seat.getStack(), tableData.getBigBlind());

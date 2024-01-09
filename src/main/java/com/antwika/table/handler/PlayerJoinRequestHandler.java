@@ -5,7 +5,7 @@ import com.antwika.table.data.SeatData;
 import com.antwika.table.event.IEvent;
 import com.antwika.table.event.PlayerJoinRequest;
 import com.antwika.table.player.Player;
-import com.antwika.table.util.TableDataUtil;
+import com.antwika.table.util.TableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public class PlayerJoinRequestHandler implements IHandler {
         final Player player = playerJoinRequest.getPlayer();
         final int amount = playerJoinRequest.getAmount();
 
-        final boolean seated = TableDataUtil.seat(tableData, player, seatData.getSeatIndex(), amount);
+        final boolean seated = TableUtil.seat(tableData, player, seatData.getSeatIndex(), amount);
 
         if (seated) {
             logger.info("{}: joined the game at seat #{}", player.getPlayerData().getPlayerName(), seatData.getSeatIndex() + 1);

@@ -8,7 +8,7 @@ import com.antwika.table.player.RandomPlayer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class TableDataUtilTest {
+public class TableUtilTest {
     @Test
     @Disabled
     public void test() throws InterruptedException {

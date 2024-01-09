@@ -2,7 +2,7 @@ package com.antwika.table.handler;
 
 import com.antwika.table.data.TableData;
 import com.antwika.table.event.*;
-import com.antwika.table.util.TableDataUtil;
+import com.antwika.table.util.TableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +30,8 @@ public class OrbitBeginRequestHandler implements IHandler {
         final TableData tableData = orbitBeginRequest.getTableData();
 
         try {
-            if (TableDataUtil.countPlayersRemainingInHand(tableData) > 1) {
-                TableDataUtil.prepareBettingRound(tableData);
+            if (TableUtil.countPlayersRemainingInHand(tableData) > 1) {
+                TableUtil.prepareBettingRound(tableData);
 
                 final int dealCommunityCardCount = orbitBeginRequest.getDealCommunityCardCount();
                 if (dealCommunityCardCount > 0) {
@@ -44,7 +44,7 @@ public class OrbitBeginRequestHandler implements IHandler {
             throw new RuntimeException(e);
         }
 
-        if (TableDataUtil.countPlayersRemainingInHand(tableData) == 1) {
+        if (TableUtil.countPlayersRemainingInHand(tableData) == 1) {
             logger.debug("All but one player has folded, hand must end");
             additionalEvents.add(new OrbitEndRequest(tableData));
         }

@@ -9,7 +9,7 @@ import com.antwika.table.data.SeatData;
 import com.antwika.table.event.IEvent;
 import com.antwika.table.event.PlayerActionRequest;
 import com.antwika.table.event.PlayerActionResponse;
-import com.antwika.table.util.TableDataUtil;
+import com.antwika.table.util.TableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public class PremiumPlayer extends Player {
     @Override
     protected IEvent onPlayerActionRequest(PlayerActionRequest event) {
         final TableData tableData = event.getTableData();
-        final SeatData seat = TableDataUtil.getSeat(tableData, this);
+        final SeatData seat = TableUtil.getSeat(tableData, this);
 
         final long cards = seat.getCards();
         final int stack = seat.getStack();
@@ -35,13 +35,13 @@ public class PremiumPlayer extends Player {
         if (hasPremium(cards)) {
             if (event.getToCall() == 0) {
                 if (hasGoodHand(tableData, cards)) {
-                    return new PlayerActionResponse(this, tableData, PlayerActionResponse.Type.BET, TableDataUtil.calcBetSize(tableData, this, 1.0f));
+                    return new PlayerActionResponse(this, tableData, PlayerActionResponse.Type.BET, TableUtil.calcBetSize(tableData, this, 1.0f));
                 } else {
                     return new PlayerActionResponse(this, tableData, PlayerActionResponse.Type.CHECK, 0);
                 }
             } else {
                 if (hasGoodHand(tableData, cards)) {
-                    return new PlayerActionResponse(this, tableData, PlayerActionResponse.Type.RAISE, TableDataUtil.calcBetSize(tableData, this, 1.0f));
+                    return new PlayerActionResponse(this, tableData, PlayerActionResponse.Type.RAISE, TableUtil.calcBetSize(tableData, this, 1.0f));
                 } else {
                     return new PlayerActionResponse(this, tableData, PlayerActionResponse.Type.FOLD, 0);
                 }

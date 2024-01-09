@@ -2,7 +2,7 @@ package com.antwika.table.handler;
 
 import com.antwika.table.data.TableData;
 import com.antwika.table.event.*;
-import com.antwika.table.util.TableDataUtil;
+import com.antwika.table.util.TableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class OrbitEndRequestHandler implements IHandler {
         final OrbitEndRequest orbitEndRequest = (OrbitEndRequest) event;
         final TableData tableData = orbitEndRequest.getTableData();
 
-        TableDataUtil.collect(tableData);
+        TableUtil.collect(tableData);
 
         if (tableData.getGameStage() == TableData.GameStage.PREFLOP) {
             tableData.setGameStage(TableData.GameStage.FLOP);
