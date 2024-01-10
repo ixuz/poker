@@ -20,16 +20,16 @@ public class TexasHoldemHandler implements IHandler {
 
     public TexasHoldemHandler() {
         this.handler = new AggregateHandler(List.of(
-                new ShowdownRequestHandler(),
-                new HandBeginRequestHandler(),
-                new HandEndRequestHandler(),
                 new PlayerJoinRequestHandler(),
-                new PlayerLeaveRequestHandler(),
+                new HandBeginRequestHandler(),
                 new OrbitBeginRequestHandler(),
-                new OrbitEndRequestHandler(),
                 new OrbitActionRequestHandler(),
                 new OrbitActionResponseHandler(),
-                new DealCommunityCardsRequestHandler()
+                new DealCommunityCardsRequestHandler(),
+                new OrbitEndRequestHandler(),
+                new ShowdownRequestHandler(),
+                new HandEndRequestHandler(),
+                new PlayerLeaveRequestHandler()
         ));
     }
 
