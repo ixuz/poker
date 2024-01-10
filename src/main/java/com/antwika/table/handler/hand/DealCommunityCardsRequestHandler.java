@@ -6,14 +6,9 @@ import com.antwika.table.event.hand.DealCommunityCardsRequest;
 import com.antwika.table.event.IEvent;
 import com.antwika.table.handler.IHandler;
 import com.antwika.table.util.TableUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 public class DealCommunityCardsRequestHandler implements IHandler {
-    private static final Logger logger = LoggerFactory.getLogger(DealCommunityCardsRequestHandler.class);
-
     public boolean canHandle(IEvent event) {
         return event instanceof DealCommunityCardsRequest;
     }

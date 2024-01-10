@@ -7,15 +7,10 @@ import com.antwika.table.event.orbit.OrbitBeginRequest;
 import com.antwika.table.event.orbit.OrbitEndRequest;
 import com.antwika.table.handler.IHandler;
 import com.antwika.table.util.TableUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrbitEndRequestHandler implements IHandler {
-    private static final Logger logger = LoggerFactory.getLogger(OrbitEndRequestHandler.class);
-
     public boolean canHandle(IEvent event) {
         if (!(event instanceof OrbitEndRequest orbitEndRequest)) return false;
 

@@ -478,8 +478,6 @@ public class PotsUtilTest {
 
         final List<SeatData> seats = List.of(seat1, seat2, seat3, seat4);
 
-        final List<PotData> pots = new ArrayList<>();
-
         // Betting round
         seat2.setCommitted(10); // SB: Post small blind
         seat3.setCommitted(20); // BB: Post big blind
@@ -490,7 +488,7 @@ public class PotsUtilTest {
         seat4.setCommitted(seat4.getCommitted() + 80); // CO: Call
 
         // Collect
-        pots.addAll(PotsUtil.collectBets(seats));
+        final List<PotData> pots = new ArrayList<>(PotsUtil.collectBets(seats));
         assertEquals(0, seat1.getCommitted());
         assertEquals(0, seat2.getCommitted());
         assertEquals(0, seat3.getCommitted());

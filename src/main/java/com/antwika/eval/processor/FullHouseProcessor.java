@@ -26,7 +26,7 @@ public class FullHouseProcessor implements IHandProcessor {
         if (!HandProcessorDataUtil.hasKicker(data, kickerOffset) && rankCount == 3) {
             HandProcessorDataUtil.setKicker(data, kickerOffset, rankIndex);
         }
-        if (!HandProcessorDataUtil.hasKicker(data, kickerOffset + 1) && !HandProcessorDataUtil.isKicker(data, kickerOffset, rankIndex) && rankCount >= 2) {
+        if (!HandProcessorDataUtil.hasKicker(data, kickerOffset + 1) && HandProcessorDataUtil.isNotKicker(data, kickerOffset, rankIndex) && rankCount >= 2) {
             HandProcessorDataUtil.setKicker(data, kickerOffset + 1, rankIndex);
         }
         if (HandProcessorDataUtil.hasKicker(data, kickerOffset) && HandProcessorDataUtil.hasKicker(data, kickerOffset + 1)) {

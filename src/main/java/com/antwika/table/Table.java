@@ -79,9 +79,4 @@ public class Table extends EventHandler {
             logger.info("Interrupted", e);
         }
     }
-
-    @Override
-    protected void preEventHandle() {
-
-    }
 }

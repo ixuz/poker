@@ -34,6 +34,10 @@ public class HandProcessorDataUtil {
         return data.getKickers()[offset] == value;
     }
 
+    public static boolean isNotKicker(IHandProcessorData data, int offset, int value) {
+        return !isKicker(data, offset, value);
+    }
+
     public static void configureHandType(IHandProcessorData data, long handType, boolean enable) {
         if (enable) {
             data.setHandType(data.getHandType() | handType);

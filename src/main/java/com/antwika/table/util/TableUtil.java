@@ -1,7 +1,6 @@
 package com.antwika.table.util;
 
 import com.antwika.common.exception.NotationException;
-import com.antwika.common.util.BitmaskUtil;
 import com.antwika.common.util.HandUtil;
 import com.antwika.table.data.*;
 import com.antwika.table.event.*;
@@ -9,9 +8,7 @@ import com.antwika.table.event.player.PlayerLeaveRequest;
 import com.antwika.table.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class TableUtil {
@@ -47,13 +44,6 @@ public class TableUtil {
         seat.setStack(buyIn);
 
         return true;
-    }
-
-    public static boolean seat(TableData tableData, Player player, int buyIn) {
-        final SeatData seat = findFirstAvailableSeat(tableData);
-        if (seat == null) return false;
-
-        return seat(tableData, player, seat.getSeatIndex(), buyIn);
     }
 
     public static void resetSeat(SeatData seat) {
@@ -131,19 +121,6 @@ public class TableUtil {
         }
 
         return additionalEvents;
-    }
-
-    public static void unseatAll(TableData tableData) {
-        tableData.getSeats().stream()
-                .filter(seat -> seat.getPlayer() != null)
-                .forEach(seat -> unseat(tableData, seat));
-    }
-
-    public static SeatData findFirstAvailableSeat(TableData tableData) {
-        return tableData.getSeats().stream()
-                .filter(seat -> seat.getPlayer() == null)
-                .findFirst()
-                .orElse(null);
     }
 
     public static List<SeatData> findAllBustedSeats(TableData tableData) {
@@ -234,56 +211,6 @@ public class TableUtil {
             }
             tableData.setActionAt(findNextSeatToAct(tableData, tableData.getButtonAt(), 0, true).getSeatIndex());
         }
-    }
-
-    public static boolean startGame(TableData tableData) {
-        final List<SeatData> seats = tableData.getSeats();
-        final int playerWithStackCount = seats.stream()
-                .filter(seat -> seat.getPlayer() != null)
-                .filter(seat -> seat.getStack() > 0)
-                .toList()
-                .size();
-        final boolean enoughPlayersToStartHand = playerWithStackCount > 1;
-
-        if (enoughPlayersToStartHand) {
-            drawButtonSeatIndex(tableData);
-            tableData.setGameStage(TableData.GameStage.NONE);
-            return true;
-        }
-
-        return false;
-    }
-
-    public static void stopGame(TableData tableData) {
-        unseatAll(tableData);
-    }
-
-    public static void drawButtonSeatIndex(TableData tableData) {
-        logger.debug("Drawing cards to determine button position...");
-        final DeckData deckData = tableData.getDeckData();
-        DeckUtil.resetAndShuffle(deckData);
-
-        tableData.getSeats().stream()
-                .filter(seat -> seat.getPlayer() != null)
-                .forEach(seat -> seat.setCards(DeckUtil.draw(deckData)));
-
-        final List<SeatData> sortedByCard = tableData.getSeats().stream()
-                .filter(i -> i.getPlayer() != null)
-                .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_SUIT_INDEX.get(e.getCards())))
-                .sorted(Comparator.comparingInt(e -> BitmaskUtil.CARD_TO_RANK_INDEX.get(e.getCards())))
-                .toList();
-
-        final SeatData winner = sortedByCard.get(sortedByCard.size() - 1);
-
-        if (winner == null) {
-            throw new RuntimeException("Failed to draw card for the button position!");
-        }
-
-        tableData.setButtonAt(winner.getSeatIndex());
-
-        logger.debug("Starting button position at seat #{}", winner.getSeatIndex() + 1);
-
-        resetAllSeats(tableData);
     }
 
     public static boolean canStartHand(TableData tableData) {
@@ -461,9 +388,5 @@ public class TableUtil {
         int minimumBet = Math.min(seat.getStack(), tableData.getBigBlind());
         int bet = Math.max(desiredBet, minimumBet);
         return Math.min(seat.getStack(), bet);
-    }
-
-    public static boolean isHandOngoing(TableData tableData) {
-        return !tableData.getGameStage().equals(TableData.GameStage.NONE);
     }
 }

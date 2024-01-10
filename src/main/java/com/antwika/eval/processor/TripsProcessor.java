@@ -25,9 +25,9 @@ public class TripsProcessor implements IHandProcessor {
             if (!HandProcessorDataUtil.hasKicker(data, kickerOffset) && rankCount == 3) {
                 HandProcessorDataUtil.setKicker(data, kickerOffset, rankIndex);
                 HandProcessorDataUtil.configureHandType(data, BitmaskUtil.TRIPS, true);
-            } else if (!HandProcessorDataUtil.hasKicker(data, kickerOffset + 1) && !HandProcessorDataUtil.isKicker(data, kickerOffset, rankIndex) && rankCount > 0) {
+            } else if (!HandProcessorDataUtil.hasKicker(data, kickerOffset + 1) && HandProcessorDataUtil.isNotKicker(data, kickerOffset, rankIndex) && rankCount > 0) {
                 HandProcessorDataUtil.setKicker(data, kickerOffset + 1, rankIndex);
-            } else if (!HandProcessorDataUtil.hasKicker(data, kickerOffset + 2) && !HandProcessorDataUtil.isKicker(data, kickerOffset + 1, rankIndex) && rankCount > 0) {
+            } else if (!HandProcessorDataUtil.hasKicker(data, kickerOffset + 2) && HandProcessorDataUtil.isNotKicker(data, kickerOffset + 1, rankIndex) && rankCount > 0) {
                 HandProcessorDataUtil.setKicker(data, kickerOffset + 2, rankIndex);
             }
         }

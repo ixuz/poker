@@ -11,8 +11,6 @@ import com.antwika.table.player.Player;
 import com.antwika.table.util.TableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrbitActionRequestHandler implements IHandler {
@@ -30,8 +28,6 @@ public class OrbitActionRequestHandler implements IHandler {
     }
 
     public List<IEvent> handle(IEvent event) {
-        final List<IEvent> additionalEvents = new ArrayList<>();
-
         try {
             final OrbitActionRequest orbitActionRequest = (OrbitActionRequest) event;
             final TableData tableData = orbitActionRequest.getTableData();

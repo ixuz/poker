@@ -3,6 +3,7 @@ package com.antwika.table.handler;
 import com.antwika.table.event.IEvent;
 import com.antwika.table.handler.hand.DealCommunityCardsRequestHandler;
 import com.antwika.table.handler.hand.HandBeginRequestHandler;
+import com.antwika.table.handler.hand.HandEndRequestHandler;
 import com.antwika.table.handler.hand.ShowdownRequestHandler;
 import com.antwika.table.handler.misc.AggregateHandler;
 import com.antwika.table.handler.orbit.OrbitActionRequestHandler;
@@ -15,12 +16,13 @@ import com.antwika.table.handler.player.PlayerLeaveRequestHandler;
 import java.util.List;
 
 public class TexasHoldemHandler implements IHandler {
-    private IHandler handler;
+    private final IHandler handler;
 
     public TexasHoldemHandler() {
         this.handler = new AggregateHandler(List.of(
                 new ShowdownRequestHandler(),
                 new HandBeginRequestHandler(),
+                new HandEndRequestHandler(),
                 new PlayerJoinRequestHandler(),
                 new PlayerLeaveRequestHandler(),
                 new OrbitBeginRequestHandler(),
@@ -28,7 +30,7 @@ public class TexasHoldemHandler implements IHandler {
                 new OrbitActionRequestHandler(),
                 new OrbitActionResponseHandler(),
                 new DealCommunityCardsRequestHandler()
-        ));;
+        ));
     }
 
     @Override

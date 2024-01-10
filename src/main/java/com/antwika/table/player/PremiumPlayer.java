@@ -10,14 +10,9 @@ import com.antwika.table.event.IEvent;
 import com.antwika.table.event.player.PlayerActionRequest;
 import com.antwika.table.event.player.PlayerActionResponse;
 import com.antwika.table.util.TableUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static com.antwika.common.util.BitmaskUtil.*;
 
 public class PremiumPlayer extends Player {
-    private static final Logger logger = LoggerFactory.getLogger(PremiumPlayer.class);
-
     private final IHandProcessor handProcessor = new TexasHoldemProcessor();
 
     public PremiumPlayer(long prngSeed, String playerName) {
@@ -30,7 +25,6 @@ public class PremiumPlayer extends Player {
         final SeatData seat = TableUtil.getSeat(tableData, this);
 
         final long cards = seat.getCards();
-        final int stack = seat.getStack();
 
         if (hasPremium(cards)) {
             if (event.getToCall() == 0) {
@@ -70,9 +64,7 @@ public class PremiumPlayer extends Player {
         if (hasAceKing) return true;
         if (hasAceQueen) return true;
         if (hasAceJack) return true;
-        if (hasKingQueen) return true;
-
-        return false;
+        return hasKingQueen;
     }
 
     private boolean hasGoodHand(TableData tableData, long cards) {
@@ -89,11 +81,6 @@ public class PremiumPlayer extends Player {
         }
 
         return false;
-    }
-
-    @Override
-    protected void preEventHandle() {
-
     }
 
     @Override

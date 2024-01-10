@@ -31,14 +31,13 @@ public class HandBeginRequestHandler implements IHandler {
 
     public List<IEvent> handle(IEvent event) {
         try {
-            final List<IEvent> additionalEvents = new ArrayList<>();
 
             final HandBeginRequest handBeginRequest = (HandBeginRequest) event;
             final TableData tableData = handBeginRequest.getTableData();
 
             TableUtil.prepareHand(tableData);
 
-            additionalEvents.addAll(TableUtil.unseat(tableData, TableUtil.findAllBustedSeats(tableData)));
+            final List<IEvent> additionalEvents = new ArrayList<>(TableUtil.unseat(tableData, TableUtil.findAllBustedSeats(tableData)));
 
             TableUtil.resetAllSeats(tableData);
 
