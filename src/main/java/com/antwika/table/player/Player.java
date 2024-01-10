@@ -4,7 +4,7 @@ import com.antwika.table.common.Prng;
 import com.antwika.table.data.PlayerData;
 import com.antwika.table.event.IEvent;
 import com.antwika.table.event.EventHandler;
-import com.antwika.table.event.PlayerActionRequest;
+import com.antwika.table.event.player.PlayerActionRequest;
 import lombok.Getter;
 import lombok.ToString;
 import org.slf4j.Logger;

@@ -1,6 +1,7 @@
-package com.antwika.table.event;
+package com.antwika.table.event.player;
 
 import com.antwika.table.data.TableData;
+import com.antwika.table.event.IEvent;
 import com.antwika.table.player.Player;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

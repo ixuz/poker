@@ -1,11 +1,12 @@
-package com.antwika.table.event;
+package com.antwika.table.event.orbit;
 
 import com.antwika.table.data.TableData;
+import com.antwika.table.event.IEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class ShowdownRequest implements IEvent {
+public class OrbitActionRequest implements IEvent {
     private TableData tableData;
 }

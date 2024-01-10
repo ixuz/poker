@@ -1,6 +1,6 @@
 package com.antwika.table;
 
-import com.antwika.table.event.*;
+import com.antwika.table.event.player.PlayerJoinRequest;
 import com.antwika.table.handler.TexasHoldemHandler;
 import com.antwika.table.player.Player;
 import com.antwika.table.player.PremiumPlayer;

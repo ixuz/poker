@@ -1,6 +1,7 @@
-package com.antwika.table.handler;
+package com.antwika.table.handler.misc;
 
 import com.antwika.table.event.IEvent;
+import com.antwika.table.handler.IHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
