@@ -1,26 +1,73 @@
 package com.antwika.fsm;
 
+import com.antwika.fsm.state.AwaitPlayerActionState;
+import com.antwika.fsm.state.FSMState;
+import com.antwika.fsm.state.HandEndedState;
+import com.antwika.fsm.state.WinningsDeliveredState;
+import com.antwika.fsm.transition.*;
+import com.antwika.table.TableDataFactory;
+import com.antwika.table.data.TableData;
+import com.antwika.table.player.Player;
+import com.antwika.table.player.RandomPlayer;
+import com.antwika.table.util.TableUtil;
 import org.junit.jupiter.api.Test;
 
 public class FiniteStateMachineTest {
     @Test
-    public void test() {
-        final FiniteStateMachine fsm = new FiniteStateMachine();
+    public void test() throws InterruptedException {
+        final TableData tableData = TableDataFactory.createTableData(1L, "FSM", 5, 1, 2);
 
-        final State startState = fsm.getStartState();
-        final State intermediateState = new IntermediateState();
-        final State endState = fsm.getEndState();
+        final FiniteStateMachine fsm = new FiniteStateMachine(tableData, 512);
 
-        fsm.addState(intermediateState);
+        final FSMState startState = fsm.getStartState();
+        final FSMState endState = fsm.getEndState();
 
-        final Transition startToIntermediateTransition = new InstantTransition(startState, intermediateState);
-        final Transition intermediateToEndTransition = new CounterTransition(intermediateState, endState, 1);
+        final FSMState handStartedState = new FSMState("HandStarted");
+        final FSMState orbitOngoingState = new FSMState("OrbitOngoingState");
+        final FSMState orbitEndedState = new FSMState("OrbitEndedState");
+        final FSMState winningsDeliveredState = new WinningsDeliveredState();
+        final FSMState awaitPlayerActionState = new AwaitPlayerActionState();
+        final FSMState handEndedState = new HandEndedState();
 
-        fsm.addTransition(startToIntermediateTransition);
-        fsm.addTransition(intermediateToEndTransition);
+        fsm.addState(handStartedState);
+        fsm.addState(orbitOngoingState);
+        fsm.addState(awaitPlayerActionState);
+        fsm.addState(orbitEndedState);
+        fsm.addState(winningsDeliveredState);
+        fsm.addState(handEndedState);
 
-        while (!fsm.isEndStageReached()) {
-            fsm.step();
-        }
+        //fsm.addTransition(new CanDeliverWinningsTransition(awaitPlayerActionState, winningsDeliveredState));
+        //fsm.addTransition(new AllPlayersActedTransition(awaitPlayerActionState, orbitEndedState));
+        fsm.addTransition(new StartHandTransition(startState, handStartedState));
+        fsm.addTransition(new CollectChipsTransition(orbitOngoingState, orbitOngoingState));
+        fsm.addTransition(new CollectChipsTransition(awaitPlayerActionState, orbitEndedState));
+        fsm.addTransition(new DealCommunityCardsTransition(orbitEndedState, orbitEndedState));
+        fsm.addTransition(new ShowdownTransition(orbitEndedState, winningsDeliveredState));
+        fsm.addTransition(new StartOrbitTransition(handStartedState, orbitOngoingState));
+        fsm.addTransition(new CanAnyPlayerActTransition(orbitOngoingState, awaitPlayerActionState));
+        fsm.addTransition(new HasPlayerActedTransition(awaitPlayerActionState, orbitOngoingState));
+        fsm.addTransition(new EndOrbitTransition(orbitOngoingState, orbitEndedState));
+        fsm.addTransition(new CanDeliverWinningsTransition(orbitEndedState, winningsDeliveredState));
+        fsm.addTransition(new StartOrbitTransition(orbitEndedState, orbitOngoingState));
+        fsm.addTransition(new InstantTransition(winningsDeliveredState, handEndedState));
+        fsm.addTransition(new StartHandTransition(handEndedState, handStartedState));
+
+        fsm.start();
+
+        Thread.sleep(1000L);
+
+        final Player alice = new RandomPlayer(1L, "Alice");
+        final Player bob = new RandomPlayer(1L, "Bob");
+        final Player charlie = new RandomPlayer(1L, "Charlie");
+        final Player david = new RandomPlayer(1L, "David");
+        final Player eric = new RandomPlayer(1L, "Eric");
+
+        TableUtil.seat(tableData, alice, 0, 1000);
+        TableUtil.seat(tableData, bob, 1, 1000);
+        TableUtil.seat(tableData, charlie, 2, 1000);
+        TableUtil.seat(tableData, david, 3, 1000);
+        TableUtil.seat(tableData, eric, 4, 1000);
+
+        fsm.join();
     }
 }

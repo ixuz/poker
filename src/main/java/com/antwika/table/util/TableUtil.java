@@ -142,6 +142,13 @@ public class TableUtil {
 
         final List<SeatData> seats = tableData.getSeats();
 
+        final int numberOfPlayersWithNonFoldedAndNonZeroStack = TableUtil.numberOfPlayersWithNonFoldedAndNonZeroStack(tableData);
+        final int countPlayersRemainingInHand = TableUtil.countPlayersRemainingInHand(tableData);
+
+        if (numberOfPlayersWithNonFoldedAndNonZeroStack < 2 && countPlayersRemainingInHand < 2) {
+            return null;
+        }
+
         for (int i = 0; i < seats.size(); i += 1) {
             final int seatIndex = (fromSeat + i + 1) % seats.size();
             final SeatData seat = seats.get(seatIndex);
@@ -149,7 +156,7 @@ public class TableUtil {
             if (seat.getPlayer() == null) continue;
 
             if (mustAct) {
-                if (!seat.isHasActed() && !seat.isHasFolded()) {
+                if (!seat.isHasActed() && !seat.isHasFolded() && seat.getStack() > 0) {
                     nextSeat = seat;
                 } else if (seat.getCommitted() < tableData.getTotalBet() && seat.getStack() > 0 && !seat.isHasFolded()) {
                     nextSeat = seat;
@@ -173,12 +180,18 @@ public class TableUtil {
     public static boolean hasAllPlayersActed(TableData tableData) {
         int highestCommit = TableUtil.findHighestCommit(tableData);
 
+        final int countPlayersRemainingInHand = TableUtil.countPlayersRemainingInHand(tableData);
+
         final int notActedYetCount = tableData.getSeats().stream()
                 .filter(seat -> seat.getStack() > 0)
                 .filter(seat -> !seat.isHasFolded())
                 .filter(seat -> !seat.isHasActed())
                 .toList()
                 .size();
+
+        if (countPlayersRemainingInHand == 1) {
+            return true;
+        }
 
         if (notActedYetCount > 0) {
             return false;
@@ -213,29 +226,48 @@ public class TableUtil {
         }
     }
 
-    public static boolean canStartHand(TableData tableData) {
-        if (!tableData.getGameStage().equals(TableData.GameStage.NONE)) return false;
-
-        boolean anyPlayerHasCards = !tableData.getSeats().stream()
+    public static boolean anyPlayerHasCards(TableData tableData) {
+        return !tableData.getSeats().stream()
                 .filter(seat -> seat.getCards() != null)
                 .filter(seat -> seat.getCards() != 0L)
                 .toList()
                 .isEmpty();
+    }
 
-        if (anyPlayerHasCards) return false;
-
-        boolean anyPlayerHasCommittedChips = !tableData.getSeats().stream()
+    public static boolean anyPlayerHasCommittedChips(TableData tableData) {
+        return !tableData.getSeats().stream()
                 .filter(seat -> seat.getCommitted() > 0)
                 .toList()
                 .isEmpty();
+    }
 
-        if (anyPlayerHasCommittedChips) return false;
-
+    public static int numberOfPlayersWithNonZeroStack(TableData tableData) {
         return tableData.getSeats().stream()
                 .filter(seat -> seat.getPlayer() != null)
                 .filter(seat -> seat.getStack() != 0)
                 .toList()
-                .size() > 1;
+                .size();
+    }
+
+    public static int numberOfPlayersWithNonFoldedAndNonZeroStack(TableData tableData) {
+        return tableData.getSeats().stream()
+                .filter(seat -> seat.getPlayer() != null)
+                .filter(seat -> !seat.isHasFolded())
+                .filter(seat -> seat.getStack() != 0)
+                .toList()
+                .size();
+    }
+
+    public static boolean canStartHand(TableData tableData) {
+        if (!tableData.getGameStage().equals(TableData.GameStage.NONE)) return false;
+
+        if (anyPlayerHasCards(tableData)) return false;
+
+        if (anyPlayerHasCommittedChips(tableData)) return false;
+
+        if (numberOfPlayersWithNonZeroStack(tableData) < 2) return false;
+
+        return true;
     }
 
     public static void forcePostBlind(TableData tableData, int blindIndex, int blindAmount) {
@@ -246,7 +278,8 @@ public class TableUtil {
         int commitAmount = Math.min(seat.getStack(), blindAmount);
         TableUtil.commit(seat, commitAmount);
 
-        tableData.setActionAt(TableUtil.findNextSeatToAct(tableData, seat.getSeatIndex(), 0, true).getSeatIndex());
+        final SeatData nextSeatToAct = TableUtil.findNextSeatToAct(tableData, seat.getSeatIndex(), 0, true);
+        tableData.setActionAt(nextSeatToAct.getSeatIndex());
 
         final StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s: posts %s %d", player.getPlayerData().getPlayerName(), getBlindName(blindIndex), commitAmount));
@@ -330,6 +363,56 @@ public class TableUtil {
     }
 
     public static void showdown(TableData tableData) throws NotationException {
+        final List<PotData> pots = tableData.getPots();
+        final Long cards = tableData.getCards();
+        final int buttonAt = tableData.getButtonAt();
+        final List<SeatData> seats = tableData.getSeats();
+
+        logger.debug("Showdown");
+        final List<PotData> collapsed = PotsUtil.collapsePots(pots);
+        final List<CandidateData> winners = PotsUtil.determineWinners(collapsed, cards, buttonAt, seats.size());
+
+        for (CandidateData winner : winners) {
+            final SeatData seat = winner.getSeat();
+            final Player player = seat.getPlayer();
+            int amount = winner.getAmount();
+            tableData.setDelivered(tableData.getDelivered() + amount);
+            winner.getSeat().setStack(seat.getStack() + amount);
+
+            logger.info("{} collected {} from {}",
+                    player.getPlayerData().getPlayerName(),
+                    amount,
+                    winner.getPotName());
+        }
+        pots.clear();
+
+        int totalStacks = seats.stream().filter(i -> i.getPlayer() != null).mapToInt(SeatData::getStack).sum();
+        int totalPot = TableUtil.countTotalPot(tableData);
+        if (totalStacks + totalPot != tableData.getChipsInPlay()) {
+            throw new RuntimeException("Invalid amount of chips");
+        }
+
+        logger.info("*** SUMMARY ***");
+        logger.info("Total pot {} | Rake {}", tableData.getDelivered(), 0);
+        logger.info("Board [{}]", TableUtil.toNotation(tableData.getCards()));
+
+        int chipsInPlay = 0;
+        for (SeatData seat : tableData.getSeats()) {
+            if (seat.getPlayer() == null) continue;
+
+            chipsInPlay += seat.getStack();
+
+            final Player player = seat.getPlayer();
+
+            logger.info("Seat {}: {} stack {}",
+                    seat.getSeatIndex(),
+                    player.getPlayerData().getPlayerName(),
+                    seat.getStack());
+        }
+        logger.info("Total chips in play {}", chipsInPlay);
+    }
+
+    public static void deliverWinnings(TableData tableData) throws NotationException {
         final List<PotData> pots = tableData.getPots();
         final Long cards = tableData.getCards();
         final int buttonAt = tableData.getButtonAt();
