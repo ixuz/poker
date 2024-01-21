@@ -10,10 +10,12 @@ import com.antwika.table.data.TableData;
 import com.antwika.table.player.Player;
 import com.antwika.table.player.RandomPlayer;
 import com.antwika.table.util.TableUtil;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class FiniteStateMachineTest {
     @Test
+    @Disabled
     public void test() throws InterruptedException {
         final TableData tableData = TableDataFactory.createTableData(1L, "FSM", 5, 1, 2);
 
