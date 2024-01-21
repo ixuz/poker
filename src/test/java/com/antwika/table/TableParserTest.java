@@ -1,5 +1,8 @@
 package com.antwika.table;
 
+import com.antwika.common.exception.NotationException;
+import com.antwika.common.util.HandUtil;
+import com.antwika.table.data.TableData;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -9,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TableParserTest {
     @Test
-    public void parseHeader() {
+    public void parseHeader() throws NotationException {
         final var handBeginTitle = "--- HAND BEGIN ---";
         final var gameInfo = "Poker Hand #1: Hold'em No Limit (1/2) - Sun Jan 21 20:59:20 CET 2024";
         final var tableInfo = "Table 'FSM' 5-max Seat #1 is the button";
@@ -116,18 +119,29 @@ public class TableParserTest {
         assertEquals("Hold'em No Limit", tableData.getGameType());
         assertEquals(1, tableData.getSmallBlind());
         assertEquals(2, tableData.getBigBlind());
+        assertEquals(TableData.GameStage.PREFLOP, tableData.getGameStage());
 
         final var tableSeats = tableData.getSeats();
         assertEquals(5, tableSeats.size());
         assertEquals("Alice", tableSeats.get(0).getPlayer().getPlayerData().getPlayerName());
+        assertEquals(HandUtil.fromNotation("6cTc").getBitmask(), tableSeats.get(0).getCards());
         assertEquals(1000, tableSeats.get(0).getStack());
+        assertEquals(0, tableSeats.get(0).getCommitted());
         assertEquals("Bob", tableSeats.get(1).getPlayer().getPlayerData().getPlayerName());
-        assertEquals(1000, tableSeats.get(1).getStack());
+        assertEquals(HandUtil.fromNotation("KcAd").getBitmask(), tableSeats.get(1).getCards());
+        assertEquals(999, tableSeats.get(1).getStack());
+        assertEquals(1, tableSeats.get(1).getCommitted());
         assertEquals("Charlie", tableSeats.get(2).getPlayer().getPlayerData().getPlayerName());
-        assertEquals(1000, tableSeats.get(2).getStack());
+        assertEquals(HandUtil.fromNotation("6dQs").getBitmask(), tableSeats.get(2).getCards());
+        assertEquals(998, tableSeats.get(2).getStack());
+        assertEquals(2, tableSeats.get(2).getCommitted());
         assertEquals("David", tableSeats.get(3).getPlayer().getPlayerData().getPlayerName());
+        assertEquals(HandUtil.fromNotation("2d8s").getBitmask(), tableSeats.get(3).getCards());
         assertEquals(1000, tableSeats.get(3).getStack());
+        assertEquals(0, tableSeats.get(3).getCommitted());
         assertEquals("Eric", tableSeats.get(4).getPlayer().getPlayerData().getPlayerName());
+        assertEquals(HandUtil.fromNotation("8hTh").getBitmask(), tableSeats.get(4).getCards());
         assertEquals(1000, tableSeats.get(4).getStack());
+        assertEquals(0, tableSeats.get(4).getCommitted());
     }
 }
