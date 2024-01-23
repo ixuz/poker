@@ -19,24 +19,25 @@ public class TableDataFactory {
             seats.add(seat);
         }
 
-        return TableData.builder()
-                .tableName(tableName)
-                .gameType("Hold'em No Limit")
-                .gameStage(TableData.GameStage.NONE)
-                .seats(seats)
-                .deckData(new DeckData(prng.nextInt()))
-                .smallBlind(smallBlind)
-                .bigBlind(bigBlind)
-                .handId(0L)
-                .buttonAt(0)
-                .actionAt(0)
-                .totalBet(0)
-                .lastRaise(0)
-                .cards(0L)
-                .delivered(0)
-                .chipsInPlay(0)
-                .prng(prng)
-                .cards(0L)
-                .build();
+        final var tableData = new TableData();
+        tableData.setTableName(tableName);
+        tableData.setGameType("Hold'em No Limit");
+        tableData.setGameStage(TableData.GameStage.NONE);
+        tableData.setSeats(seats);
+        tableData.setDeckData(new DeckData(prng.nextInt()));
+        tableData.setSmallBlind(smallBlind);
+        tableData.setBigBlind(bigBlind);
+        tableData.setHandId(0L);
+        tableData.setButtonAt(0);
+        tableData.setActionAt(0);
+        tableData.setTotalBet(0);
+        tableData.setLastRaise(0);
+        tableData.setCards(0L);
+        tableData.setDelivered(0);
+        tableData.setChipsInPlay(0);
+        tableData.setPrng(prng);
+        tableData.setCards(0L);
+
+        return tableData;
     }
 }
