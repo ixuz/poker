@@ -21,7 +21,9 @@ public class HandUtil {
         }
     }
 
-    public static String toNotation(long bitmask) throws NotationException {
+    public static String toNotation(Long bitmask) throws NotationException {
+        if (bitmask == null) return "";
+
         final StringBuilder builder = new StringBuilder();
         final String bitmaskString = Long.toBinaryString(bitmask);
         for (int i = bitmaskString.length() - 1; i >= 0; i--) {

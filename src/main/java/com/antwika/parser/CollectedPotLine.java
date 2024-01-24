@@ -1,6 +1,7 @@
 package com.antwika.parser;
 
 import com.antwika.table.data.TableData;
+import com.antwika.table.util.TableUtil;
 
 import java.util.regex.Pattern;
 
@@ -13,6 +14,8 @@ public class CollectedPotLine implements ILine {
             final var playerName = m.group(1);
             final var amount = Integer.parseInt(m.group(2));
             final var potName = m.group(3);
+
+            tableData.getSeats().forEach(seat -> seat.setCommitted(0));
 
             final var optionalSeat = findSeatByPlayerName(tableData, playerName);
 

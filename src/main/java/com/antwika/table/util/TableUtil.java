@@ -68,6 +68,13 @@ public class TableUtil {
         return tableData.getPots().stream().mapToInt(PotData::getTotalAmount).sum();
     }
 
+    public static int countChipsInPlay(TableData tableData) {
+        final var totalStacks = TableUtil.countAllStacks(tableData);
+        final var totalCommitted = TableUtil.countTotalCommitted(tableData);
+        final var totalPot = TableUtil.countTotalPot(tableData);
+        return totalStacks + totalCommitted + totalPot;
+    }
+
     public static int countTotalCommitted(TableData tableData) {
         return tableData.getSeats().stream().mapToInt(SeatData::getCommitted).sum();
     }
