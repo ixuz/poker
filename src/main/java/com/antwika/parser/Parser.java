@@ -1,5 +1,6 @@
 package com.antwika.parser;
 
+import com.antwika.parser.parsers.ILineParser;
 import com.antwika.table.data.SeatData;
 import com.antwika.table.data.TableData;
 import org.slf4j.Logger;
@@ -11,21 +12,17 @@ import java.util.Optional;
 public class Parser {
     private static final Logger logger = LoggerFactory.getLogger(Parser.class);
 
-    public static TableData parse(List<ILine> lineParsers, List<String> lines) {
+    public static TableData parse(ILineParser lineParser, String line) {
         final var tableData = new TableData();
 
-        for (var line : lines) {
-            boolean handled = false;
-            for (var lineParser : lineParsers) {
-                if (lineParser.parse(tableData, line)) {
-                    handled = true;
-                    break;
-                }
-            }
+        boolean handled = false;
 
-            if (!handled) {
-                logger.warn("No suitable LineParser for: '{}'", line);
-            }
+        if (lineParser.parse(tableData, line)) {
+            handled = true;
+        }
+
+        if (!handled) {
+            logger.warn("No suitable LineParser for: '{}'", line);
         }
 
         return tableData;

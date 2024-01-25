@@ -5,8 +5,6 @@ import com.antwika.common.util.HandUtil;
 import com.antwika.table.data.TableData;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ParserTest {
@@ -23,7 +21,7 @@ public class ParserTest {
                 "Eric: posts small blind 1\n" +
                 "Alice: posts big blind 2";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
@@ -87,7 +85,7 @@ public class ParserTest {
                 "Dealt to David [Ac 7d]\n" +
                 "Dealt to Eric [9c 9s]";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
@@ -158,7 +156,7 @@ public class ParserTest {
                 "Bob: folds\n" +
                 "David: folds";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
@@ -230,7 +228,7 @@ public class ParserTest {
                 "David: folds\n" +
                 "*** FLOP *** [3c 8c 5s]";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
@@ -305,7 +303,7 @@ public class ParserTest {
                 "Alice: checks\n" +
                 "Eric: checks";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
@@ -381,7 +379,7 @@ public class ParserTest {
                 "Eric: checks\n" +
                 "*** TURN *** [3c 8c 5s] [4s]";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
@@ -464,7 +462,7 @@ public class ParserTest {
                 "Alice: raises to 915\n" +
                 "Eric: calls 915";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
@@ -548,7 +546,7 @@ public class ParserTest {
                 "Eric: calls 915\n" +
                 "*** RIVER *** [3c 8c 4s 5s] [Tc]";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
@@ -635,7 +633,7 @@ public class ParserTest {
                 "Alice: bets 55 and is all-in\n" +
                 "Eric: calls 55";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
@@ -725,7 +723,7 @@ public class ParserTest {
                 "Eric collected 110 from Side pot #1\n" +
                 "*** SUMMARY ***";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
@@ -814,7 +812,7 @@ public class ParserTest {
                 "Eric collected 1874 from Main pot\n" +
                 "Eric collected 110 from Side pot #1\n" +
                 "*** SUMMARY ***\n" +
-                "Total pot 1984 | Rake 0\n" +
+                "Total pot 1984\n" +
                 "Board [3c 8c Tc 4s 5s]\n" +
                 "Seat 0: Alice stack 0\n" +
                 "Seat 1: Bob stack 986\n" +
@@ -824,7 +822,7 @@ public class ParserTest {
                 "Total chips in play 5000\n" +
                 "--- HAND END ---";
 
-        final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
+        final var tableData = Parser.parse(LineParserFactory.createTexasHoldemLineParser(), hand);
 
         assertEquals(5000, tableData.getChipsInPlay());
 
