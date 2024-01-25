@@ -722,7 +722,8 @@ public class ParserTest {
                 "Alice: bets 55 and is all-in\n" +
                 "Eric: calls 55\n" +
                 "Eric collected 1874 from Main pot\n" +
-                "Eric collected 110 from Side pot #1";
+                "Eric collected 110 from Side pot #1\n" +
+                "*** SUMMARY ***";
 
         final var tableData = Parser.parse(LineParsers.createTexasHoldemLineParsers(), List.of(hand.split("\n")));
 
@@ -732,7 +733,7 @@ public class ParserTest {
         assertEquals("Hold'em No Limit", tableData.getGameType());
         assertEquals(1, tableData.getSmallBlind());
         assertEquals(2, tableData.getBigBlind());
-        assertEquals(TableData.GameStage.RIVER, tableData.getGameStage());
+        assertEquals(TableData.GameStage.NONE, tableData.getGameStage());
         assertEquals("3c8cTc4s5s", HandUtil.toNotation(tableData.getCards()));
 
         final var tableSeats = tableData.getSeats();
@@ -742,7 +743,7 @@ public class ParserTest {
         assertEquals(0, tableSeats.get(0).getStack());
         assertEquals(0, tableSeats.get(0).getCommitted());
         assertFalse(tableSeats.get(0).isHasFolded());
-        assertTrue(tableSeats.get(0).isHasActed());
+        assertFalse(tableSeats.get(0).isHasActed());
         assertEquals("Bob", tableSeats.get(1).getPlayer().getPlayerData().getPlayerName());
         assertEquals(HandUtil.fromNotation("6cKh").getBitmask(), tableSeats.get(1).getCards());
         assertEquals(986, tableSeats.get(1).getStack());
@@ -766,7 +767,7 @@ public class ParserTest {
         assertEquals(2032, tableSeats.get(4).getStack());
         assertEquals(0, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
-        assertTrue(tableSeats.get(4).isHasActed());
+        assertFalse(tableSeats.get(4).isHasActed());
     }
 
     @Test

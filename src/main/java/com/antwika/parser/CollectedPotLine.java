@@ -15,7 +15,7 @@ public class CollectedPotLine implements ILine {
             final var amount = Integer.parseInt(m.group(2));
             final var potName = m.group(3);
 
-            tableData.getSeats().forEach(seat -> seat.setCommitted(0));
+            // tableData.getSeats().forEach(seat -> seat.setCommitted(0));
 
             final var optionalSeat = findSeatByPlayerName(tableData, playerName);
 
