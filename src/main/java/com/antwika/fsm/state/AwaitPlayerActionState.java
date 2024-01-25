@@ -121,7 +121,7 @@ public class AwaitPlayerActionState extends FSMState {
 
         TableUtil.commit(seat, action.amount);
         final StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s: calls %d", seat.getPlayer().getPlayerData().getPlayerName(), action.amount));
+        sb.append(String.format("%s: calls %d", seat.getPlayer().getPlayerData().getPlayerName(), seat.getCommitted()));
         if (seat.getStack() == 0) {
             sb.append(" and is all-in");
         }
