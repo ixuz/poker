@@ -3,6 +3,10 @@ package com.antwika.handhistory.parser;
 import com.antwika.handhistory.line.ILine;
 import com.antwika.handhistory.line.TotalPotLine;
 import com.antwika.table.data.TableData;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class TotalPotLineParser implements ILineParser {
@@ -16,5 +20,16 @@ public class TotalPotLineParser implements ILineParser {
             return new TotalPotLine(totalPot);
         }
         return null;
+    }
+
+    @Override
+    public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
+        if (!(line instanceof TotalPotLine totalPotLine)) return false;
+        final var str = String.format(
+                "Total pot: %d",
+                totalPotLine.totalPot()
+        );
+        baos.write(str.getBytes(StandardCharsets.UTF_8));
+        return true;
     }
 }

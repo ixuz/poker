@@ -7,6 +7,10 @@ import com.antwika.handhistory.line.ILine;
 import com.antwika.table.data.TableData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class FlopHeaderLineParser implements ILineParser {
@@ -32,5 +36,23 @@ public class FlopHeaderLineParser implements ILineParser {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
+        if (!(line instanceof FlopHeaderLine flopHeaderLine)) return false;
+        try {
+            final String str = String.format(
+                    "*** FLOP *** [%s %s %s]",
+                    HandUtil.toNotation(flopHeaderLine.card1()),
+                    HandUtil.toNotation(flopHeaderLine.card2()),
+                    HandUtil.toNotation(flopHeaderLine.card3())
+            );
+            baos.write(str.getBytes(StandardCharsets.UTF_8));
+            return true;
+        } catch (NotationException e) {
+            logger.warn("Failed to write line", e);
+            return false;
+        }
     }
 }

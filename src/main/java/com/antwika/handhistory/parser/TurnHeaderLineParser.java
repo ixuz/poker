@@ -7,6 +7,10 @@ import com.antwika.handhistory.line.TurnHeaderLine;
 import com.antwika.table.data.TableData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class TurnHeaderLineParser implements ILineParser {
@@ -30,5 +34,24 @@ public class TurnHeaderLineParser implements ILineParser {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
+        if (!(line instanceof TurnHeaderLine turnHeaderLine)) return false;
+        try {
+            final String str = String.format(
+                    "*** TURN *** [%s %s %s] [%s]",
+                    HandUtil.toNotation(turnHeaderLine.card1()),
+                    HandUtil.toNotation(turnHeaderLine.card2()),
+                    HandUtil.toNotation(turnHeaderLine.card3()),
+                    HandUtil.toNotation(turnHeaderLine.card4())
+            );
+            baos.write(str.getBytes(StandardCharsets.UTF_8));
+            return true;
+        } catch (NotationException e) {
+            logger.warn("Failed to write line", e);
+            return false;
+        }
     }
 }

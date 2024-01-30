@@ -7,11 +7,105 @@ import com.antwika.handhistory.helper.LineParserFactory;
 import com.antwika.table.data.TableData;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ParserTest {
     @Test
-    public void parseHeader() throws NotationException {
+    public void parseEmptyLine() throws IOException {
+        final var hand = "\n";
+        final var handProcessor = new HandProcessor(
+                LineParserFactory.createTexasHoldemLineParser(),
+                LineApplierFactory.createTexasHoldemLineApplier()
+        );
+        final var tableData = handProcessor.process(hand);
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
+    }
+
+    @Test
+    public void parseEmptyLineBetweenHandStartAndEnd() throws IOException {
+        final var hand = "--- HAND BEGIN ---\n" +
+                "\n" +
+                "--- HAND BEGIN ---";
+        final var handProcessor = new HandProcessor(
+                LineParserFactory.createTexasHoldemLineParser(),
+                LineApplierFactory.createTexasHoldemLineApplier()
+        );
+        final var tableData = handProcessor.process(hand);
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
+    }
+
+    @Test
+    public void parseMultipleEmptyLinesBetweenHandStartAndEnd() throws IOException {
+        final var hand = "--- HAND BEGIN ---\n" +
+                "\n" +
+                "\n" +
+                "--- HAND BEGIN ---";
+        final var handProcessor = new HandProcessor(
+                LineParserFactory.createTexasHoldemLineParser(),
+                LineApplierFactory.createTexasHoldemLineApplier()
+        );
+        final var tableData = handProcessor.process(hand);
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
+    }
+
+    @Test
+    public void parseMultipleLeadingEmptyLinesBetweenHandStartAndEnd() throws IOException {
+        final var hand =
+                "\n" +
+                "\n" +
+                "--- HAND BEGIN ---\n" +
+                "\n" +
+                "\n" +
+                "--- HAND BEGIN ---";
+        final var handProcessor = new HandProcessor(
+                LineParserFactory.createTexasHoldemLineParser(),
+                LineApplierFactory.createTexasHoldemLineApplier()
+        );
+        final var tableData = handProcessor.process(hand);
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
+    }
+
+    @Test
+    public void parseMultipleTrailingEmptyLinesBetweenHandStartAndEnd() throws IOException {
+        final var hand = "--- HAND BEGIN ---\n" +
+                "\n" +
+                "\n" +
+                "--- HAND BEGIN ---" +
+                "\n" +
+                "\n";
+        final var handProcessor = new HandProcessor(
+                LineParserFactory.createTexasHoldemLineParser(),
+                LineApplierFactory.createTexasHoldemLineApplier()
+        );
+        final var tableData = handProcessor.process(hand);
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
+    }
+
+    @Test
+    public void parseHeader() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -70,10 +164,15 @@ public class ParserTest {
         assertEquals(1, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertFalse(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 
     @Test
-    public void parseHoldcards() throws NotationException {
+    public void parseHoldcards() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -138,10 +237,15 @@ public class ParserTest {
         assertEquals(1, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertFalse(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 
     @Test
-    public void parsePreFlopAction() throws NotationException {
+    public void parsePreFlopAction() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -213,10 +317,15 @@ public class ParserTest {
         assertEquals(18, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertTrue(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 
     @Test
-    public void parseFlop() throws NotationException {
+    public void parseFlop() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -289,10 +398,15 @@ public class ParserTest {
         assertEquals(0, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertFalse(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 
     @Test
-    public void parseFlopAction() throws NotationException {
+    public void parseFlopAction() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -368,10 +482,15 @@ public class ParserTest {
         assertEquals(0, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertTrue(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 
     @Test
-    public void parseTurn() throws NotationException {
+    public void parseTurn() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -448,10 +567,15 @@ public class ParserTest {
         assertEquals(0, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertFalse(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 
     @Test
-    public void parseTurnAction() throws NotationException {
+    public void parseTurnAction() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -535,10 +659,15 @@ public class ParserTest {
         assertEquals(915, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertTrue(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 
     @Test
-    public void parseRiver() throws NotationException {
+    public void parseRiver() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -623,10 +752,15 @@ public class ParserTest {
         assertEquals(0, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertFalse(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 
     @Test
-    public void parseRiverAction() throws NotationException {
+    public void parseRiverAction() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -714,10 +848,15 @@ public class ParserTest {
         assertEquals(55, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertTrue(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 
     @Test
-    public void parseCollection() throws NotationException {
+    public void parseCollection() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -808,10 +947,15 @@ public class ParserTest {
         assertEquals(0, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertFalse(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 
     @Test
-    public void parseSummary() throws NotationException {
+    public void parseSummary() throws NotationException, IOException {
         final var hand = "--- HAND BEGIN ---\n" +
                 "Poker Hand #7: Hold'em No Limit (1/2) - Mon Jan 22 17:57:37 CET 2024\n" +
                 "Table 'FSM' 5-max Seat #4 is the button\n" +
@@ -911,5 +1055,10 @@ public class ParserTest {
         assertEquals(0, tableSeats.get(4).getCommitted());
         assertFalse(tableSeats.get(4).isHasFolded());
         assertFalse(tableSeats.get(4).isHasActed());
+
+        final var handWithFinalLineBreak = hand.trim().concat("\n");
+        final var baos = new ByteArrayOutputStream();
+        handProcessor.write(tableData, baos);
+        assertEquals(handWithFinalLineBreak, baos.toString().trim().concat("\n"));
     }
 }

@@ -3,6 +3,10 @@ package com.antwika.handhistory.parser;
 import com.antwika.handhistory.line.ILine;
 import com.antwika.handhistory.line.TableInfoLine;
 import com.antwika.table.data.TableData;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class TableInfoLineParser implements ILineParser {
@@ -18,5 +22,18 @@ public class TableInfoLineParser implements ILineParser {
             return new TableInfoLine(tableName, seatCount, buttonAt);
         }
         return null;
+    }
+
+    @Override
+    public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
+        if (!(line instanceof TableInfoLine tableInfoLine)) return false;
+        final var str = String.format(
+                "Table '%s' %d-max Seat #%d is the button",
+                tableInfoLine.tableName(),
+                tableInfoLine.seatCount(),
+                tableInfoLine.buttonAt()
+        );
+        baos.write(str.getBytes(StandardCharsets.UTF_8));
+        return true;
     }
 }

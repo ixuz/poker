@@ -6,6 +6,10 @@ import com.antwika.table.data.TableData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 public class HandProcessor {
     private static final Logger logger = LoggerFactory.getLogger(HandProcessor.class);
     private final ILineParser parser;
@@ -36,5 +40,11 @@ public class HandProcessor {
         }
 
         return tableData;
+    }
+
+    public void write(TableData tableData, ByteArrayOutputStream baos) throws IOException {
+        for (var line : tableData.getHistory()) {
+            parser.write(line, baos);
+        }
     }
 }

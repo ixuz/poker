@@ -5,10 +5,14 @@ import com.antwika.table.data.TableData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class AggregateLineParser implements ILineParser {
     private static final Logger logger = LoggerFactory.getLogger(AggregateLineParser.class);
+
     final List<ILineParser> lineParsers;
 
     public AggregateLineParser(List<ILineParser> lineParsers) {
@@ -24,5 +28,17 @@ public class AggregateLineParser implements ILineParser {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
+        for (int i=0; i < lineParsers.size(); i += 1) {
+            final var lineParser = lineParsers.get(i);
+            boolean written = lineParser.write(line, baos);
+            if (!written) continue;
+
+            baos.write("\n".getBytes(StandardCharsets.UTF_8));
+        }
+        return true;
     }
 }

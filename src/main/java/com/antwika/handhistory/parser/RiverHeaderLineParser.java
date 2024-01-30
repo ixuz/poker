@@ -7,6 +7,10 @@ import com.antwika.handhistory.line.RiverHeaderLine;
 import com.antwika.table.data.TableData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class RiverHeaderLineParser implements ILineParser {
@@ -31,5 +35,25 @@ public class RiverHeaderLineParser implements ILineParser {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
+        if (!(line instanceof RiverHeaderLine riverHeaderLine)) return false;
+        try {
+            final String str = String.format(
+                    "*** RIVER *** [%s %s %s %s] [%s]",
+                    HandUtil.toNotation(riverHeaderLine.card1()),
+                    HandUtil.toNotation(riverHeaderLine.card2()),
+                    HandUtil.toNotation(riverHeaderLine.card3()),
+                    HandUtil.toNotation(riverHeaderLine.card4()),
+                    HandUtil.toNotation(riverHeaderLine.card5())
+            );
+            baos.write(str.getBytes(StandardCharsets.UTF_8));
+            return true;
+        } catch (NotationException e) {
+            logger.warn("Failed to write line", e);
+            return false;
+        }
     }
 }

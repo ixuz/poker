@@ -7,6 +7,7 @@ import java.util.List;
 public class LineParserFactory {
     public static ILineParser createTexasHoldemLineParser() {
         return new AggregateLineParser(List.of(
+                new EmptyLineParser(),
                 new HandBeginLineParser(),
                 new GameInfoLineParser(),
                 new TableInfoLineParser(),

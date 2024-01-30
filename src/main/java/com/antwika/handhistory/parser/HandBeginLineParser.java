@@ -3,6 +3,10 @@ package com.antwika.handhistory.parser;
 import com.antwika.handhistory.line.HandBeginLine;
 import com.antwika.handhistory.line.ILine;
 import com.antwika.table.data.TableData;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class HandBeginLineParser implements ILineParser {
@@ -15,5 +19,15 @@ public class HandBeginLineParser implements ILineParser {
             return new HandBeginLine();
         }
         return null;
+    }
+
+    @Override
+    public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
+        if (!(line instanceof HandBeginLine handBeginLine)) return false;
+        final var a = String.format(
+                "--- HAND BEGIN ---"
+        );
+        baos.write(a.getBytes(StandardCharsets.UTF_8));
+        return true;
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 public class LineApplierFactory {
     public static ILineApplier createTexasHoldemLineApplier() {
         return new AggregateLineApplier(List.of(
+                new EmptyLineApplier(),
                 new HandBeginLineApplier(),
                 new GameInfoLineApplier(),
                 new TableInfoLineApplier(),
