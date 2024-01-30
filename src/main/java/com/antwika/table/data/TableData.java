@@ -1,7 +1,7 @@
 package com.antwika.table.data;
 
+import com.antwika.handhistory.line.ILine;
 import com.antwika.table.common.Prng;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class TableData {
     public enum GameStage { NONE, HAND_BEGUN, PREFLOP, FLOP, TURN, RIVER, SHOWDOWN }
+    private List<ILine> history = new ArrayList<>();
     private String tableName;
     private String gameType;
     private GameStage gameStage;

@@ -1,0 +1,19 @@
+package com.antwika.handhistory.parser;
+
+import com.antwika.handhistory.line.ILine;
+import com.antwika.handhistory.line.SummaryHeaderLine;
+import com.antwika.table.data.TableData;
+import java.util.regex.Pattern;
+
+public class SummaryHeaderLineParser implements ILineParser {
+    final static String PATTERN = "\\*\\*\\* SUMMARY \\*\\*\\*";
+
+    @Override
+    public ILine parse(TableData tableData, String line) {
+        final var m = Pattern.compile(PATTERN).matcher(line);
+        if (m.find()) {
+            return new SummaryHeaderLine();
+        }
+        return null;
+    }
+}

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TableUtil {
     private static final Logger logger = LoggerFactory.getLogger(TableUtil.class);
@@ -478,5 +479,11 @@ public class TableUtil {
         int minimumBet = Math.min(seat.getStack(), tableData.getBigBlind());
         int bet = Math.max(desiredBet, minimumBet);
         return Math.min(seat.getStack(), bet);
+    }
+
+    public static Optional<SeatData> findSeatByPlayerName(TableData tableData, String playerName) {
+        return tableData.getSeats().stream()
+                .filter(seat -> seat.getPlayer().getPlayerData().getPlayerName().equals(playerName))
+                .findFirst();
     }
 }
