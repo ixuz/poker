@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class TurnHeaderLineParser implements ILineParser {
     private static final Logger logger = LoggerFactory.getLogger(TurnHeaderLineParser.class);
 
-    final static String PATTERN = "\\*\\*\\* TURN \\*\\*\\* \\[(..) (..) (..)] \\[(..)]";
+    final static String PATTERN = "^\\*\\*\\* TURN \\*\\*\\* \\[(..) (..) (..)] \\[(..)]$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

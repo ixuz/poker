@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class SummaryTotalChipsLineParser implements ILineParser {
-    final static String PATTERN = "Total chips in play (\\d+)";
+    final static String PATTERN = "^Total chips in play (\\d+)$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

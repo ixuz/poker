@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class PlayerRaiseLineParser implements ILineParser {
-    final static String PATTERN = "(.+): raises to (\\d+)";
+    final static String PATTERN = "^(.+): raises to (\\d+)$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

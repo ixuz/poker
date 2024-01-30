@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class TableInfoLineParser implements ILineParser {
-    final static String PATTERN = "Table '(.+)' (\\d+)-max Seat #(\\d+) is the button";
+    final static String PATTERN = "^Table '(.+)' (\\d+)-max Seat #(\\d+) is the button$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

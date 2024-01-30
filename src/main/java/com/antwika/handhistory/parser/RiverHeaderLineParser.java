@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class RiverHeaderLineParser implements ILineParser {
     private static final Logger logger = LoggerFactory.getLogger(RiverHeaderLineParser.class);
 
-    final static String PATTERN = "\\*\\*\\* RIVER \\*\\*\\* \\[(..) (..) (..) (..)] \\[(..)]";
+    final static String PATTERN = "^\\*\\*\\* RIVER \\*\\*\\* \\[(..) (..) (..) (..)] \\[(..)]$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

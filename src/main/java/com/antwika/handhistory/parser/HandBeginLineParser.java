@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class HandBeginLineParser implements ILineParser {
-    final static String PATTERN = "--- HAND BEGIN ---";
+    final static String PATTERN = "^--- HAND BEGIN ---$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

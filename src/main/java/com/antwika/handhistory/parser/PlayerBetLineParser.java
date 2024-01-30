@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class PlayerBetLineParser implements ILineParser {
-    final static String PATTERN = "(.+): bets (\\d+)( and is all-in)?";
+    final static String PATTERN = "^(.+): bets (\\d+)( and is all-in)?$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

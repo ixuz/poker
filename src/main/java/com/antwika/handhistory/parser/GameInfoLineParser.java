@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class GameInfoLineParser implements ILineParser {
-    final static String PATTERN = "Poker Hand #(\\d+): (.+) \\((\\d+)/(\\d+)\\) - (.*)";
+    final static String PATTERN = "^Poker Hand #(\\d+): (.+) \\((\\d+)/(\\d+)\\) - (.*)$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

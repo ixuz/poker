@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class PlayerFoldLineParser implements ILineParser {
-    final static String PATTERN = "(.+): folds";
+    final static String PATTERN = "^(.+): folds$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

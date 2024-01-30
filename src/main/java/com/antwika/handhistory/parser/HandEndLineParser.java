@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class HandEndLineParser implements ILineParser {
-    final static String PATTERN = "--- HAND END ---";
+    final static String PATTERN = "^--- HAND END ---$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

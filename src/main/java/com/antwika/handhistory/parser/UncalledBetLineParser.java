@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class UncalledBetLineParser implements ILineParser {
-    final static String PATTERN = "Uncalled bet \\((\\d+)\\) returned to (.+)";
+    final static String PATTERN = "^Uncalled bet \\((\\d+)\\) returned to (.+)$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

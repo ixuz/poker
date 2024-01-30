@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class PlayerCheckLineParser implements ILineParser {
-    final static String PATTERN = "(.+): checks";
+    final static String PATTERN = "^(.+): checks$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

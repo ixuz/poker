@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class SummaryHeaderLineParser implements ILineParser {
-    final static String PATTERN = "\\*\\*\\* SUMMARY \\*\\*\\*";
+    final static String PATTERN = "^\\*\\*\\* SUMMARY \\*\\*\\*$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

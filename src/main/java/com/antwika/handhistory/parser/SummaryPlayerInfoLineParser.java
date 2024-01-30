@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class SummaryPlayerInfoLineParser implements ILineParser {
-    final static String PATTERN = "Seat (\\d+): (.+) stack (\\d+)";
+    final static String PATTERN = "^Seat (\\d+): (.+) stack (\\d+)$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

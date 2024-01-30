@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class CollectedPotLineParser implements ILineParser {
-    final static String PATTERN = "(.+) collected (\\d+) from (.+)";
+    final static String PATTERN = "^(.+) collected (\\d+) from (.+)$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class BlindLineParser implements ILineParser {
-    final static String PATTERN = "(.+): posts (.+) (\\d+)";
+    final static String PATTERN = "^(.+): posts (.+) (\\d+)$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class SummaryBoardInfoLineParser implements ILineParser {
     private static final Logger logger = LoggerFactory.getLogger(SummaryBoardInfoLineParser.class);
 
-    final static String PATTERN = "Board \\[(..) (..) (..) (..) (..)]";
+    final static String PATTERN = "^Board \\[(..) (..) (..) (..) (..)]$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

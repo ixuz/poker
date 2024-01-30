@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class FlopHeaderLineParser implements ILineParser {
     private static Logger logger = LoggerFactory.getLogger(FlopHeaderLineParser.class);
 
-    final static String PATTERN = "\\*\\*\\* FLOP \\*\\*\\* \\[(..) (..) (..)]";
+    final static String PATTERN = "^\\*\\*\\* FLOP \\*\\*\\* \\[(..) (..) (..)]$";
 
     @Override
     public ILine parse(TableData tableData, String line) {

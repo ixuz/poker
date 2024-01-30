@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class HolecardsLineParser implements ILineParser {
     private static final Logger logger = LoggerFactory.getLogger(HolecardsLineParser.class);
 
-    final static String PATTERN = "Dealt to (.+) \\[(..) (..)]";
+    final static String PATTERN = "^Dealt to (.+) \\[(..) (..)]$";
 
     @Override
     public ILine parse(TableData tableData, String line) {
