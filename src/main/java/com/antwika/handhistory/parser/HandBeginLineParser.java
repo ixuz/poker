@@ -24,10 +24,8 @@ public class HandBeginLineParser implements ILineParser {
     @Override
     public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
         if (!(line instanceof HandBeginLine handBeginLine)) return false;
-        final var a = String.format(
-                "--- HAND BEGIN ---"
-        );
-        baos.write(a.getBytes(StandardCharsets.UTF_8));
+        final var str = "--- HAND BEGIN ---";
+        baos.write(str.getBytes(StandardCharsets.UTF_8));
         return true;
     }
 }

@@ -1,14 +1,12 @@
 package com.antwika.handhistory.parser;
 
 import com.antwika.common.exception.NotationException;
-import com.antwika.common.util.CardUtil;
 import com.antwika.common.util.HandUtil;
 import com.antwika.handhistory.line.HolecardsLine;
 import com.antwika.handhistory.line.ILine;
 import com.antwika.table.data.TableData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

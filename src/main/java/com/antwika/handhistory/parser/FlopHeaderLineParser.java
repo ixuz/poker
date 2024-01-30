@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class FlopHeaderLineParser implements ILineParser {
-    private static Logger logger = LoggerFactory.getLogger(FlopHeaderLineParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(FlopHeaderLineParser.class);
 
     final static String PATTERN = "^\\*\\*\\* FLOP \\*\\*\\* \\[(..) (..) (..)]$";
 

@@ -5,8 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CounterTransition extends Transition {
-    private static final Logger logger = LoggerFactory.getLogger(CounterTransition.class);
-
     private final int countTo;
 
     private int counter = 0;

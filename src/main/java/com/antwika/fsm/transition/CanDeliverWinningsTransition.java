@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CanDeliverWinningsTransition extends Transition {
-    private static final Logger logger = LoggerFactory.getLogger(CanDeliverWinningsTransition.class);
-
     public CanDeliverWinningsTransition(FSMState fromState, FSMState toState) {
         super("CanDeliverWinningsTransition", fromState, toState);
     }

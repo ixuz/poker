@@ -5,8 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DelayTransition extends Transition {
-    private static final Logger logger = LoggerFactory.getLogger(DelayTransition.class);
-
     private final long delayUntil;
 
     public DelayTransition(FSMState fromState, FSMState toState, long delayMillis) {

@@ -11,8 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class AggregateLineParser implements ILineParser {
-    private static final Logger logger = LoggerFactory.getLogger(AggregateLineParser.class);
-
     final List<ILineParser> lineParsers;
 
     public AggregateLineParser(List<ILineParser> lineParsers) {
@@ -32,8 +30,7 @@ public class AggregateLineParser implements ILineParser {
 
     @Override
     public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
-        for (int i=0; i < lineParsers.size(); i += 1) {
-            final var lineParser = lineParsers.get(i);
+        for (final ILineParser lineParser : lineParsers) {
             boolean written = lineParser.write(line, baos);
             if (!written) continue;
 

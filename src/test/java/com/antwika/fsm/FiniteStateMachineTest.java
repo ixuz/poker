@@ -38,8 +38,6 @@ public class FiniteStateMachineTest {
         fsm.addState(winningsDeliveredState);
         fsm.addState(handEndedState);
 
-        //fsm.addTransition(new CanDeliverWinningsTransition(awaitPlayerActionState, winningsDeliveredState));
-        //fsm.addTransition(new AllPlayersActedTransition(awaitPlayerActionState, orbitEndedState));
         fsm.addTransition(new StartHandTransition(startState, handStartedState));
         fsm.addTransition(new CollectChipsTransition(orbitOngoingState, orbitOngoingState));
         fsm.addTransition(new CollectChipsTransition(awaitPlayerActionState, orbitEndedState));

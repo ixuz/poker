@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EndState extends FSMState {
-    private static final Logger logger = LoggerFactory.getLogger(EndState.class);
-
     public EndState() {
         super("EndState");
     }

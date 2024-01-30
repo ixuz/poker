@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HasPlayerActedTransition extends Transition {
-    private static final Logger logger = LoggerFactory.getLogger(HasPlayerActedTransition.class);
-
     public HasPlayerActedTransition(FSMState fromState, FSMState toState) {
         super("HasPlayerActedTransition", fromState, toState);
     }

@@ -24,9 +24,7 @@ public class SummaryHeaderLineParser implements ILineParser {
     @Override
     public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
         if (!(line instanceof SummaryHeaderLine summaryHeaderLine)) return false;
-        final var str = String.format(
-                "*** SUMMARY ***"
-        );
+        final var str = "*** SUMMARY ***";
         baos.write(str.getBytes(StandardCharsets.UTF_8));
         return true;
     }

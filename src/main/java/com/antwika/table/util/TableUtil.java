@@ -231,7 +231,15 @@ public class TableUtil {
             for (SeatData seat : tableData.getSeats()) {
                 seat.setHasActed(false);
             }
-            tableData.setActionAt(findNextSeatToAct(tableData, tableData.getButtonAt(), 0, true).getSeatIndex());
+
+            final var nextSeatToAct = findNextSeatToAct(tableData, tableData.getButtonAt(), 0, true);
+
+            if (nextSeatToAct == null) {
+                logger.error("Unexpected that the next seat to act to be null");
+                return;
+            }
+
+            tableData.setActionAt(nextSeatToAct.getSeatIndex());
         }
     }
 
@@ -280,21 +288,33 @@ public class TableUtil {
     }
 
     public static void forcePostBlind(TableData tableData, int blindIndex, int blindAmount) {
-        final SeatData seat = TableUtil.findNextSeatToAct(tableData, tableData.getButtonAt(), blindIndex, true);
-        final Player player = seat.getPlayer();
+        final SeatData nextSeatToAct = TableUtil.findNextSeatToAct(tableData, tableData.getButtonAt(), blindIndex, true);
 
-        int commitAmount = Math.min(seat.getStack(), blindAmount);
-        TableUtil.commit(seat, commitAmount);
+        if (nextSeatToAct == null) {
+            logger.error("Unexpected that the nextSeatToAct to act to be null");
+            return;
+        }
 
-        final SeatData nextSeatToAct = TableUtil.findNextSeatToAct(tableData, seat.getSeatIndex(), 0, true);
-        tableData.setActionAt(nextSeatToAct.getSeatIndex());
+        final Player player = nextSeatToAct.getPlayer();
+
+        int commitAmount = Math.min(nextSeatToAct.getStack(), blindAmount);
+        TableUtil.commit(nextSeatToAct, commitAmount);
+
+        final SeatData nextNextSeatToAct = TableUtil.findNextSeatToAct(tableData, nextSeatToAct.getSeatIndex(), 0, true);
+
+        if (nextNextSeatToAct == null) {
+            logger.error("Unexpected that the nextNextSeatToAct to act to be null");
+            return;
+        }
+
+        tableData.setActionAt(nextNextSeatToAct.getSeatIndex());
 
         final var playerName = player.getPlayerData().getPlayerName();
         final var blindName = getBlindName(blindIndex);
 
         final StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s: posts %s %d", playerName, blindName, commitAmount));
-        if (seat.getStack() == 0) {
+        if (nextSeatToAct.getStack() == 0) {
             sb.append(" and is all-in");
         }
         logger.info(sb.toString());
@@ -354,45 +374,49 @@ public class TableUtil {
             logger.info(sb.toString());
             logger.info("Total pot: {}", TableUtil.countTotalPot(tableData));
 
-            if (streetName.equals("FLOP")) {
-                final var notation = HandUtil.toNotation(tableData.getCards());
-                final var card1 = HandUtil.fromNotation(notation.substring(0, 2)).getBitmask();
-                final var card2 = HandUtil.fromNotation(notation.substring(2, 4)).getBitmask();
-                final var card3 = HandUtil.fromNotation(notation.substring(4, 6)).getBitmask();
+            switch (streetName) {
+                case "FLOP" -> {
+                    final var notation = HandUtil.toNotation(tableData.getCards());
+                    final var card1 = HandUtil.fromNotation(notation.substring(0, 2)).getBitmask();
+                    final var card2 = HandUtil.fromNotation(notation.substring(2, 4)).getBitmask();
+                    final var card3 = HandUtil.fromNotation(notation.substring(4, 6)).getBitmask();
 
-                tableData.getHistory().add(new FlopHeaderLine(
-                        card1,
-                        card2,
-                        card3
-                ));
-            } else if (streetName.equals("TURN")) {
-                final var notation = HandUtil.toNotation(tableData.getCards());
-                final var card1 = HandUtil.fromNotation(notation.substring(0, 2)).getBitmask();
-                final var card2 = HandUtil.fromNotation(notation.substring(2, 4)).getBitmask();
-                final var card3 = HandUtil.fromNotation(notation.substring(4, 6)).getBitmask();
-                final var card4 = HandUtil.fromNotation(notation.substring(6, 8)).getBitmask();
+                    tableData.getHistory().add(new FlopHeaderLine(
+                            card1,
+                            card2,
+                            card3
+                    ));
+                }
+                case "TURN" -> {
+                    final var notation = HandUtil.toNotation(tableData.getCards());
+                    final var card1 = HandUtil.fromNotation(notation.substring(0, 2)).getBitmask();
+                    final var card2 = HandUtil.fromNotation(notation.substring(2, 4)).getBitmask();
+                    final var card3 = HandUtil.fromNotation(notation.substring(4, 6)).getBitmask();
+                    final var card4 = HandUtil.fromNotation(notation.substring(6, 8)).getBitmask();
 
-                tableData.getHistory().add(new TurnHeaderLine(
-                        card1,
-                        card2,
-                        card3,
-                        card4
-                ));
-            } else if (streetName.equals("RIVER")) {
-                final var notation = HandUtil.toNotation(tableData.getCards());
-                final var card1 = HandUtil.fromNotation(notation.substring(0, 2)).getBitmask();
-                final var card2 = HandUtil.fromNotation(notation.substring(2, 4)).getBitmask();
-                final var card3 = HandUtil.fromNotation(notation.substring(4, 6)).getBitmask();
-                final var card4 = HandUtil.fromNotation(notation.substring(6, 8)).getBitmask();
-                final var card5 = HandUtil.fromNotation(notation.substring(8, 10)).getBitmask();
+                    tableData.getHistory().add(new TurnHeaderLine(
+                            card1,
+                            card2,
+                            card3,
+                            card4
+                    ));
+                }
+                case "RIVER" -> {
+                    final var notation = HandUtil.toNotation(tableData.getCards());
+                    final var card1 = HandUtil.fromNotation(notation.substring(0, 2)).getBitmask();
+                    final var card2 = HandUtil.fromNotation(notation.substring(2, 4)).getBitmask();
+                    final var card3 = HandUtil.fromNotation(notation.substring(4, 6)).getBitmask();
+                    final var card4 = HandUtil.fromNotation(notation.substring(6, 8)).getBitmask();
+                    final var card5 = HandUtil.fromNotation(notation.substring(8, 10)).getBitmask();
 
-                tableData.getHistory().add(new RiverHeaderLine(
-                        card1,
-                        card2,
-                        card3,
-                        card4,
-                        card5
-                ));
+                    tableData.getHistory().add(new RiverHeaderLine(
+                            card1,
+                            card2,
+                            card3,
+                            card4,
+                            card5
+                    ));
+                }
             }
         } catch (NotationException e) {
             throw new RuntimeException(e);

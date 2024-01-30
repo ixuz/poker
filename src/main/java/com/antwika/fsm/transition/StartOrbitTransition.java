@@ -4,14 +4,11 @@ import com.antwika.fsm.state.FSMState;
 import com.antwika.table.data.SeatData;
 import com.antwika.table.data.TableData;
 import com.antwika.table.event.IEvent;
-import com.antwika.table.event.orbit.OrbitActionRequest;
-import com.antwika.table.event.orbit.OrbitEndRequest;
 import com.antwika.table.event.player.PlayerActionRequest;
 import com.antwika.table.player.Player;
 import com.antwika.table.util.TableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 public class StartOrbitTransition extends Transition {
@@ -39,29 +36,24 @@ public class StartOrbitTransition extends Transition {
     public void onTransition(Object data) {
         try {
             final TableData tableData = (TableData) data;
-
-            if (TableUtil.countPlayersRemainingInHand(tableData) == 1) {
-                logger.debug("All but one player has folded, hand must end");
-                // return List.of(new OrbitEndRequest(tableData)); // TODO: End orbit transition
-            }
-
-            if (TableUtil.getNumberOfPlayersLeftToAct(tableData) < 1) {
-                // return List.of(new OrbitEndRequest(tableData)); // TODO: End orbit transition
-            }
-
             final List<SeatData> seats = tableData.getSeats();
             final int actionAt = tableData.getActionAt();
 
             final SeatData seat = seats.get(actionAt);
 
-            final SeatData seatAfter = TableUtil.findNextSeatToAct(tableData, actionAt, 0, true);
+            final SeatData nextSeatToAct = TableUtil.findNextSeatToAct(tableData, actionAt, 0, true);
+
             if (seat == null) {
-                // return List.of(new OrbitEndRequest(tableData)); // TODO: End orbit transition
+                throw new RuntimeException("Unexpected that the seat with action is null");
+            }
+
+            if (nextSeatToAct == null) {
+                throw new RuntimeException("Unexpected that the nextSeatToAct is null");
             }
 
             if (seat.isHasFolded()) {
                 seat.setHasActed(true);
-                tableData.setActionAt(seatAfter.getSeatIndex());
+                tableData.setActionAt(nextSeatToAct.getSeatIndex());
                 // return List.of(new OrbitActionRequest(tableData)); // TODO: Request player action
             }
 

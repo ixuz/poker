@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HandStatedState extends FSMState {
-    private static final Logger logger = LoggerFactory.getLogger(HandStatedState.class);
-
     public HandStatedState() {
         super("HandStatedState");
     }

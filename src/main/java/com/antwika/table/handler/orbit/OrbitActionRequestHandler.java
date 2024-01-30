@@ -51,6 +51,10 @@ public class OrbitActionRequestHandler implements IHandler {
                 return List.of(new OrbitEndRequest(tableData));
             }
 
+            if (seatAfter == null) {
+                return List.of(new OrbitEndRequest(tableData));
+            }
+
             if (seat.isHasFolded()) {
                 seat.setHasActed(true);
                 tableData.setActionAt(seatAfter.getSeatIndex());

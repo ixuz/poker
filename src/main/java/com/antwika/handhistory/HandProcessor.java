@@ -5,10 +5,8 @@ import com.antwika.handhistory.parser.ILineParser;
 import com.antwika.table.data.TableData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public class HandProcessor {
     private static final Logger logger = LoggerFactory.getLogger(HandProcessor.class);

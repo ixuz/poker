@@ -1,11 +1,8 @@
 package com.antwika.handhistory.applier;
 
-import com.antwika.handhistory.line.BlindLine;
 import com.antwika.handhistory.line.EmptyLine;
 import com.antwika.handhistory.line.ILine;
 import com.antwika.table.data.TableData;
-
-import static com.antwika.table.util.TableUtil.findSeatByPlayerName;
 
 public class EmptyLineApplier implements ILineApplier {
     @Override

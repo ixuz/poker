@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CanNoPlayerActTransition extends Transition {
-    private static final Logger logger = LoggerFactory.getLogger(CanNoPlayerActTransition.class);
-
     public CanNoPlayerActTransition(FSMState fromState, FSMState toState) {
         super("CanAnyPlayerActTransition", fromState, toState);
     }

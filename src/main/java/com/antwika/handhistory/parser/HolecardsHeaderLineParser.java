@@ -24,10 +24,8 @@ public class HolecardsHeaderLineParser implements ILineParser {
     @Override
     public boolean write(ILine line, ByteArrayOutputStream baos) throws IOException {
         if (!(line instanceof HolecardsHeaderLine holecardsHeaderLine)) return false;
-        final var a = String.format(
-                "*** HOLE CARDS ***"
-        );
-        baos.write(a.getBytes(StandardCharsets.UTF_8));
+        final var str = "*** HOLE CARDS ***";
+        baos.write(str.getBytes(StandardCharsets.UTF_8));
         return true;
     }
 }

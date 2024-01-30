@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DealCommunityCardsTransition extends Transition {
-    private static final Logger logger = LoggerFactory.getLogger(DealCommunityCardsTransition.class);
-
     public DealCommunityCardsTransition(FSMState fromState, FSMState toState) {
         super("DealCommunityCardsTransition", fromState, toState);
     }

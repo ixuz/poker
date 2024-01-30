@@ -24,7 +24,13 @@ public class HandEndRequestHandler implements IHandler {
             final HandEndRequest handEndRequest = (HandEndRequest) event;
             final TableData tableData = handEndRequest.getTableData();
 
-            tableData.setButtonAt(TableUtil.findNextSeatToAct(tableData, tableData.getButtonAt(), 0, false).getSeatIndex());
+            final var nextSeatToAct = TableUtil.findNextSeatToAct(tableData, tableData.getButtonAt(), 0, false);
+
+            if (nextSeatToAct == null) {
+                return additionalEvents;
+            }
+
+            tableData.setButtonAt(nextSeatToAct.getSeatIndex());
 
             tableData.setGameStage(TableData.GameStage.NONE);
 

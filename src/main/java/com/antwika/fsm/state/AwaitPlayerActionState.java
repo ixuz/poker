@@ -71,9 +71,7 @@ public class AwaitPlayerActionState extends FSMState {
     }
 
     private List<IEvent> handleBetAction(IEvent event) {
-        if (!(event instanceof PlayerActionResponse)) throw new RuntimeException("Can't handle this type of event");
-
-        final PlayerActionResponse playerActionResponse = (PlayerActionResponse) event;
+        if (!(event instanceof PlayerActionResponse playerActionResponse)) throw new RuntimeException("Can't handle this type of event");
 
         final TableData tableData = playerActionResponse.getTableData();
         final SeatData seat = TableUtil.getSeat(tableData, playerActionResponse.player);
@@ -124,9 +122,7 @@ public class AwaitPlayerActionState extends FSMState {
     }
 
     public List<IEvent> handleCall(IEvent event) {
-        if (!(event instanceof PlayerActionResponse)) throw new RuntimeException("Can't handle this type of event");
-
-        final PlayerActionResponse action = (PlayerActionResponse) event;
+        if (!(event instanceof PlayerActionResponse action)) throw new RuntimeException("Can't handle this type of event");
 
         final TableData tableData = action.getTableData();
         final SeatData seat = TableUtil.getSeat(tableData, action.player);
@@ -168,9 +164,7 @@ public class AwaitPlayerActionState extends FSMState {
     }
 
     private List<IEvent> handleCheck(IEvent event) {
-        if (!(event instanceof PlayerActionResponse)) throw new RuntimeException("Can't handle this type of event");
-
-        final PlayerActionResponse action = (PlayerActionResponse) event;
+        if (!(event instanceof PlayerActionResponse action)) throw new RuntimeException("Can't handle this type of event");
 
         final TableData tableData = action.getTableData();
         final SeatData seat = TableUtil.getSeat(tableData, action.player);
@@ -201,9 +195,7 @@ public class AwaitPlayerActionState extends FSMState {
     }
 
     private List<IEvent> handleFold(IEvent event) {
-        if (!(event instanceof PlayerActionResponse)) throw new RuntimeException("Can't handle this type of event");
-
-        final PlayerActionResponse action = (PlayerActionResponse) event;
+        if (!(event instanceof PlayerActionResponse action)) throw new RuntimeException("Can't handle this type of event");
 
         final TableData tableData = action.getTableData();
         final SeatData seat = TableUtil.getSeat(tableData, action.player);
@@ -233,9 +225,7 @@ public class AwaitPlayerActionState extends FSMState {
     }
 
     private List<IEvent> handleRaise(IEvent event) {
-        if (!(event instanceof PlayerActionResponse)) throw new RuntimeException("Can't handle this type of event");
-
-        final PlayerActionResponse action = (PlayerActionResponse) event;
+        if (!(event instanceof PlayerActionResponse action)) throw new RuntimeException("Can't handle this type of event");
 
         final TableData tableData = action.getTableData();
         final SeatData seat = TableUtil.getSeat(tableData, action.player);
