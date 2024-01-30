@@ -3,6 +3,7 @@ package com.antwika.fsm.transition;
 import com.antwika.common.exception.NotationException;
 import com.antwika.common.util.HandUtil;
 import com.antwika.fsm.state.FSMState;
+import com.antwika.handhistory.line.*;
 import com.antwika.table.data.DeckData;
 import com.antwika.table.data.SeatData;
 import com.antwika.table.data.TableData;
@@ -53,6 +54,7 @@ public class StartHandTransition extends Transition {
         tableData.setGameStage(TableData.GameStage.HAND_BEGUN);
 
         logger.info("--- HAND BEGIN ---");
+        tableData.getHistory().add(new HandBeginLine());
 
         logger.info("Poker Hand #{}: {} ({}/{}) - {}",
                 tableData.getHandId(),
@@ -60,6 +62,13 @@ public class StartHandTransition extends Transition {
                 tableData.getSmallBlind(),
                 tableData.getBigBlind(),
                 new Date());
+        tableData.getHistory().add(new GameInfoLine(
+                tableData.getHandId(),
+                tableData.getGameType(),
+                tableData.getSmallBlind(),
+                tableData.getBigBlind(),
+                new Date().toString()
+        ));
 
         DeckUtil.resetAndShuffle(tableData.getDeckData());
 
@@ -67,6 +76,11 @@ public class StartHandTransition extends Transition {
                 tableData.getTableName(),
                 tableData.getSeats().size(),
                 tableData.getButtonAt() + 1);
+        tableData.getHistory().add(new TableInfoLine(
+                tableData.getTableName(),
+                tableData.getSeats().size(),
+                tableData.getButtonAt() + 1
+        ));
 
         for (SeatData seat : tableData.getSeats()) {
             if (seat.getPlayer() == null) continue;
@@ -75,6 +89,11 @@ public class StartHandTransition extends Transition {
                     seat.getSeatIndex() + 1,
                     seat.getPlayer().getPlayerData().getPlayerName(),
                     seat.getStack());
+            tableData.getHistory().add(new SeatInfoLine(
+                    seat.getSeatIndex() + 1,
+                    seat.getPlayer().getPlayerData().getPlayerName(),
+                    seat.getStack()
+            ));
         }
 
         TableUtil.forcePostBlinds(tableData, List.of(tableData.getSmallBlind(), tableData.getBigBlind()));
@@ -82,6 +101,7 @@ public class StartHandTransition extends Transition {
         final List<SeatData> seats = tableData.getSeats();
         final DeckData deckData = tableData.getDeckData();
         logger.info("*** HOLE CARDS ***");
+        tableData.getHistory().add(new HolecardsHeaderLine());
         for (int i = 0; i < seats.size() * 2; i += 1) {
             final int seatIndex = (tableData.getActionAt() + i + 1) % seats.size();
             final SeatData seat = seats.get(seatIndex);
@@ -104,7 +124,16 @@ public class StartHandTransition extends Transition {
             if (Long.bitCount(cards) != 2) throw new RuntimeException("Unexpected number of cards after deal");
 
             try {
-                logger.info("Dealt to {} [{}]", seat.getPlayer().getPlayerData().getPlayerName(), TableUtil.toNotation(seat.getCards()));
+                final var playerName = seat.getPlayer().getPlayerData().getPlayerName();
+                final var notation = HandUtil.toNotation(seat.getCards());
+                final var card1 = HandUtil.fromNotation(notation.substring(0, 2)).getBitmask();
+                final var card2 = HandUtil.fromNotation(notation.substring(2, 4)).getBitmask();
+                logger.info("Dealt to {} [{}{}]", playerName, HandUtil.toNotation(card1), HandUtil.toNotation(card2));
+                tableData.getHistory().add(new HolecardsLine(
+                        seat.getPlayer().getPlayerData().getPlayerName(),
+                        card1,
+                        card2
+                ));
             } catch (NotationException e) {
                 throw new RuntimeException(e);
             }

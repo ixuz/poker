@@ -1,6 +1,8 @@
 package com.antwika.fsm.transition;
 
 import com.antwika.fsm.state.FSMState;
+import com.antwika.handhistory.line.CollectedPotLine;
+import com.antwika.handhistory.line.HandEndLine;
 import com.antwika.table.data.TableData;
 import com.antwika.table.util.TableUtil;
 import org.slf4j.Logger;

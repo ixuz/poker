@@ -1,5 +1,6 @@
 package com.antwika.fsm.state;
 
+import com.antwika.handhistory.line.*;
 import com.antwika.table.data.SeatData;
 import com.antwika.table.data.TableData;
 import com.antwika.table.event.IEvent;
@@ -83,15 +84,29 @@ public class AwaitPlayerActionState extends FSMState {
             throw new RuntimeException("Player can not bet a zero amount!");
         }
 
-        TableUtil.commit(seat, playerActionResponse.amount);
+        final var playerName = seat.getPlayer().getPlayerData().getPlayerName();
+        final var amount = playerActionResponse.amount;
+
+        TableUtil.commit(seat, amount);
         tableData.setTotalBet(seat.getCommitted());
-        tableData.setLastRaise(playerActionResponse.amount);
+        tableData.setLastRaise(amount);
+
         final StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s: bets %d", seat.getPlayer().getPlayerData().getPlayerName(), playerActionResponse.amount));
+        sb.append(String.format("%s: bets %d", playerName, amount));
+
+        var allIn = false;
         if (seat.getStack() == 0) {
             sb.append(" and is all-in");
+            allIn = true;
         }
         logger.info(sb.toString());
+
+        tableData.getHistory().add(new PlayerBetLine(
+                playerName,
+                amount,
+                allIn
+        ));
+
         seat.setHasActed(true);
 
         if (TableUtil.hasAllPlayersActed(tableData)) {
@@ -121,11 +136,21 @@ public class AwaitPlayerActionState extends FSMState {
 
         TableUtil.commit(seat, action.amount);
         final StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s: calls %d", seat.getPlayer().getPlayerData().getPlayerName(), seat.getCommitted()));
+
+        final var playerName = seat.getPlayer().getPlayerData().getPlayerName();
+        final var committed = seat.getCommitted();
+
+        sb.append(String.format("%s: calls %d", playerName, committed));
         if (seat.getStack() == 0) {
             sb.append(" and is all-in");
         }
         logger.info(sb.toString());
+
+        tableData.getHistory().add(new PlayerCallLine(
+                playerName,
+                committed
+        ));
+
         seat.setHasActed(true);
 
         if (TableUtil.hasAllPlayersActed(tableData)) {
@@ -149,8 +174,16 @@ public class AwaitPlayerActionState extends FSMState {
 
         final TableData tableData = action.getTableData();
         final SeatData seat = TableUtil.getSeat(tableData, action.player);
+
+        final var playerName = seat.getPlayer().getPlayerData().getPlayerName();
+
         seat.setHasActed(true);
-        logger.info("{}: checks", seat.getPlayer().getPlayerData().getPlayerName());
+        logger.info("{}: checks", playerName);
+
+        tableData.getHistory().add(new PlayerCheckLine(
+                playerName
+        ));
+
         seat.setHasActed(true);
 
         if (TableUtil.hasAllPlayersActed(tableData)) {
@@ -174,9 +207,16 @@ public class AwaitPlayerActionState extends FSMState {
 
         final TableData tableData = action.getTableData();
         final SeatData seat = TableUtil.getSeat(tableData, action.player);
+
+        final var playerName = seat.getPlayer().getPlayerData().getPlayerName();
+
         seat.setHasFolded(true);
-        logger.info("{}: folds", seat.getPlayer().getPlayerData().getPlayerName());
+        logger.info("{}: folds", playerName);
         seat.setHasActed(true);
+
+        tableData.getHistory().add(new PlayerFoldLine(
+                playerName
+        ));
 
         if (TableUtil.hasAllPlayersActed(tableData)) {
             return List.of(new OrbitEndRequest(tableData));
