@@ -184,15 +184,4 @@ public class TableDataTest {
         table2.setChipsInPlay(2);
         assertNotEquals(table1, table2);
     }
-
-    @Test
-    public void inequalityWhenPrngDiffers() {
-        final var table1 = new TableData();
-        final var table2 = new TableData();
-        final var prng1 = mock(Prng.class);
-        final var prng2 = mock(Prng.class);
-        table1.setPrng(prng1);
-        table2.setPrng(prng2);
-        assertNotEquals(table1, table2);
-    }
 }

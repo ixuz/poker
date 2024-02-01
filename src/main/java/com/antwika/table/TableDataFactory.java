@@ -35,7 +35,6 @@ public class TableDataFactory {
         tableData.setCards(0L);
         tableData.setDelivered(0);
         tableData.setChipsInPlay(0);
-        tableData.setPrng(prng);
         tableData.setCards(0L);
 
         return tableData;

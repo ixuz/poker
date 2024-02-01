@@ -29,5 +29,4 @@ public class TableData {
     private Long cards;
     private int delivered;
     private int chipsInPlay;
-    private Prng prng;
 }
