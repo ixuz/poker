@@ -14,6 +14,7 @@ public class SummaryHeaderLineApplier implements ILineApplier {
         tableData.getPots().clear();
         tableData.getSeats().forEach(seat -> seat.setCommitted(0));
         tableData.setChipsInPlay(TableUtil.countChipsInPlay(tableData));
+        tableData.setChipsInPlay(TableUtil.countChipsInPlay(tableData));
         tableData.getHistory().add(summaryHeaderLine);
         return true;
     }

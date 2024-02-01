@@ -425,7 +425,6 @@ public class TableUtil {
 
     public static void prepareHand(TableData tableData) {
         tableData.getPots().clear();
-        tableData.setHandId(tableData.getHandId() + 1L);
         tableData.setCards(0L);
         tableData.setDelivered(0);
         tableData.setTotalBet(tableData.getBigBlind());

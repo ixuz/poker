@@ -8,6 +8,7 @@ public class SummaryTotalChipsLineApplier implements ILineApplier {
     @Override
     public boolean apply(TableData tableData, ILine line) {
         if (!(line instanceof SummaryTotalChipsLine summaryTotalChipsLine)) return false;
+        tableData.setChipsInPlay(summaryTotalChipsLine.totalChipsInPlay());
         tableData.getHistory().add(summaryTotalChipsLine);
         return true;
     }

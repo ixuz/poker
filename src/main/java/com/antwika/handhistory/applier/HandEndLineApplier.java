@@ -9,7 +9,9 @@ public class HandEndLineApplier implements ILineApplier {
     public boolean apply(TableData tableData, ILine line) {
         if (!(line instanceof HandEndLine handEndLine)) return false;
         tableData.setGameStage(TableData.GameStage.NONE);
+        tableData.setActionAt(-1);
         tableData.getHistory().add(handEndLine);
+        tableData.setCards(0L);
         return true;
     }
 }
