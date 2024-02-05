@@ -4,7 +4,7 @@ import com.antwika.handhistory.line.GameInfoLine;
 import com.antwika.handhistory.line.ILine;
 import com.antwika.table.data.TableData;
 
-public class GameInfoLineApplier implements ILineApplier {
+public non-sealed class GameInfoLineApplier implements ILineApplier {
     @Override
     public boolean apply(TableData tableData, ILine line) {
         if (!(line instanceof GameInfoLine gameInfoLine)) return false;

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class PlayerRaiseLineParser implements ILineParser {
+public non-sealed class PlayerRaiseLineParser implements ILineParser {
     final static String PATTERN = "^(.+): raises to (\\d+)$";
 
     @Override

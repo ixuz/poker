@@ -6,7 +6,7 @@ import com.antwika.table.data.TableData;
 
 import static com.antwika.table.util.TableUtil.findSeatByPlayerName;
 
-public class HolecardsLineApplier implements ILineApplier {
+public non-sealed class HolecardsLineApplier implements ILineApplier {
     @Override
     public boolean apply(TableData tableData, ILine line) {
         if (!(line instanceof HolecardsLine holecardsLine)) return false;

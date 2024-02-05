@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class PlayerCheckLineParser implements ILineParser {
+public non-sealed class PlayerCheckLineParser implements ILineParser {
     final static String PATTERN = "^(.+): checks$";
 
     @Override

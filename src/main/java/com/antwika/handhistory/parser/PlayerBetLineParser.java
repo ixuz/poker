@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class PlayerBetLineParser implements ILineParser {
+public non-sealed class PlayerBetLineParser implements ILineParser {
     final static String PATTERN = "^(.+): bets (\\d+)( and is all-in)?$";
 
     @Override

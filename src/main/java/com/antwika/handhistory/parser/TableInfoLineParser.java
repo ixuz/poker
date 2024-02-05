@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class TableInfoLineParser implements ILineParser {
+public non-sealed class TableInfoLineParser implements ILineParser {
     final static String PATTERN = "^Table '(.+)' (\\d+)-max Seat #(\\d+) is the button$";
 
     @Override

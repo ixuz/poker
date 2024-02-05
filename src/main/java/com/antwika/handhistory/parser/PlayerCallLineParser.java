@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class PlayerCallLineParser implements ILineParser {
+public non-sealed class PlayerCallLineParser implements ILineParser {
     final static String PATTERN = "^(.+): calls (\\d+)$";
 
     @Override

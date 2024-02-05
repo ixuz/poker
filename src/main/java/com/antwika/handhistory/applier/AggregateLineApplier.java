@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class AggregateLineApplier implements ILineApplier {
+public final class AggregateLineApplier implements ILineApplier {
     private static final Logger logger = LoggerFactory.getLogger(AggregateLineApplier.class);
     final List<ILineApplier> lineAppliers;
 

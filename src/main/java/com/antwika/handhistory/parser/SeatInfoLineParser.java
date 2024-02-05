@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class SeatInfoLineParser implements ILineParser {
+public non-sealed class SeatInfoLineParser implements ILineParser {
     final static String PATTERN = "^Seat (\\d+): (.+) \\((\\d+) in chips\\)$";
 
     @Override

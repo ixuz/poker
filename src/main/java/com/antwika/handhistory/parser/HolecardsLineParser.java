@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class HolecardsLineParser implements ILineParser {
+public non-sealed class HolecardsLineParser implements ILineParser {
     private static final Logger logger = LoggerFactory.getLogger(HolecardsLineParser.class);
 
     final static String PATTERN = "^Dealt to (.+) \\[(..) (..)]$";

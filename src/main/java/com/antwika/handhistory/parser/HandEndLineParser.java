@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class HandEndLineParser implements ILineParser {
+public non-sealed class HandEndLineParser implements ILineParser {
     final static String PATTERN = "^--- HAND END ---$";
 
     @Override

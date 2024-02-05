@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class SummaryBoardInfoLineParser implements ILineParser {
+public non-sealed class SummaryBoardInfoLineParser implements ILineParser {
     private static final Logger logger = LoggerFactory.getLogger(SummaryBoardInfoLineParser.class);
 
     final static String PATTERN = "^Board \\[(..) (..) (..) (..) (..)]$";

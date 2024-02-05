@@ -6,7 +6,7 @@ import com.antwika.table.data.TableData;
 import java.io.ByteArrayOutputStream;
 import java.util.regex.Pattern;
 
-public class EmptyLineParser implements ILineParser {
+public non-sealed class EmptyLineParser implements ILineParser {
     final static String PATTERN = "^$";
 
     @Override

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class CollectedPotLineParser implements ILineParser {
+public non-sealed class CollectedPotLineParser implements ILineParser {
     final static String PATTERN = "^(.+) collected (\\d+) from (.+)$";
 
     @Override

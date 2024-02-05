@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class BlindLineParser implements ILineParser {
+public non-sealed class BlindLineParser implements ILineParser {
     final static String PATTERN = "^(.+): posts (.+) (\\d+)$";
 
     @Override

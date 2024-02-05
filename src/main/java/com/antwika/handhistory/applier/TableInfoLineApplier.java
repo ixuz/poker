@@ -6,7 +6,7 @@ import com.antwika.table.data.SeatData;
 import com.antwika.table.data.TableData;
 import java.util.ArrayList;
 
-public class TableInfoLineApplier implements ILineApplier {
+public non-sealed class TableInfoLineApplier implements ILineApplier {
     @Override
     public boolean apply(TableData tableData, ILine line) {
         if (!(line instanceof TableInfoLine tableInfoLine)) return false;

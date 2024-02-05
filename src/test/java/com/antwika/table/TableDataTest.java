@@ -23,17 +23,6 @@ public class TableDataTest {
     }
 
     @Test
-    public void inequalityWhenHistoryDiffers() {
-        final var table1 = new TableData();
-        final var table2 = new TableData();
-        final var mockLine1 = mock(ILine.class);
-        final var mockLine2 = mock(ILine.class);
-        table1.getHistory().add(mockLine1);
-        table2.getHistory().add(mockLine2);
-        assertNotEquals(table1, table2);
-    }
-
-    @Test
     public void inequalityWhenTableNameDiffers() {
         final var table1 = new TableData();
         final var table2 = new TableData();

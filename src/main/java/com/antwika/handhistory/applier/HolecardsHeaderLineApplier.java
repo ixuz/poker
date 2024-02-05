@@ -5,7 +5,7 @@ import com.antwika.handhistory.line.ILine;
 import com.antwika.table.data.TableData;
 import com.antwika.table.util.TableUtil;
 
-public class HolecardsHeaderLineApplier implements ILineApplier {
+public non-sealed class HolecardsHeaderLineApplier implements ILineApplier {
     @Override
     public boolean apply(TableData tableData, ILine line) {
         if (!(line instanceof HolecardsHeaderLine holecardsHeaderLine)) return false;

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class HolecardsHeaderLineParser implements ILineParser {
+public non-sealed class HolecardsHeaderLineParser implements ILineParser {
     final static String PATTERN = "^\\*\\*\\* HOLE CARDS \\*\\*\\*$";
 
     @Override

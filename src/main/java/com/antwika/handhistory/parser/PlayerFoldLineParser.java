@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class PlayerFoldLineParser implements ILineParser {
+public non-sealed class PlayerFoldLineParser implements ILineParser {
     final static String PATTERN = "^(.+): folds$";
 
     @Override

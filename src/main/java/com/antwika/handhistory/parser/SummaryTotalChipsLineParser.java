@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class SummaryTotalChipsLineParser implements ILineParser {
+public non-sealed class SummaryTotalChipsLineParser implements ILineParser {
     final static String PATTERN = "^Total chips in play (\\d+)$";
 
     @Override

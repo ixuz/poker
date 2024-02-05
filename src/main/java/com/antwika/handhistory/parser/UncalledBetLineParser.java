@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class UncalledBetLineParser implements ILineParser {
+public non-sealed class UncalledBetLineParser implements ILineParser {
     final static String PATTERN = "^Uncalled bet \\((\\d+)\\) returned to (.+)$";
 
     @Override

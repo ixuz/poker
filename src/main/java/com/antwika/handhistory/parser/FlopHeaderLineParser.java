@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class FlopHeaderLineParser implements ILineParser {
+public non-sealed class FlopHeaderLineParser implements ILineParser {
     private static final Logger logger = LoggerFactory.getLogger(FlopHeaderLineParser.class);
 
     final static String PATTERN = "^\\*\\*\\* FLOP \\*\\*\\* \\[(..) (..) (..)]$";

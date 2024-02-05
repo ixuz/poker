@@ -6,7 +6,7 @@ import com.antwika.table.data.TableData;
 import com.antwika.table.player.RandomPlayer;
 import com.antwika.table.util.TableUtil;
 
-public class SeatInfoLineApplier implements ILineApplier {
+public non-sealed class SeatInfoLineApplier implements ILineApplier {
     @Override
     public boolean apply(TableData tableData, ILine line) {
         if (!(line instanceof SeatInfoLine seatInfoLine)) return false;

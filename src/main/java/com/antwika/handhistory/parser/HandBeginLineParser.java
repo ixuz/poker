@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class HandBeginLineParser implements ILineParser {
+public non-sealed class HandBeginLineParser implements ILineParser {
     final static String PATTERN = "^--- HAND BEGIN ---$";
 
     @Override

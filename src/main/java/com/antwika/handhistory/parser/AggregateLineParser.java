@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class AggregateLineParser implements ILineParser {
+public non-sealed class AggregateLineParser implements ILineParser {
     final List<ILineParser> lineParsers;
 
     public AggregateLineParser(List<ILineParser> lineParsers) {

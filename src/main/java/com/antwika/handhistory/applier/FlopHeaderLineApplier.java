@@ -5,7 +5,7 @@ import com.antwika.handhistory.line.ILine;
 import com.antwika.table.data.TableData;
 import com.antwika.table.util.TableUtil;
 
-public class FlopHeaderLineApplier implements ILineApplier {
+public non-sealed class FlopHeaderLineApplier implements ILineApplier {
     @Override
     public boolean apply(TableData tableData, ILine line) {
         if (!(line instanceof FlopHeaderLine flopHeaderLine)) return false;

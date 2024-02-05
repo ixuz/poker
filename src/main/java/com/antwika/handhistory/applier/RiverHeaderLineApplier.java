@@ -5,7 +5,7 @@ import com.antwika.handhistory.line.RiverHeaderLine;
 import com.antwika.table.data.TableData;
 import com.antwika.table.util.TableUtil;
 
-public class RiverHeaderLineApplier implements ILineApplier {
+public non-sealed class RiverHeaderLineApplier implements ILineApplier {
     @Override
     public boolean apply(TableData tableData, ILine line) {
         if (!(line instanceof RiverHeaderLine riverHeaderLine)) return false;

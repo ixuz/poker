@@ -6,7 +6,7 @@ import com.antwika.table.data.TableData;
 
 import static com.antwika.table.util.TableUtil.findSeatByPlayerName;
 
-public class PlayerCallLineApplier implements ILineApplier {
+public non-sealed class PlayerCallLineApplier implements ILineApplier {
     @Override
     public boolean apply(TableData tableData, ILine line) {
         if (!(line instanceof PlayerCallLine playerCallLine)) return false;

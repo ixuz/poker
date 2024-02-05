@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class TurnHeaderLineParser implements ILineParser {
+public non-sealed class TurnHeaderLineParser implements ILineParser {
     private static final Logger logger = LoggerFactory.getLogger(TurnHeaderLineParser.class);
 
     final static String PATTERN = "^\\*\\*\\* TURN \\*\\*\\* \\[(..) (..) (..)] \\[(..)]$";

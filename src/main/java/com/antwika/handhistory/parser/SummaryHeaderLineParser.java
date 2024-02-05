@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class SummaryHeaderLineParser implements ILineParser {
+public non-sealed class SummaryHeaderLineParser implements ILineParser {
     final static String PATTERN = "^\\*\\*\\* SUMMARY \\*\\*\\*$";
 
     @Override
