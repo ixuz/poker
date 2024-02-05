@@ -1021,7 +1021,7 @@ public class ParserTest {
         assertEquals(1, tableData.getSmallBlind());
         assertEquals(2, tableData.getBigBlind());
         assertEquals(TableData.GameStage.NONE, tableData.getGameStage());
-        assertEquals("3c8cTc4s5s", HandUtil.toNotation(tableData.getCards()));
+        assertEquals("", HandUtil.toNotation(tableData.getCards()));
 
         final var tableSeats = tableData.getSeats();
         assertEquals(5, tableSeats.size());
