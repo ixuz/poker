@@ -12,10 +12,7 @@ public class AllPlayersActedTransition extends Transition {
     @Override
     public boolean checkCondition(Object data) {
         final TableData tableData = (TableData) data;
-
-        if (TableUtil.hasAllPlayersActed(tableData)) return true;
-
-        return false;
+        return TableUtil.hasAllPlayersActed(tableData);
     }
 
     @Override

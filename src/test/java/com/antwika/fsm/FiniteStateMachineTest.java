@@ -1,9 +1,6 @@
 package com.antwika.fsm;
 
-import com.antwika.fsm.state.AwaitPlayerActionState;
-import com.antwika.fsm.state.FSMState;
-import com.antwika.fsm.state.HandEndedState;
-import com.antwika.fsm.state.WinningsDeliveredState;
+import com.antwika.fsm.state.*;
 import com.antwika.fsm.transition.*;
 import com.antwika.table.TableDataFactory;
 import com.antwika.table.data.TableData;
@@ -24,9 +21,9 @@ public class FiniteStateMachineTest {
         final FSMState startState = fsm.getStartState();
         final FSMState endState = fsm.getEndState();
 
-        final FSMState handStartedState = new FSMState("HandStarted");
-        final FSMState orbitOngoingState = new FSMState("OrbitOngoingState");
-        final FSMState orbitEndedState = new FSMState("OrbitEndedState");
+        final FSMState handStartedState = new SimpleState("HandStarted");
+        final FSMState orbitOngoingState = new SimpleState("OrbitOngoingState");
+        final FSMState orbitEndedState = new SimpleState("OrbitEndedState");
         final FSMState winningsDeliveredState = new WinningsDeliveredState();
         final FSMState awaitPlayerActionState = new AwaitPlayerActionState();
         final FSMState handEndedState = new HandEndedState();

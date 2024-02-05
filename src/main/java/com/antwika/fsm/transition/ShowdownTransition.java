@@ -20,9 +20,7 @@ public class ShowdownTransition extends Transition {
 
         if (tableData.getGameStage() != TableData.GameStage.RIVER) return false;
         if (TableUtil.countPlayersRemainingInHand(tableData) <= 1) return false;
-        if (TableUtil.numberOfPlayersWithNonZeroStack(tableData) > 1) return false;
-
-        return true;
+        return TableUtil.numberOfPlayersWithNonZeroStack(tableData) <= 1;
     }
 
     @Override

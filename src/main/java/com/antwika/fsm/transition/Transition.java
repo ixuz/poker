@@ -28,7 +28,5 @@ public abstract class Transition {
 
     abstract public boolean checkCondition(Object data);
 
-    public void onTransition(Object data) {
-
-    }
+    abstract public void onTransition(Object data);
 }

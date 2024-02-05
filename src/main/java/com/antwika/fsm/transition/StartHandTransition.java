@@ -28,9 +28,7 @@ public class StartHandTransition extends Transition {
         if (!tableData.getGameStage().equals(TableData.GameStage.NONE)) return false;
         if (TableUtil.anyPlayerHasCards(tableData)) return false;
         if (TableUtil.anyPlayerHasCommittedChips(tableData)) return false;
-        if (TableUtil.numberOfPlayersWithNonZeroStack(tableData) < 2) return false;
-
-        return true;
+        return TableUtil.numberOfPlayersWithNonZeroStack(tableData) >= 2;
     }
 
     @Override

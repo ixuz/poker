@@ -95,9 +95,10 @@ public class PotsUtil {
             collapsed.add(p);
         }
 
-        for (int i = 0; i < collapsed.size() - 1; i++) {
-            final PotData currentPot = collapsed.get(i);
-            final PotData nextPot = collapsed.get(i + 1);
+        final var removePots = new ArrayList<PotData>();
+        for (int i = 1; i < collapsed.size(); i++) {
+            final PotData currentPot = collapsed.get(i - 1);
+            final PotData nextPot = collapsed.get(i);
 
             if (!hasSameCandidates(currentPot, nextPot)) {
                 continue;
@@ -114,8 +115,10 @@ public class PotsUtil {
                 }
             }
 
-            collapsed.remove(i);
+            removePots.add(currentPot);
         }
+
+        collapsed.removeAll(removePots);
 
         namePots(collapsed);
 

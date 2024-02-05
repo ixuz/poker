@@ -1,10 +1,8 @@
 package com.antwika.table.data;
 
 import com.antwika.handhistory.line.ILine;
-import com.antwika.table.common.Prng;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 

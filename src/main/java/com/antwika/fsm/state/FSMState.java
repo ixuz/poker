@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class FSMState {
+public abstract class FSMState {
     private static final Logger logger = LoggerFactory.getLogger(FSMState.class);
 
     private final String name;
@@ -37,15 +37,9 @@ public class FSMState {
         onStep(data);
     }
 
-    protected void onEnter(Object data) {
+    protected abstract void onEnter(Object data);
 
-    }
+    protected abstract void onExit(Object data);
 
-    protected void onExit(Object data) {
-
-    }
-
-    protected void onStep(Object data) {
-
-    }
+    protected abstract void onStep(Object data);
 }

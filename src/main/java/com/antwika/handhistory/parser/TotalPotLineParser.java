@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public non-sealed class TotalPotLineParser implements ILineParser {
+public final class TotalPotLineParser implements ILineParser {
     final static String PATTERN = "^Total pot: (\\d+)$";
 
     @Override

@@ -1,8 +1,6 @@
 package com.antwika.fsm.transition;
 
 import com.antwika.fsm.state.FSMState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DelayTransition extends Transition {
     private final long delayUntil;
@@ -14,11 +12,7 @@ public class DelayTransition extends Transition {
 
     @Override
     public boolean checkCondition(Object data) {
-        if (System.currentTimeMillis() >= delayUntil) {
-            return true;
-        }
-
-        return false;
+        return System.currentTimeMillis() >= delayUntil;
     }
 
     @Override

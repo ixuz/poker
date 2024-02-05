@@ -54,7 +54,6 @@ public class StartOrbitTransition extends Transition {
             if (seat.isHasFolded()) {
                 seat.setHasActed(true);
                 tableData.setActionAt(nextSeatToAct.getSeatIndex());
-                // return List.of(new OrbitActionRequest(tableData)); // TODO: Request player action
             }
 
             final Player player = seat.getPlayer();
@@ -67,16 +66,8 @@ public class StartOrbitTransition extends Transition {
             final int minBet = totalBet + minRaise - seat.getCommitted();
             final int smallestValidRaise = Math.min(totalBet + bigBlind, seat.getStack());
 
-            if (seat.getStack() == 0) {
-                // return List.of(new OrbitEndRequest(tableData)); // TODO: End orbit transition
-            }
-
             // TODO: Weird should be async, no?
             final IEvent response = Player.handleEvent(new PlayerActionRequest(player, tableData, totalBet, toCall, minBet, smallestValidRaise));
-
-            if (response != null) {
-                // return List.of(response); // TODO: Weird
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

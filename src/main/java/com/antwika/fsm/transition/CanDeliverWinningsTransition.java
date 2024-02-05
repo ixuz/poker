@@ -4,8 +4,6 @@ import com.antwika.common.exception.NotationException;
 import com.antwika.fsm.state.FSMState;
 import com.antwika.table.data.TableData;
 import com.antwika.table.util.TableUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CanDeliverWinningsTransition extends Transition {
     public CanDeliverWinningsTransition(FSMState fromState, FSMState toState) {
@@ -23,9 +21,7 @@ public class CanDeliverWinningsTransition extends Transition {
             return true;
         }
 
-        if (!TableUtil.hasAllPlayersActed(tableData)) return false;
-
-        return true;
+        return TableUtil.hasAllPlayersActed(tableData);
     }
 
     @Override

@@ -55,18 +55,16 @@ public class AwaitPlayerActionState extends FSMState {
 
         final PlayerActionResponse playerActionResponse = (PlayerActionResponse) Player.handleEvent(new PlayerActionRequest(player, tableData, totalBet, toCall, minBet, smallestValidRaise));
 
-        List<IEvent> additionalEvents = null;
-
         if (playerActionResponse.action.equals(PlayerActionResponse.Type.BET)) {
-            additionalEvents = handleBetAction(playerActionResponse);
+            handleBetAction(playerActionResponse);
         } else if (playerActionResponse.action.equals(PlayerActionResponse.Type.CALL)) {
-            additionalEvents = handleCall(playerActionResponse);
+            handleCall(playerActionResponse);
         } else if (playerActionResponse.action.equals(PlayerActionResponse.Type.CHECK)) {
-            additionalEvents = handleCheck(playerActionResponse);
+            handleCheck(playerActionResponse);
         } else if (playerActionResponse.action.equals(PlayerActionResponse.Type.FOLD)) {
-            additionalEvents = handleFold(playerActionResponse);
+            handleFold(playerActionResponse);
         } else if (playerActionResponse.action.equals(PlayerActionResponse.Type.RAISE)) {
-            additionalEvents = handleRaise(playerActionResponse);
+            handleRaise(playerActionResponse);
         }
     }
 

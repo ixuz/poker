@@ -10,6 +10,7 @@ import java.io.IOException;
 
 public class HandProcessor {
     private static final Logger logger = LoggerFactory.getLogger(HandProcessor.class);
+
     private final ILineParser parser;
 
     private final ILineApplier applier;

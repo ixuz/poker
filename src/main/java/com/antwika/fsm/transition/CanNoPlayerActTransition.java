@@ -4,8 +4,6 @@ import com.antwika.fsm.state.FSMState;
 import com.antwika.table.data.SeatData;
 import com.antwika.table.data.TableData;
 import com.antwika.table.util.TableUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CanNoPlayerActTransition extends Transition {
     public CanNoPlayerActTransition(FSMState fromState, FSMState toState) {
@@ -44,11 +42,7 @@ public class CanNoPlayerActTransition extends Transition {
         final int numberOfPlayersWithNonFoldedAndNonZeroStack = TableUtil.numberOfPlayersWithNonFoldedAndNonZeroStack(tableData);
         final int countPlayersRemainingInHand = TableUtil.countPlayersRemainingInHand(tableData);
 
-        if (numberOfPlayersWithNonFoldedAndNonZeroStack < 2 && countPlayersRemainingInHand < 2) {
-            return false;
-        }
-
-        return true;
+        return numberOfPlayersWithNonFoldedAndNonZeroStack >= 2 || countPlayersRemainingInHand >= 2;
     }
 
     @Override

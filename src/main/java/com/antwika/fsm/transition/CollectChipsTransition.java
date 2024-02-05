@@ -17,9 +17,7 @@ public class CollectChipsTransition extends Transition {
         if (!TableUtil.anyPlayerHasCommittedChips(tableData)) return false;
         if (tableData.getGameStage() == TableData.GameStage.NONE) return false;
         if (tableData.getGameStage() == TableData.GameStage.SHOWDOWN) return false;
-        if (tableData.getGameStage() == TableData.GameStage.HAND_BEGUN) return false;
-
-        return true;
+        return tableData.getGameStage() != TableData.GameStage.HAND_BEGUN;
     }
 
     @Override

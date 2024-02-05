@@ -20,7 +20,6 @@ public non-sealed class EmptyLineParser implements ILineParser {
 
     @Override
     public boolean write(ILine line, ByteArrayOutputStream baos) {
-        if (!(line instanceof EmptyLine emptyLine)) return false;
-        return true;
+        return line instanceof EmptyLine;
     }
 }

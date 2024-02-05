@@ -1,8 +1,8 @@
 package com.antwika.fsm.state;
 
-public class EndState extends FSMState {
-    public EndState() {
-        super("EndState");
+public class SimpleState extends FSMState {
+    public SimpleState(String name) {
+        super(name);
     }
 
     @Override

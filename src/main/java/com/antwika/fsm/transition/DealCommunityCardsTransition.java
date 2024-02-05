@@ -3,8 +3,6 @@ package com.antwika.fsm.transition;
 import com.antwika.fsm.state.FSMState;
 import com.antwika.table.data.TableData;
 import com.antwika.table.util.TableUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DealCommunityCardsTransition extends Transition {
     public DealCommunityCardsTransition(FSMState fromState, FSMState toState) {
@@ -21,9 +19,7 @@ public class DealCommunityCardsTransition extends Transition {
         if (tableData.getGameStage() == TableData.GameStage.NONE) return false;
         if (tableData.getGameStage() == TableData.GameStage.SHOWDOWN) return false;
         if (tableData.getGameStage() == TableData.GameStage.HAND_BEGUN) return false;
-        if (tableData.getGameStage() == TableData.GameStage.RIVER) return false;
-
-        return true;
+        return tableData.getGameStage() != TableData.GameStage.RIVER;
     }
 
     @Override

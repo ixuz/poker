@@ -277,14 +277,9 @@ public class TableUtil {
 
     public static boolean canStartHand(TableData tableData) {
         if (!tableData.getGameStage().equals(TableData.GameStage.NONE)) return false;
-
         if (anyPlayerHasCards(tableData)) return false;
-
         if (anyPlayerHasCommittedChips(tableData)) return false;
-
-        if (numberOfPlayersWithNonZeroStack(tableData) < 2) return false;
-
-        return true;
+        return numberOfPlayersWithNonZeroStack(tableData) >= 2;
     }
 
     public static void forcePostBlind(TableData tableData, int blindIndex, int blindAmount) {
