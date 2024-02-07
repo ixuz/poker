@@ -452,21 +452,21 @@ public class TableUtil {
         final List<CandidateData> winners = PotsUtil.determineWinners(collapsed, cards, buttonAt, seats.size());
 
         for (CandidateData winner : winners) {
-            final SeatData seat = winner.getSeat();
+            final SeatData seat = winner.seat();
             final Player player = seat.getPlayer();
-            int amount = winner.getAmount();
+            int amount = winner.amount();
             tableData.setDelivered(tableData.getDelivered() + amount);
-            winner.getSeat().setStack(seat.getStack() + amount);
+            winner.seat().setStack(seat.getStack() + amount);
 
             logger.info("{} collected {} from {}",
                     player.getPlayerData().getPlayerName(),
                     amount,
-                    winner.getPotName());
+                    winner.potName());
 
             tableData.getHistory().add(new CollectedPotLine(
                     player.getPlayerData().getPlayerName(),
                     amount,
-                    winner.getPotName()
+                    winner.potName()
             ));
         }
         pots.clear();
@@ -508,21 +508,21 @@ public class TableUtil {
         final List<CandidateData> winners = PotsUtil.determineWinners(collapsed, cards, buttonAt, seats.size());
 
         for (CandidateData winner : winners) {
-            final SeatData seat = winner.getSeat();
+            final SeatData seat = winner.seat();
             final Player player = seat.getPlayer();
-            int amount = winner.getAmount();
+            int amount = winner.amount();
             tableData.setDelivered(tableData.getDelivered() + amount);
-            winner.getSeat().setStack(seat.getStack() + amount);
+            winner.seat().setStack(seat.getStack() + amount);
 
             logger.info("{} collected {} from {}",
                     player.getPlayerData().getPlayerName(),
                     amount,
-                    winner.getPotName());
+                    winner.potName());
 
             tableData.getHistory().add(new CollectedPotLine(
                     player.getPlayerData().getPlayerName(),
                     amount,
-                    winner.getPotName()
+                    winner.potName()
             ));
         }
         pots.clear();

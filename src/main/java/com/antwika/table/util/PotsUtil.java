@@ -39,7 +39,7 @@ public class PotsUtil {
                     potAmount = seat.getCommitted();
                 }
 
-                candidates.add(new CandidateData(seat, potAmount));
+                candidates.add(new CandidateData("Pot", seat, potAmount));
                 seat.setCommitted(seat.getCommitted() - potAmount);
             }
 
@@ -54,7 +54,7 @@ public class PotsUtil {
 
             if (lastSidePot.getCandidates().size() == 1) {
                 final CandidateData candidate = lastSidePot.getCandidates().get(0);
-                final SeatData seat = candidate.getSeat();
+                final SeatData seat = candidate.seat();
                 final Player player = seat.getPlayer();
                 final int amount = lastSidePot.getTotalAmount();
                 seat.setStack(seat.getStack() + amount);
@@ -67,8 +67,8 @@ public class PotsUtil {
     }
 
     public static boolean hasSameCandidates(PotData pot1, PotData pot2) {
-        final List<SeatData> potCandidates1 = pot1.getCandidates().stream().map(CandidateData::getSeat).filter(i -> !i.isHasFolded()).toList();
-        final List<SeatData> potCandidates2 = pot2.getCandidates().stream().map(CandidateData::getSeat).filter(i -> !i.isHasFolded()).toList();
+        final List<SeatData> potCandidates1 = pot1.getCandidates().stream().map(CandidateData::seat).filter(i -> !i.isHasFolded()).toList();
+        final List<SeatData> potCandidates2 = pot2.getCandidates().stream().map(CandidateData::seat).filter(i -> !i.isHasFolded()).toList();
 
         if (potCandidates1.size() != potCandidates2.size()) return false;
 
@@ -85,7 +85,7 @@ public class PotsUtil {
             final List<CandidateData> ineligible = new ArrayList<>();
             final List<CandidateData> eligible = new ArrayList<>(pot.getCandidates());
             for (CandidateData candidate : pot.getCandidates()) {
-                if (candidate.getSeat().isHasFolded()) {
+                if (candidate.seat().isHasFolded()) {
                     ineligible.add(candidate);
                 }
             }
@@ -107,10 +107,17 @@ public class PotsUtil {
             nextPot.setTotalAmount(nextPot.getTotalAmount() + currentPot.getTotalAmount());
             nextPot.setAmountPerCandidate(nextPot.getAmountPerCandidate() + currentPot.getAmountPerCandidate());
 
-            for (CandidateData nextPotCandidate : nextPot.getCandidates()) {
+            final var nextPotCandidates = nextPot.getCandidates();
+            for (var nextPotCandidateIndex = 0; nextPotCandidateIndex < nextPotCandidates.size(); nextPotCandidateIndex++) {
+                final var nextPotCandidate = nextPotCandidates.get(nextPotCandidateIndex);
+
                 for (CandidateData currentPotCandidate : currentPot.getCandidates()) {
-                    if (currentPotCandidate.getSeat() == nextPotCandidate.getSeat()) {
-                        nextPotCandidate.setAmount(nextPotCandidate.getAmount() + currentPotCandidate.getAmount());
+                    if (currentPotCandidate.seat() == nextPotCandidate.seat()) {
+
+                        final var combinedAmount = nextPotCandidate.amount() + currentPotCandidate.amount();
+                        final var combined = new CandidateData(nextPotCandidate.potName(), nextPotCandidate.seat(), combinedAmount);
+
+                        nextPotCandidates.set(nextPotCandidateIndex, combined);
                     }
                 }
             }
@@ -148,11 +155,11 @@ public class PotsUtil {
         while (!collapsedPots.isEmpty()) {
             potIndex += 1;
             final PotData pot = collapsedPots.remove(0);
-            final List<CandidateData> candidates = pot.getCandidates().stream().filter(i -> !i.getSeat().isHasFolded()).toList();
+            final List<CandidateData> candidates = pot.getCandidates().stream().filter(i -> !i.seat().isHasFolded()).toList();
 
             final List<CandidateEvaluationData> evaluations = candidates.stream()
                     .map(i -> {
-                        final IEvaluation evaluation = HandEvaluatorUtil.evaluate(processor, i.getSeat().getCards() | communityCards);
+                        final IEvaluation evaluation = HandEvaluatorUtil.evaluate(processor, i.seat().getCards() | communityCards);
                         final String groupId = HandEvaluatorUtil.toId(evaluation);
                         return new CandidateEvaluationData(i, evaluation, groupId);
                     })
@@ -180,14 +187,14 @@ public class PotsUtil {
                 int portion = remainingPot / winnerCount;
                 int rest = remainingPot - portion * winnerCount;
 
-                final List<CandidateData> groupWinners = getCandidateDataList(group, portion, potIndex);
+                List<CandidateData> groupWinners = getCandidateDataList(group, portion, potIndex);
 
-                delivered += groupWinners.stream().mapToInt(CandidateData::getAmount).sum();
+                delivered += groupWinners.stream().mapToInt(CandidateData::amount).sum();
 
                 if (rest > 0) {
-                    final List<CandidateData> sortedWinnersBySeatIndex = groupWinners.stream()
-                            .sorted(Comparator.comparingInt(e -> e.getSeat().getSeatIndex()))
-                            .toList();
+                    final List<CandidateData> sortedWinnersBySeatIndex = new ArrayList<>(groupWinners.stream()
+                            .sorted(Comparator.comparingInt(e -> e.seat().getSeatIndex()))
+                            .toList());
 
                     Integer firstWinnerIndexAfterButton = getFirstWinnerIndexAfterButton(buttonAt, seatCount, sortedWinnersBySeatIndex);
 
@@ -202,10 +209,14 @@ public class PotsUtil {
                         final int seatIndex = (firstWinnerIndexAfterButton + i) % sortedWinnersBySeatIndex.size();
                         final CandidateData aWinner = sortedWinnersBySeatIndex.get(seatIndex);
 
-                        aWinner.setAmount(aWinner.getAmount() + 1);
+                        final var winner = new CandidateData(aWinner.potName(), aWinner.seat(), aWinner.amount() + 1);
+                        sortedWinnersBySeatIndex.set(seatIndex, winner);
+
                         delivered += 1;
                         rest -= 1;
                     }
+
+                    groupWinners = sortedWinnersBySeatIndex;
                 }
 
                 remainingPot -= delivered;
@@ -220,10 +231,8 @@ public class PotsUtil {
     private static List<CandidateData> getCandidateDataList(List<CandidateEvaluationData> group, int portion, int potIndex) {
         final List<CandidateData> groupWinners = new ArrayList<>();
         for (CandidateEvaluationData e : group) {
-            final CandidateData candidate = new CandidateData(e.getCandidate().getSeat(), portion);
-            if (potIndex == 0) candidate.setPotName("Main pot");
-            else candidate.setPotName("Side pot #" + potIndex);
-            groupWinners.add(candidate);
+            final var potName = (potIndex == 0 ? "Main pot" : "Side pot #" + potIndex);
+            groupWinners.add(new CandidateData(potName, e.getCandidate().seat(), portion));
         }
         return groupWinners;
     }
@@ -232,7 +241,7 @@ public class PotsUtil {
         Integer firstWinnerIndexAfterButton = null;
         for (int i = 0; i < sortedWinnersBySeatIndex.size(); i += 1) {
             final CandidateData aWinner = sortedWinnersBySeatIndex.get(i);
-            final int seatIndex = aWinner.getSeat().getSeatIndex();
+            final int seatIndex = aWinner.seat().getSeatIndex();
             int seatIndexAfterButton = (buttonAt + 1) % seatCount;
             if (seatIndex >= seatIndexAfterButton) {
                 firstWinnerIndexAfterButton = i;

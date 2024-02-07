@@ -11,8 +11,8 @@ public class CandidateDataTest {
     @Test
     public void equality() {
         final SeatData seat = new SeatData();
-        final CandidateData candidate1 = new CandidateData(seat, 100);
-        final CandidateData candidate2 = new CandidateData(seat, 100);
+        final CandidateData candidate1 = new CandidateData("Pot", seat, 100);
+        final CandidateData candidate2 = new CandidateData("Pot", seat, 100);
 
         assertEquals(candidate1, candidate2);
 
