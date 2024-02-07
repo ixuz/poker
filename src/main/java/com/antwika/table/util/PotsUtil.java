@@ -167,15 +167,15 @@ public class PotsUtil {
 
             final List<CandidateEvaluationData> sortedEvaluations = evaluations.stream().sorted((e1, e2) -> {
                 try {
-                    return -1 * HandEvaluatorUtil.compare(processor, e1.getEvaluation().getHand(), e2.getEvaluation().getHand());
+                    return -1 * HandEvaluatorUtil.compare(processor, e1.evaluation().getHand(), e2.evaluation().getHand());
                 } catch (HandEvaluatorException e) {
                     throw new RuntimeException(e);
                 }
             }).toList();
 
-            final List<String> sortedGroupIds = sortedEvaluations.stream().map(CandidateEvaluationData::getGroupId).distinct().toList();
+            final List<String> sortedGroupIds = sortedEvaluations.stream().map(CandidateEvaluationData::groupId).distinct().toList();
 
-            final Map<String, List<CandidateEvaluationData>> groups = evaluations.stream().collect(Collectors.groupingBy(CandidateEvaluationData::getGroupId));
+            final Map<String, List<CandidateEvaluationData>> groups = evaluations.stream().collect(Collectors.groupingBy(CandidateEvaluationData::groupId));
 
             int remainingPot = pot.getTotalAmount();
             for (String groupId : sortedGroupIds) {
@@ -232,7 +232,7 @@ public class PotsUtil {
         final List<CandidateData> groupWinners = new ArrayList<>();
         for (CandidateEvaluationData e : group) {
             final var potName = (potIndex == 0 ? "Main pot" : "Side pot #" + potIndex);
-            groupWinners.add(new CandidateData(potName, e.getCandidate().seat(), portion));
+            groupWinners.add(new CandidateData(potName, e.candidate().seat(), portion));
         }
         return groupWinners;
     }

@@ -1,13 +1,9 @@
 package com.antwika.table.data;
 
 import com.antwika.eval.core.IEvaluation;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
-@Data
-@AllArgsConstructor
-public class CandidateEvaluationData {
-    private CandidateData candidate;
-    private IEvaluation evaluation;
-    private String groupId;
-}
+public record CandidateEvaluationData(
+    CandidateData candidate,
+    IEvaluation evaluation,
+    String groupId
+) {}
