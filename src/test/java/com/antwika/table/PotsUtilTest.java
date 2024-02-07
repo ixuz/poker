@@ -86,11 +86,11 @@ public class PotsUtilTest {
         assertEquals(1, pots.size());
 
         final PotData mainPot = pots.get(0);
-        assertEquals(2, mainPot.getTotalAmount());
-        assertEquals(1, mainPot.getAmountPerCandidate());
-        assertEquals(2, mainPot.getCandidates().size());
-        assertEquals(seat1, mainPot.getCandidates().get(0).seat());
-        assertEquals(seat2, mainPot.getCandidates().get(1).seat());
+        assertEquals(2, mainPot.totalAmount());
+        assertEquals(1, mainPot.amountPerCandidate());
+        assertEquals(2, mainPot.candidates().size());
+        assertEquals(seat1, mainPot.candidates().get(0).seat());
+        assertEquals(seat2, mainPot.candidates().get(1).seat());
     }
 
     @Test
@@ -114,12 +114,12 @@ public class PotsUtilTest {
         assertEquals(1, pots.size());
 
         final PotData mainPot = pots.get(0);
-        assertEquals(3, mainPot.getTotalAmount());
-        assertEquals(1, mainPot.getAmountPerCandidate());
-        assertEquals(3, mainPot.getCandidates().size());
-        assertEquals(seat1, mainPot.getCandidates().get(0).seat());
-        assertEquals(seat2, mainPot.getCandidates().get(1).seat());
-        assertEquals(seat3, mainPot.getCandidates().get(2).seat());
+        assertEquals(3, mainPot.totalAmount());
+        assertEquals(1, mainPot.amountPerCandidate());
+        assertEquals(3, mainPot.candidates().size());
+        assertEquals(seat1, mainPot.candidates().get(0).seat());
+        assertEquals(seat2, mainPot.candidates().get(1).seat());
+        assertEquals(seat3, mainPot.candidates().get(2).seat());
     }
 
     @Test
@@ -143,19 +143,19 @@ public class PotsUtilTest {
         assertEquals(2, pots.size());
 
         final PotData mainPot = pots.get(0);
-        assertEquals(3, mainPot.getTotalAmount());
-        assertEquals(1, mainPot.getAmountPerCandidate());
-        assertEquals(3, mainPot.getCandidates().size());
-        assertEquals(seat3, mainPot.getCandidates().get(0).seat());
-        assertEquals(seat1, mainPot.getCandidates().get(1).seat());
-        assertEquals(seat2, mainPot.getCandidates().get(2).seat());
+        assertEquals(3, mainPot.totalAmount());
+        assertEquals(1, mainPot.amountPerCandidate());
+        assertEquals(3, mainPot.candidates().size());
+        assertEquals(seat3, mainPot.candidates().get(0).seat());
+        assertEquals(seat1, mainPot.candidates().get(1).seat());
+        assertEquals(seat2, mainPot.candidates().get(2).seat());
 
         final PotData sidePot = pots.get(1);
-        assertEquals(2, sidePot.getTotalAmount());
-        assertEquals(1, sidePot.getAmountPerCandidate());
-        assertEquals(2, sidePot.getCandidates().size());
-        assertEquals(seat1, sidePot.getCandidates().get(0).seat());
-        assertEquals(seat2, sidePot.getCandidates().get(1).seat());
+        assertEquals(2, sidePot.totalAmount());
+        assertEquals(1, sidePot.amountPerCandidate());
+        assertEquals(2, sidePot.candidates().size());
+        assertEquals(seat1, sidePot.candidates().get(0).seat());
+        assertEquals(seat2, sidePot.candidates().get(1).seat());
     }
 
     @Test
@@ -182,20 +182,20 @@ public class PotsUtilTest {
         assertEquals(2, pots.size());
 
         final PotData mainPot = pots.get(0);
-        assertEquals(8, mainPot.getTotalAmount());
-        assertEquals(2, mainPot.getAmountPerCandidate());
-        assertEquals(4, mainPot.getCandidates().size());
-        assertEquals(seat1, mainPot.getCandidates().get(0).seat());
-        assertEquals(seat2, mainPot.getCandidates().get(1).seat());
-        assertEquals(seat3, mainPot.getCandidates().get(2).seat());
-        assertEquals(seat4, mainPot.getCandidates().get(3).seat());
+        assertEquals(8, mainPot.totalAmount());
+        assertEquals(2, mainPot.amountPerCandidate());
+        assertEquals(4, mainPot.candidates().size());
+        assertEquals(seat1, mainPot.candidates().get(0).seat());
+        assertEquals(seat2, mainPot.candidates().get(1).seat());
+        assertEquals(seat3, mainPot.candidates().get(2).seat());
+        assertEquals(seat4, mainPot.candidates().get(3).seat());
 
         final PotData sidePot = pots.get(1);
-        assertEquals(6, sidePot.getTotalAmount());
-        assertEquals(3, sidePot.getAmountPerCandidate());
-        assertEquals(2, sidePot.getCandidates().size());
-        assertEquals(seat3, sidePot.getCandidates().get(0).seat());
-        assertEquals(seat4, sidePot.getCandidates().get(1).seat());
+        assertEquals(6, sidePot.totalAmount());
+        assertEquals(3, sidePot.amountPerCandidate());
+        assertEquals(2, sidePot.candidates().size());
+        assertEquals(seat3, sidePot.candidates().get(0).seat());
+        assertEquals(seat4, sidePot.candidates().get(1).seat());
     }
 
     @Test
@@ -222,28 +222,28 @@ public class PotsUtilTest {
         assertEquals(3, pots.size());
 
         final PotData mainPot = pots.get(0);
-        assertEquals(8, mainPot.getTotalAmount());
-        assertEquals(2, mainPot.getAmountPerCandidate());
-        assertEquals(4, mainPot.getCandidates().size());
-        assertEquals(seat1, mainPot.getCandidates().get(0).seat());
-        assertEquals(seat2, mainPot.getCandidates().get(1).seat());
-        assertEquals(seat3, mainPot.getCandidates().get(2).seat());
-        assertEquals(seat4, mainPot.getCandidates().get(3).seat());
+        assertEquals(8, mainPot.totalAmount());
+        assertEquals(2, mainPot.amountPerCandidate());
+        assertEquals(4, mainPot.candidates().size());
+        assertEquals(seat1, mainPot.candidates().get(0).seat());
+        assertEquals(seat2, mainPot.candidates().get(1).seat());
+        assertEquals(seat3, mainPot.candidates().get(2).seat());
+        assertEquals(seat4, mainPot.candidates().get(3).seat());
 
         final PotData sidePot1 = pots.get(1);
-        assertEquals(3, sidePot1.getTotalAmount());
-        assertEquals(1, sidePot1.getAmountPerCandidate());
-        assertEquals(3, sidePot1.getCandidates().size());
-        assertEquals(seat2, sidePot1.getCandidates().get(0).seat());
-        assertEquals(seat3, sidePot1.getCandidates().get(1).seat());
-        assertEquals(seat4, sidePot1.getCandidates().get(2).seat());
+        assertEquals(3, sidePot1.totalAmount());
+        assertEquals(1, sidePot1.amountPerCandidate());
+        assertEquals(3, sidePot1.candidates().size());
+        assertEquals(seat2, sidePot1.candidates().get(0).seat());
+        assertEquals(seat3, sidePot1.candidates().get(1).seat());
+        assertEquals(seat4, sidePot1.candidates().get(2).seat());
 
         final PotData sidePot2 = pots.get(2);
-        assertEquals(4, sidePot2.getTotalAmount());
-        assertEquals(2, sidePot2.getAmountPerCandidate());
-        assertEquals(2, sidePot2.getCandidates().size());
-        assertEquals(seat3, sidePot2.getCandidates().get(0).seat());
-        assertEquals(seat4, sidePot2.getCandidates().get(1).seat());
+        assertEquals(4, sidePot2.totalAmount());
+        assertEquals(2, sidePot2.amountPerCandidate());
+        assertEquals(2, sidePot2.candidates().size());
+        assertEquals(seat3, sidePot2.candidates().get(0).seat());
+        assertEquals(seat4, sidePot2.candidates().get(1).seat());
     }
 
     @Test
@@ -261,7 +261,7 @@ public class PotsUtilTest {
     @Test
     public void determineWinners_mainPotButNoCandidates() throws NotationException {
         // Arrange
-        final List<PotData> pots = List.of(new PotData(1, List.of()));
+        final List<PotData> pots = List.of(new PotData("Pot", 1, List.of()));
 
         // Act
         final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 10);
@@ -277,7 +277,7 @@ public class PotsUtilTest {
         seat1.setSeatIndex(0);
         seat1.setCards(HandUtil.fromNotation("AcQd").getBitmask());
         final List<CandidateData> candidates = List.of(new CandidateData("Pot", seat1, 1));
-        final List<PotData> pots = List.of(new PotData(1, candidates));
+        final List<PotData> pots = List.of(new PotData("Pot", 1, candidates));
 
         // Act
         final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 1);
@@ -301,7 +301,7 @@ public class PotsUtilTest {
                 new CandidateData("Pot", seat1, 1),
                 new CandidateData("Pot", seat2, 1)
         );
-        final List<PotData> pots = List.of(new PotData(1, candidates));
+        final List<PotData> pots = List.of(new PotData("Pot", 1, candidates));
 
         // Act
         final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
@@ -325,7 +325,7 @@ public class PotsUtilTest {
                 new CandidateData("Pot", seat1, 1),
                 new CandidateData("Pot", seat2, 1)
         );
-        final List<PotData> pots = List.of(new PotData(1, candidates));
+        final List<PotData> pots = List.of(new PotData("Pot", 1, candidates));
 
         // Act
         final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 2);
@@ -353,14 +353,14 @@ public class PotsUtilTest {
         seat3.setSeatIndex(2);
         seat3.setCards(HandUtil.fromNotation("QhQs").getBitmask());
         final List<PotData> pots = List.of(
-                new PotData(1,
+                new PotData("Pot", 1,
                         List.of(
                                 new CandidateData("Pot", seat1, 1),
                                 new CandidateData("Pot", seat2, 1),
                                 new CandidateData("Pot", seat3, 1)
                         )
                 ),
-                new PotData(4,
+                new PotData("Pot", 4,
                         List.of(
                                 new CandidateData("Pot", seat2, 4),
                                 new CandidateData("Pot", seat3, 4)
@@ -403,7 +403,7 @@ public class PotsUtilTest {
         seat6.setSeatIndex(5);
         seat6.setCards(HandUtil.fromNotation("7c7d").getBitmask());
         final List<PotData> pots = List.of(
-                new PotData(1,
+                new PotData("Pot", 1,
                         List.of(
                                 new CandidateData("Pot", seat1, 1),
                                 new CandidateData("Pot", seat2, 1),
@@ -413,7 +413,7 @@ public class PotsUtilTest {
                                 new CandidateData("Pot", seat6, 1)
                         )
                 ),
-                new PotData(4,
+                new PotData("Pot", 4,
                         List.of(
                                 new CandidateData("Pot", seat2, 4),
                                 new CandidateData("Pot", seat3, 4),
@@ -422,7 +422,7 @@ public class PotsUtilTest {
                                 new CandidateData("Pot", seat6, 4)
                         )
                 ),
-                new PotData(6,
+                new PotData("Pot", 6,
                         List.of(
                                 new CandidateData("Pot", seat5, 6),
                                 new CandidateData("Pot", seat6, 6)
@@ -495,8 +495,8 @@ public class PotsUtilTest {
         assertEquals(0, seat4.getCommitted());
 
         assertEquals(1, pots.size());
-        assertEquals(100, pots.get(0).getAmountPerCandidate());
-        assertEquals(400, pots.get(0).getTotalAmount());
+        assertEquals(100, pots.get(0).amountPerCandidate());
+        assertEquals(400, pots.get(0).totalAmount());
 
         // Betting round
         seat2.setCommitted(250); // SB: Bet (all-in)
@@ -513,14 +513,14 @@ public class PotsUtilTest {
         assertEquals(0, seat4.getCommitted());
 
         assertEquals(4, pots.size());
-        assertEquals(100, pots.get(0).getAmountPerCandidate());
-        assertEquals(400, pots.get(0).getTotalAmount());
-        assertEquals(250, pots.get(1).getAmountPerCandidate());
-        assertEquals(1000, pots.get(1).getTotalAmount());
-        assertEquals(250, pots.get(2).getAmountPerCandidate());
-        assertEquals(750, pots.get(2).getTotalAmount());
-        assertEquals(150, pots.get(3).getAmountPerCandidate());
-        assertEquals(300, pots.get(3).getTotalAmount());
+        assertEquals(100, pots.get(0).amountPerCandidate());
+        assertEquals(400, pots.get(0).totalAmount());
+        assertEquals(250, pots.get(1).amountPerCandidate());
+        assertEquals(1000, pots.get(1).totalAmount());
+        assertEquals(250, pots.get(2).amountPerCandidate());
+        assertEquals(750, pots.get(2).totalAmount());
+        assertEquals(150, pots.get(3).amountPerCandidate());
+        assertEquals(300, pots.get(3).totalAmount());
 
         // Determine winnings
         final List<CandidateData> winners = PotsUtil.determineWinners(pots, HandUtil.fromNotation("2c4d6h8sTc").getBitmask(), 0, 4);
@@ -549,8 +549,8 @@ public class PotsUtilTest {
         final CandidateData candidate4 = new CandidateData("Pot", seat, 200);
         final List<CandidateData> candidates1 = List.of(candidate1, candidate2);
         final List<CandidateData> candidates2 = List.of(candidate3, candidate4);
-        final PotData pot1 = new PotData(200, candidates1);
-        final PotData pot2 = new PotData(200, candidates2);
+        final PotData pot1 = new PotData("Pot", 200, candidates1);
+        final PotData pot2 = new PotData("Pot", 200, candidates2);
         assertTrue(PotsUtil.hasSameCandidates(pot1, pot2));
     }
 
@@ -562,11 +562,11 @@ public class PotsUtilTest {
         final SeatData seat3 = new SeatData();
 
         final List<PotData> pots = List.of(
-                new PotData(100, List.of(
+                new PotData("Pot", 100, List.of(
                         new CandidateData("Pot", seat1, 100),
                         new CandidateData("Pot", seat2, 100)
                 )),
-                new PotData(250, List.of(
+                new PotData("Pot", 250, List.of(
                         new CandidateData("Pot", seat1, 250),
                         new CandidateData("Pot", seat2, 250),
                         new CandidateData("Pot", seat3, 250)
@@ -578,10 +578,10 @@ public class PotsUtilTest {
 
         // Assert
         assertEquals(2, collapsed.size());
-        assertEquals(100, collapsed.get(0).getAmountPerCandidate());
-        assertEquals(200, collapsed.get(0).getTotalAmount());
-        assertEquals(250, collapsed.get(1).getAmountPerCandidate());
-        assertEquals(750, collapsed.get(1).getTotalAmount());
+        assertEquals(100, collapsed.get(0).amountPerCandidate());
+        assertEquals(200, collapsed.get(0).totalAmount());
+        assertEquals(250, collapsed.get(1).amountPerCandidate());
+        assertEquals(750, collapsed.get(1).totalAmount());
     }
 
     @Test
@@ -591,11 +591,11 @@ public class PotsUtilTest {
         final SeatData seat2 = new SeatData();
 
         final List<PotData> pots = List.of(
-                new PotData(100, List.of(
+                new PotData("Pot", 100, List.of(
                         new CandidateData("Pot", seat1, 100),
                         new CandidateData("Pot", seat2, 100)
                 )),
-                new PotData(250, List.of(
+                new PotData("Pot", 250, List.of(
                         new CandidateData("Pot", seat1, 250),
                         new CandidateData("Pot", seat2, 250)
                 ))
@@ -606,8 +606,8 @@ public class PotsUtilTest {
 
         // Assert
         assertEquals(1, collapsed.size());
-        assertEquals(350, collapsed.get(0).getAmountPerCandidate());
-        assertEquals(700, collapsed.get(0).getTotalAmount());
+        assertEquals(350, collapsed.get(0).amountPerCandidate());
+        assertEquals(700, collapsed.get(0).totalAmount());
     }
 
     @Test
@@ -628,8 +628,8 @@ public class PotsUtilTest {
                 new CandidateData("Pot", seat2, 2)
         );
         final List<PotData> pots = List.of(
-                new PotData(1, candidates1),
-                new PotData(2, candidates2)
+                new PotData("Pot", 1, candidates1),
+                new PotData("Pot", 2, candidates2)
         );
 
         // Act

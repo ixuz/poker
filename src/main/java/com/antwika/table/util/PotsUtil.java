@@ -43,7 +43,7 @@ public class PotsUtil {
                 seat.setCommitted(seat.getCommitted() - potAmount);
             }
 
-            pots.add(new PotData(potAmount, candidates));
+            pots.add(new PotData("Pot", potAmount, candidates));
 
             sorted.removeAll(sorted.stream().filter(i -> i.getCommitted() == 0).toList());
         }
@@ -52,14 +52,14 @@ public class PotsUtil {
             final int lastSidePotIndex = pots.size() - 1;
             final PotData lastSidePot = pots.get(lastSidePotIndex);
 
-            if (lastSidePot.getCandidates().size() == 1) {
-                final CandidateData candidate = lastSidePot.getCandidates().get(0);
+            if (lastSidePot.candidates().size() == 1) {
+                final CandidateData candidate = lastSidePot.candidates().get(0);
                 final SeatData seat = candidate.seat();
                 final Player player = seat.getPlayer();
-                final int amount = lastSidePot.getTotalAmount();
+                final int amount = lastSidePot.totalAmount();
                 seat.setStack(seat.getStack() + amount);
                 pots.remove(lastSidePot);
-                logger.info("Uncalled bet ({}) returned to {}", lastSidePot.getTotalAmount(), player.getPlayerData().getPlayerName());
+                logger.info("Uncalled bet ({}) returned to {}", lastSidePot.totalAmount(), player.getPlayerData().getPlayerName());
             }
         }
 
@@ -67,8 +67,8 @@ public class PotsUtil {
     }
 
     public static boolean hasSameCandidates(PotData pot1, PotData pot2) {
-        final List<SeatData> potCandidates1 = pot1.getCandidates().stream().map(CandidateData::seat).filter(i -> !i.isHasFolded()).toList();
-        final List<SeatData> potCandidates2 = pot2.getCandidates().stream().map(CandidateData::seat).filter(i -> !i.isHasFolded()).toList();
+        final List<SeatData> potCandidates1 = pot1.candidates().stream().map(CandidateData::seat).filter(i -> !i.isHasFolded()).toList();
+        final List<SeatData> potCandidates2 = pot2.candidates().stream().map(CandidateData::seat).filter(i -> !i.isHasFolded()).toList();
 
         if (potCandidates1.size() != potCandidates2.size()) return false;
 
@@ -83,16 +83,14 @@ public class PotsUtil {
 
         for (PotData pot : pots) {
             final List<CandidateData> ineligible = new ArrayList<>();
-            final List<CandidateData> eligible = new ArrayList<>(pot.getCandidates());
-            for (CandidateData candidate : pot.getCandidates()) {
+            final List<CandidateData> eligible = new ArrayList<>(pot.candidates());
+            for (CandidateData candidate : pot.candidates()) {
                 if (candidate.seat().isHasFolded()) {
                     ineligible.add(candidate);
                 }
             }
             eligible.removeAll(ineligible);
-            final PotData p = new PotData(pot.getAmountPerCandidate(), eligible);
-            p.setTotalAmount(pot.getTotalAmount());
-            collapsed.add(p);
+            collapsed.add(new PotData("Pot", pot.amountPerCandidate(), eligible));
         }
 
         final var removePots = new ArrayList<PotData>();
@@ -104,14 +102,13 @@ public class PotsUtil {
                 continue;
             }
 
-            nextPot.setTotalAmount(nextPot.getTotalAmount() + currentPot.getTotalAmount());
-            nextPot.setAmountPerCandidate(nextPot.getAmountPerCandidate() + currentPot.getAmountPerCandidate());
+            nextPot.amountPerCandidate(nextPot.amountPerCandidate() + currentPot.amountPerCandidate());
 
-            final var nextPotCandidates = nextPot.getCandidates();
+            final var nextPotCandidates = nextPot.candidates();
             for (var nextPotCandidateIndex = 0; nextPotCandidateIndex < nextPotCandidates.size(); nextPotCandidateIndex++) {
                 final var nextPotCandidate = nextPotCandidates.get(nextPotCandidateIndex);
 
-                for (CandidateData currentPotCandidate : currentPot.getCandidates()) {
+                for (CandidateData currentPotCandidate : currentPot.candidates()) {
                     if (currentPotCandidate.seat() == nextPotCandidate.seat()) {
 
                         final var combinedAmount = nextPotCandidate.amount() + currentPotCandidate.amount();
@@ -136,9 +133,9 @@ public class PotsUtil {
         for (int i = collapsed.size() - 1; i >= 0; i -= 1) {
             final PotData pot = collapsed.get(0);
             if (i == 0) {
-                pot.setName("Main pot");
+                pot.name("Main pot");
             } else {
-                pot.setName("Side pot #" + i);
+                pot.name("Side pot #" + i);
             }
         }
     }
@@ -155,7 +152,7 @@ public class PotsUtil {
         while (!collapsedPots.isEmpty()) {
             potIndex += 1;
             final PotData pot = collapsedPots.remove(0);
-            final List<CandidateData> candidates = pot.getCandidates().stream().filter(i -> !i.seat().isHasFolded()).toList();
+            final List<CandidateData> candidates = pot.candidates().stream().filter(i -> !i.seat().isHasFolded()).toList();
 
             final List<CandidateEvaluationData> evaluations = candidates.stream()
                     .map(i -> {
@@ -177,7 +174,7 @@ public class PotsUtil {
 
             final Map<String, List<CandidateEvaluationData>> groups = evaluations.stream().collect(Collectors.groupingBy(CandidateEvaluationData::groupId));
 
-            int remainingPot = pot.getTotalAmount();
+            int remainingPot = pot.totalAmount();
             for (String groupId : sortedGroupIds) {
                 if (remainingPot == 0) break;
                 if (remainingPot < 0) throw new RuntimeException("The remaining pot must never be negative");

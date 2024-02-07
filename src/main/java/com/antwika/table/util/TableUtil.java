@@ -67,7 +67,7 @@ public class TableUtil {
     }
 
     public static int countTotalPot(TableData tableData) {
-        return tableData.getPots().stream().mapToInt(PotData::getTotalAmount).sum();
+        return tableData.getPots().stream().mapToInt(PotData::totalAmount).sum();
     }
 
     public static int countChipsInPlay(TableData tableData) {

@@ -1,19 +1,39 @@
 package com.antwika.table.data;
 
-import lombok.Data;
-
 import java.util.List;
 
-@Data
 public class PotData {
-    private String name = "Pot";
+    private String name;
     private int amountPerCandidate;
-    private List<CandidateData> candidates;
-    private int totalAmount;
+    private final List<CandidateData> candidates;
 
-    public PotData(int amountPerCandidate, List<CandidateData> candidates) {
-        setAmountPerCandidate(amountPerCandidate);
-        setCandidates(candidates);
-        setTotalAmount(candidates.size() * amountPerCandidate);
+    public PotData(String name, int amountPerCandidate, List<CandidateData> candidates) {
+        this.name = name;
+        this.amountPerCandidate = amountPerCandidate;
+        this.candidates = candidates;
+    }
+
+    public void name(String name) {
+        this.name = name;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public int amountPerCandidate() {
+        return amountPerCandidate;
+    }
+
+    public void amountPerCandidate(int amountPerCandidate) {
+        this.amountPerCandidate = amountPerCandidate;
+    }
+
+    public List<CandidateData> candidates() {
+        return candidates;
+    }
+
+    public int totalAmount() {
+        return amountPerCandidate * candidates.size();
     }
 }
